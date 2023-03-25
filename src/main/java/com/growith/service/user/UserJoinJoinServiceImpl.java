@@ -1,5 +1,7 @@
-package com.growith.domain.user;
+package com.growith.service.user;
 
+import com.growith.domain.user.User;
+import com.growith.domain.user.UserRepository;
 import com.growith.domain.user.oauth.UserProfile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

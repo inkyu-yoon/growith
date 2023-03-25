@@ -1,6 +1,6 @@
 package com.growith.controller;
 
-import com.growith.domain.user.UserService;
+import com.growith.service.user.UserService;
 import com.growith.domain.user.dto.UserGetResponse;
 import com.growith.global.Response;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +23,7 @@ public class UserApiController {
 
         return ResponseEntity.ok(Response.success(response));
     }
+
+
 
 }

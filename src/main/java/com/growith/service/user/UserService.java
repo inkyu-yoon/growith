@@ -1,5 +1,7 @@
-package com.growith.domain.user;
+package com.growith.service.user;
 
+import com.growith.domain.user.User;
+import com.growith.domain.user.UserRepository;
 import com.growith.domain.user.dto.UserGetResponse;
 import com.growith.global.exception.AppException;
 import lombok.RequiredArgsConstructor;
