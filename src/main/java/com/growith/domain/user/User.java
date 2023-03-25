@@ -2,6 +2,7 @@ package com.growith.domain.user;
 
 
 import com.growith.domain.BaseEntity;
+import com.growith.domain.user.dto.UserGetResponse;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -35,4 +36,14 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
+    public UserGetResponse toGetUserResponse() {
+        return UserGetResponse.builder()
+                .id(this.id)
+                .name(this.name)
+                .imageUrl(this.imageUrl)
+                .nickName(this.nickName)
+                .email(this.email)
+                .blog(this.blog)
+                .build();
+    }
 }
