@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 @Setter
 @Getter
-public class GithubProfile {
+public class UserProfile {
     private String email;
     private String name;
     @JsonProperty("avatar_url")

@@ -1,7 +1,7 @@
 package com.growith.controller;
 
-import com.growith.domain.user.UserService;
-import com.growith.domain.user.oauth.GithubProfile;
+import com.growith.domain.user.UserJoinService;
+import com.growith.domain.user.oauth.UserProfile;
 import com.growith.domain.user.oauth.OAuthInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class UserLoginController {
     @Value("${spring.security.oauth2.client.registration.github.client-secret}")
     private String clientSecret;
 
-    private final UserService userService;
+    private final UserJoinService userJoinService;
 
     /**
      * 깃허브 로그인 인증 시 redirect 되는 것 GET
@@ -64,14 +64,14 @@ public class UserLoginController {
     @GetMapping("/githubLogin/success")
     public String githubLoginSuccess(@RequestParam String access_token) {
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<GithubProfile> response = restTemplate.exchange("https://api.github.com/user"
+        ResponseEntity<UserProfile> response = restTemplate.exchange("https://api.github.com/user"
                 , HttpMethod.GET
                 , getUserInfo(access_token)
-                , GithubProfile.class);
+                , UserProfile.class);
 
-        GithubProfile userInfo = response.getBody();
+        UserProfile userInfo = response.getBody();
 
-        userService.login(userInfo);
+        userJoinService.login(userInfo);
         return "redirect:/";
     }
     private HttpEntity<MultiValueMap<String,String>> getUserInfo(String access_token) {
