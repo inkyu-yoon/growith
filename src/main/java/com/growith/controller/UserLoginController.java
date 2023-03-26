@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import static com.growith.global.util.constant.CookieConstants.*;
+
 @Controller
 @Slf4j
 @RequiredArgsConstructor
@@ -19,7 +21,6 @@ public class UserLoginController {
     private final WebClientService webClientService;
     private final UserJoinService userJoinService;
 
-    private final String JWT_COOKIE_NAME = "jwt";
 
     @GetMapping("/oauth2/redirect")
     public String githubLogin(@RequestParam String code) {
@@ -33,7 +34,7 @@ public class UserLoginController {
 
         String jwt = userJoinService.login(userInfo);
 
-        CookieUtil.setCookie(response,JWT_COOKIE_NAME,jwt,60*60);
+        CookieUtil.setCookie(response, JWT_COOKIE_NAME,jwt,COOKIE_AGE);
 
         return "redirect:/";
     }

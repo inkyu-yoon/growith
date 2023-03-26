@@ -1,5 +1,6 @@
 package com.growith.global.util;
 
+import com.growith.global.util.constant.UserConstants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+
+import static com.growith.global.util.constant.UserConstants.*;
 
 @Component
 @RequiredArgsConstructor
@@ -21,7 +24,7 @@ public class JwtUtil {
         Claims claims = Jwts.claims()
                 .setSubject(email);
 
-        claims.put("role", role);
+        claims.put(USER_ROLE_IN_CLAIM, role);
 
         Date now = new Date();
 
