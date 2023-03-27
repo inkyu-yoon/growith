@@ -24,7 +24,7 @@ function showLoginForm(){
             $('.login-footer').fadeIn('fast');    
         });
         
-        $('.modal-title').html('Login with');
+        $('.modal-title').html('Sign Up · Sign In');
     });       
      $('.error').removeClass('alert alert-danger').html(''); 
 }
