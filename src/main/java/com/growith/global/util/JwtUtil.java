@@ -1,6 +1,5 @@
 package com.growith.global.util;
 
-import com.growith.global.util.constant.UserConstants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -26,12 +25,10 @@ public class JwtUtil {
 
         claims.put(USER_ROLE_IN_CLAIM, role);
 
-        Date now = new Date();
-
         return Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + tokenValidMillis))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + tokenValidMillis))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
@@ -46,12 +43,13 @@ public class JwtUtil {
                 .getSubject();
     }
 
-    public boolean validateToken(String token, String secretKey) {
+    public boolean isExpired(String token, String secretKey) {
         Jws<Claims> claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token);
 
-        return !claims.getBody()
+
+        return claims.getBody()
                 .getExpiration()
                 .before(new Date());
     }

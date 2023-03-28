@@ -2,6 +2,7 @@ package com.growith.service.user;
 
 import com.growith.domain.user.User;
 import com.growith.domain.user.UserRepository;
+import com.growith.domain.user.dto.UserGetMyPageResponse;
 import com.growith.domain.user.dto.UserGetResponse;
 import com.growith.global.exception.AppException;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +20,16 @@ public class UserService {
 
     public UserGetResponse getUser(Long userId) {
 
-        User foundUser = userRepository.findById(userId).orElseThrow(
-                () -> new AppException(USER_NOT_FOUND)
-        );
+        User foundUser = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
-        return foundUser.toGetUserResponse();
+        return foundUser.toUserGetResponse();
+    }
+
+    public UserGetMyPageResponse getMyPageUser(String email) {
+        User foundUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(USER_NOT_FOUND));
+
+        return foundUser.toUserGetMyPageResponse();
     }
 }

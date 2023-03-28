@@ -2,6 +2,7 @@ package com.growith.domain.user;
 
 
 import com.growith.domain.BaseEntity;
+import com.growith.domain.user.dto.UserGetMyPageResponse;
 import com.growith.domain.user.dto.UserGetResponse;
 import jakarta.persistence.*;
 import lombok.*;
@@ -77,7 +78,7 @@ public class User extends BaseEntity implements UserDetails {
         return true;
     }
 
-    public UserGetResponse toGetUserResponse() {
+    public UserGetResponse toUserGetResponse() {
         return UserGetResponse.builder()
                 .id(this.id)
                 .name(this.name)
@@ -85,6 +86,18 @@ public class User extends BaseEntity implements UserDetails {
                 .nickName(this.nickName)
                 .email(this.email)
                 .blog(this.blog)
+                .build();
+    }
+
+    public UserGetMyPageResponse toUserGetMyPageResponse() {
+        return UserGetMyPageResponse.builder()
+                .id(this.id)
+                .name(this.name)
+                .imageUrl(this.imageUrl)
+                .nickName(this.nickName)
+                .email(this.email)
+                .blog(this.blog)
+                .point(this.point)
                 .build();
     }
 

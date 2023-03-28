@@ -34,9 +34,16 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
                 .and()
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+                .deleteCookies("jwt")
+
+                .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/css/**", "/js/**", "/img/**", "/login/assets/**").permitAll()
-                .anyRequest().permitAll()
+                .requestMatchers("/assets/**","/","/oauth2/redirect","/githubLogin/success","/logout").permitAll()
+                .requestMatchers("/api/v1/users/mypage").authenticated()
+                .requestMatchers("/api/v1/users/**").permitAll()
 
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil,userDetailsService,secretKey), UsernamePasswordAuthenticationFilter.class)
