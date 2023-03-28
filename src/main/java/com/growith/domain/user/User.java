@@ -4,6 +4,7 @@ package com.growith.domain.user;
 import com.growith.domain.BaseEntity;
 import com.growith.domain.user.dto.UserGetMyPageResponse;
 import com.growith.domain.user.dto.UserGetResponse;
+import com.growith.domain.user.dto.UserUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -102,4 +104,18 @@ public class User extends BaseEntity implements UserDetails {
     }
 
 
+    public boolean userValid(String email) {
+        return this.email == email;
+    }
+
+    public void updateUserInfo(UserUpdateRequest requestDto) {
+        String blog = requestDto.getBlog();
+        String nickName = requestDto.getNickName();
+        if (StringUtils.hasText(blog)) {
+            this.blog = blog;
+        }
+        if (StringUtils.hasText(nickName)) {
+            this.nickName = nickName;
+        }
+    }
 }

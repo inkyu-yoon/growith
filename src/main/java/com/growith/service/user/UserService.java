@@ -4,12 +4,15 @@ import com.growith.domain.user.User;
 import com.growith.domain.user.UserRepository;
 import com.growith.domain.user.dto.UserGetMyPageResponse;
 import com.growith.domain.user.dto.UserGetResponse;
+import com.growith.domain.user.dto.UserUpdateRequest;
+import com.growith.domain.user.dto.UserUpdateResponse;
 import com.growith.global.exception.AppException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.growith.global.exception.ErrorCode.USER_NOT_FOUND;
+import static com.growith.global.exception.ErrorCode.USER_NOT_MATCH;
 
 @Service
 @RequiredArgsConstructor
@@ -31,5 +34,17 @@ public class UserService {
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
         return foundUser.toUserGetMyPageResponse();
+    }
+
+    @Transactional
+    public void updateUser(String email, Long userId, UserUpdateRequest requestDto) {
+        User foundUser = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(USER_NOT_FOUND));
+
+        if (foundUser.userValid(email)) {
+            throw new AppException(USER_NOT_MATCH);
+        }
+
+        foundUser.updateUserInfo(requestDto);
     }
 }

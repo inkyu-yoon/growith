@@ -1,6 +1,8 @@
 package com.growith.controller;
 
 import com.growith.domain.user.dto.UserGetMyPageResponse;
+import com.growith.domain.user.dto.UserUpdateRequest;
+import com.growith.domain.user.dto.UserUpdateResponse;
 import com.growith.service.user.UserService;
 import com.growith.domain.user.dto.UserGetResponse;
 import com.growith.global.Response;
@@ -9,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,4 +36,11 @@ public class UserApiController {
         return ResponseEntity.ok(Response.success(response));
     }
 
+    @PatchMapping("/{userId}")
+    public ResponseEntity<Response<Long>> update(Authentication authentication, @PathVariable(name = "userId") Long userId, @RequestBody UserUpdateRequest requestdto) {
+        String email = authentication.getName();
+        userService.updateUser(email, userId,requestdto);
+
+        return ResponseEntity.ok(Response.success(userId));
+    }
 }
