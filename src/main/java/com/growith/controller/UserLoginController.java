@@ -24,13 +24,13 @@ public class UserLoginController {
 
     @GetMapping("/oauth2/redirect")
     public String githubLogin(@RequestParam String code) {
-        String accessToken = webClientService.getAccessToken(code);
+        String accessToken = webClientService.getAccessToken(code,"https://github.com/login/oauth/access_token");
         return "redirect:/githubLogin/success?access_token="+accessToken;
     }
 
     @GetMapping("/githubLogin/success")
     public String githubLoginSuccess(HttpServletResponse response, @RequestParam(name = "access_token") String accessToken) {
-        UserProfile userInfo = webClientService.getUserInfo(accessToken);
+        UserProfile userInfo = webClientService.getUserInfo(accessToken,"https://api.github.com/user");
 
         String jwt = userJoinService.login(userInfo);
 

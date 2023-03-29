@@ -3,13 +3,13 @@ package com.growith.domain.user.oauth;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.growith.domain.user.User;
 import com.growith.domain.user.UserRole;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @ToString
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserProfile {
     private String email;
     private String name;
