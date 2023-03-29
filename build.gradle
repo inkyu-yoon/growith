@@ -19,27 +19,47 @@ repositories {
 }
 
 dependencies {
+	//jpa 와 mysql
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// 스프링 시큐리티
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	testImplementation 'org.springframework.security:spring-security-test'
 
+	//탬플릿 엔진 관련
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// 편의 라이브러리
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	//OAuth
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
+	// WebClient
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+	// jwt 토큰
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	implementation 'javax.xml.bind:jaxb-api:2.3.0'
 
+	// MockStatic을 위한 라이브러리
+	testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
+
+	// WebClient 테스트 코드를 위한 MockWebServer
+	testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '5.0.0-alpha.11'
+	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.0.0-alpha.11'
+
+	// 객체 json화
+	implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 tasks.named('test') {
