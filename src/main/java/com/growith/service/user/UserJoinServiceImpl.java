@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class UserJoinJoinServiceImpl implements UserJoinService {
+public class UserJoinServiceImpl implements UserJoinService {
 
     private final long TOKEN_VALID_MILLIS = 1000L * 60 * 60;
 
