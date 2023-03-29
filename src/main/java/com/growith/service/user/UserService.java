@@ -41,7 +41,7 @@ public class UserService {
         User foundUser = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
-        if (foundUser.userValid(email)) {
+        if (!foundUser.userValid(email)) {
             throw new AppException(USER_NOT_MATCH);
         }
 

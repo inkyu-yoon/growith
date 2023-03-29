@@ -12,6 +12,7 @@ import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.util.Collection;
@@ -19,7 +20,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Where(clause = "deleted_date is NULL")
@@ -79,6 +79,23 @@ public class User extends BaseEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+    @Builder
+    public User(String name, String imageUrl, String nickName, String email, String blog, Long point, UserRole userRole) {
+        Assert.hasText(name, "name must not be empty");
+        Assert.hasText(imageUrl, "imageUrl must not be empty");
+        Assert.hasText(nickName, "nickName must not be empty");
+        Assert.hasText(email, "email must not be empty");
+        Assert.notNull(userRole, "userRole must not be empty");
+
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.nickName = nickName;
+        this.email = email;
+        this.blog = blog;
+        this.point = point;
+        this.userRole = userRole;
+    }
+
 
     public UserGetResponse toUserGetResponse() {
         return UserGetResponse.builder()
@@ -105,7 +122,7 @@ public class User extends BaseEntity implements UserDetails {
 
 
     public boolean userValid(String email) {
-        return this.email == email;
+        return this.email.equals(email);
     }
 
     public void updateUserInfo(UserUpdateRequest requestDto) {

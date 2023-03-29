@@ -18,7 +18,8 @@ public class UserProfile {
     private String blog;
 
     public User toEntity() {
-        return User.builder().userRole(UserRole.ROLE_USER)
+        return User.builder()
+                .userRole(UserRole.ROLE_USER)
                 .point(0L)
                 .blog(this.blog)
                 .email(this.email)
