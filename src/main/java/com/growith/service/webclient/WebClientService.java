@@ -13,9 +13,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 @RequiredArgsConstructor
 public class WebClientService {
-    @Value("${spring.security.oauth2.client.registration.github.client-id}")
+    @Value("${github.client-id}")
     private String clientId;
-    @Value("${spring.security.oauth2.client.registration.github.client-secret}")
+    @Value("${github.client-secret}")
     private String clientSecret;
 
     private final WebClient webClient;
