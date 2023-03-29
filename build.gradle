@@ -54,6 +54,9 @@ dependencies {
 	testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '5.0.0-alpha.11'
 	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.0.0-alpha.11'
 
+	// Wiremock
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.0.1'
+
 	// 객체 json화
 	implementation 'com.google.code.gson:gson:2.10.1'
 }
