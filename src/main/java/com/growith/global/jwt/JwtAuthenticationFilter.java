@@ -24,7 +24,6 @@ import static com.growith.global.util.constant.CookieConstants.*;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
-    private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
     private final String secretKey;
@@ -33,12 +32,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //쿠키가 없는 경우 그냥 진행
         String token = CookieUtil.getCookie(request, JWT_COOKIE_NAME);
-        if (token == null || token.equals(JWT_COOKIE_NAME_DELETED) || jwtUtil.isExpired(token,secretKey)) {
+        if (token == null || token.equals(JWT_COOKIE_NAME_DELETED) || JwtUtil.isExpired(token,secretKey)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(jwtUtil.getUserEmail(token,secretKey));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(JwtUtil.getUserEmail(token,secretKey));
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 

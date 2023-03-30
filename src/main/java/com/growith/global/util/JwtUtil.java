@@ -4,17 +4,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-import static com.growith.global.util.constant.UserConstants.*;
+import static com.growith.global.util.constant.UserConstants.USER_ROLE_IN_CLAIM;
 
-@Component
-@RequiredArgsConstructor
-@Slf4j
 public class JwtUtil {
 
 
@@ -35,7 +29,7 @@ public class JwtUtil {
     }
 
 
-    public String getUserEmail(String token, String secretKey) {
+    public static String getUserEmail(String token, String secretKey) {
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
@@ -43,7 +37,7 @@ public class JwtUtil {
                 .getSubject();
     }
 
-    public boolean isExpired(String token, String secretKey) {
+    public static boolean isExpired(String token, String secretKey) {
         Jws<Claims> claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token);

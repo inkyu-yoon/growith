@@ -1,11 +1,11 @@
 package com.growith.global.config;
 
 import com.growith.global.jwt.JwtAuthenticationFilter;
-import com.growith.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,8 +20,6 @@ public class SecurityConfig {
 
     @Value("${jwt.secret}")
     private String secretKey;
-
-    private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
     @Bean
@@ -43,10 +41,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/assets/**","/","/oauth2/redirect","/githubLogin/success","/logout").permitAll()
                 .requestMatchers("/api/v1/users/mypage").authenticated()
+                .requestMatchers(HttpMethod.POST,"/api/v1/posts").authenticated()
                 .requestMatchers("/api/v1/users/**").permitAll()
 
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil,userDetailsService,secretKey), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(userDetailsService,secretKey), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
