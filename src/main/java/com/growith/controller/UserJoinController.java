@@ -16,7 +16,7 @@ import static com.growith.global.util.constant.CookieConstants.*;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-public class UserLoginController {
+public class UserJoinController {
 
     private final WebClientService webClientService;
     private final UserJoinService userJoinService;
