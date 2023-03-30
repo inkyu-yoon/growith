@@ -119,7 +119,7 @@ access_token={값}&expires_in={값}&refresh_token={값}&refresh_token_expires_in
 
 
 
-## 2️⃣ Wireock
+## 2️⃣ WireMock
 
 ```
 implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.0.1'
