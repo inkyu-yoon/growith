@@ -39,9 +39,8 @@ WebClient를 사용해서 Github Api로 유저 정보를 받아오는 [WebClient
 ## 1️⃣ MockWebServer
 
 ```
-	// WebClient 테스트 코드를 위한 MockWebServer
-	testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '5.0.0-alpha.11'
-	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.0.0-alpha.11'
+testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '5.0.0-alpha.11'
+implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.0.0-alpha.11'
 ```
 
 **mockwebserver** 와 **okhttp** 라이브러리를 추가해야 합니다.
@@ -123,8 +122,7 @@ access_token={값}&expires_in={값}&refresh_token={값}&refresh_token_expires_in
 ## 2️⃣ Wireock
 
 ```
-	// Wiremock
-	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.0.1'
+implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.0.1'
 ```
 
 WireMock을 사용하기 위해서는 위 라이브러리를 추가합니다.
@@ -187,7 +185,7 @@ WireMock 방식의 경우 Http Method도 지정할 수 있다는 것이 큰 차�
 
 실제로 위 코드에서 ` stubFor(post(urlEqualTo("/login/oauth/access_token"))`의 post를 ` stubFor(get(urlEqualTo("/login/oauth/access_token"))` get으로 변경하는 경우 테스트 실패를 하게됩니다.
 
-왜냐하면 `getAccessToken` 메서드에서 입력한 url에 post 요청을 보내기 때문입니다.
+왜냐하면 `getAccessToken` 메서드에서는, 파라미터에 입력된 url에 post 요청을 보내기 때문입니다.
 
 MockWebServer 보다 구체적인 상황으로 테스트 코드를 작성할 수 있다는 것이 코드가 어떤 역할인지 더 잘 보여줄 수 있는 장점이 있다고 생각이 들었습니다.
 
