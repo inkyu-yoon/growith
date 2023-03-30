@@ -1,5 +1,6 @@
 package com.growith.service.webclient;
 
+import com.google.gson.Gson;
 import com.growith.domain.user.oauth.UserProfile;
 import mockwebserver3.MockResponse;
 import mockwebserver3.MockWebServer;
@@ -28,13 +29,13 @@ class WebClientServiceTest {
     }
 
     @BeforeEach
-    void init(){
+    void init() {
         String baseUrl = String.format("http://localhost:%s", mockWebServer.getPort());
         webClientService = new WebClientService(WebClient.create(baseUrl));
     }
 
     @AfterAll
-    public static void end() throws IOException {
+    public static void shutdown() throws IOException {
         mockWebServer.shutdown();
     }
 
@@ -44,16 +45,17 @@ class WebClientServiceTest {
 
         @Test
         @DisplayName("AccessToken 가져오기 성공 테스트")
-        public void getAccessTokenSuccess(){
-
+        public void getAccessTokenSuccess() {
+            String expectedToken = "token";
+            String expectedResponse = String.format("access_token=%s&expires_in={값}&refresh_token={값}&refresh_token_expires_in={값}&scope=&token_type={값}", expectedToken);
             mockWebServer.enqueue(new MockResponse()
-                    .setBody("access_token=token"));
+                    .setBody(expectedResponse));
 
             String code = "code";
 
-            String accessToken = webClientService.getAccessToken(code,String.format("http://localhost:%s", mockWebServer.getPort()));
+            String accessToken = webClientService.getAccessToken(code, "/login/oauth/access_token");
 
-            assertThat(accessToken).isEqualTo("token");
+            assertThat(accessToken).isEqualTo(expectedToken);
 
         }
     }
@@ -62,28 +64,40 @@ class WebClientServiceTest {
     @DisplayName("github user 정보 가져오기 테스트")
     class getUserInfo {
 
+        Gson gson = new Gson();
+
+        static class GithubResponse {
+            private String email;
+            private String name;
+            private String avatar_url;
+            private String blog;
+
+            public GithubResponse(String email, String name, String imageUrl, String blog) {
+                this.email = email;
+                this.name = name;
+                this.avatar_url = imageUrl;
+                this.blog = blog;
+            }
+        }
+
         @Test
         @DisplayName("github user 정보 가져오기 성공 테스트")
-        public void getUserInfo(){
-            String email = "email";
-            String name = "name";
-            String imageUrl = "imageUrl";
-            String blog = "blog";
-            String response = String.format("{\"email\":\"%s\",\"name\":\"%s\",\"avatar_url\":\"%s\",\"blog\":\"%s\"}",email,name,imageUrl,blog);
+        public void getUserInfo() {
 
-            System.out.println(response);
+            String response = gson.toJson(new GithubResponse("email", "name", "imageUrl", "blog"));
+
             mockWebServer.enqueue(new MockResponse()
-                            .addHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .addHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                     .setBody(response));
 
             String accessToken = "AccessToken";
 
-            UserProfile result = webClientService.getUserInfo(accessToken, String.format("http://localhost:%s", mockWebServer.getPort()));
+            UserProfile result = webClientService.getUserInfo(accessToken, "/user");
 
-            assertThat(result.getName()).isEqualTo(name);
-            assertThat(result.getEmail()).isEqualTo(email);
-            assertThat(result.getImageUrl()).isEqualTo(imageUrl);
-            assertThat(result.getBlog()).isEqualTo(blog);
+            assertThat(result.getName()).isEqualTo("name");
+            assertThat(result.getEmail()).isEqualTo("email");
+            assertThat(result.getImageUrl()).isEqualTo("imageUrl");
+            assertThat(result.getBlog()).isEqualTo("blog");
 
         }
     }
