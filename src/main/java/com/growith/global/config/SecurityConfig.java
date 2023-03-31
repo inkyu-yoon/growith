@@ -40,6 +40,8 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests()
                 .requestMatchers("/assets/**","/","/oauth2/redirect","/githubLogin/success","/logout").permitAll()
+                .requestMatchers("/posts/**").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/v1/posts/**").permitAll()
                 .requestMatchers("/api/v1/users/mypage").authenticated()
                 .requestMatchers(HttpMethod.POST,"/api/v1/posts").authenticated()
                 .requestMatchers("/api/v1/users/**").permitAll()
