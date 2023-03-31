@@ -7,7 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 import java.util.Date;
 
-import static com.growith.global.util.constant.UserConstants.USER_ROLE_IN_CLAIM;
+import static com.growith.global.util.constant.JwtConstants.USER_ROLE_IN_CLAIM;
 
 public class JwtUtil {
 

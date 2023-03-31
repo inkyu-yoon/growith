@@ -10,13 +10,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.growith.global.util.constant.JwtConstants.TOKEN_VALID_MILLIS;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
 public class UserJoinServiceImpl implements UserJoinService {
 
-    private final long TOKEN_VALID_MILLIS = 1000L * 60 * 60;
 
     @Value("${jwt.secret}")
     private String secretKey;
