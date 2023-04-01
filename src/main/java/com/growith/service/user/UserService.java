@@ -5,7 +5,6 @@ import com.growith.domain.user.UserRepository;
 import com.growith.domain.user.dto.UserGetMyPageResponse;
 import com.growith.domain.user.dto.UserGetResponse;
 import com.growith.domain.user.dto.UserUpdateRequest;
-import com.growith.domain.user.dto.UserUpdateResponse;
 import com.growith.global.exception.AppException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,7 +40,7 @@ public class UserService {
         User foundUser = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
-        if (!foundUser.userValid(email)) {
+        if (!foundUser.checkAuth(email)) {
             throw new AppException(USER_NOT_MATCH);
         }
 

@@ -18,12 +18,14 @@ import org.springframework.util.StringUtils;
 import java.util.Collection;
 import java.util.List;
 
+import static com.growith.domain.user.UserRole.*;
+
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Where(clause = "deleted_date is NULL")
-@SQLDelete(sql = "UPDATE USER SET deleted_at = current_timestamp WHERE user_id = ?")
+@SQLDelete(sql = "UPDATE USER SET deleted_date = current_timestamp WHERE id = ?")
 public class User extends BaseEntity implements UserDetails {
     @Id
     @Column(name = "user_id")
@@ -121,8 +123,17 @@ public class User extends BaseEntity implements UserDetails {
     }
 
 
-    public boolean userValid(String email) {
-        return this.email.equals(email);
+    /**
+     * 요청하는 자가 본인이면 가능, 혹은 관리자는 본인이 아니어도 가능
+     */
+    public boolean checkAuth(String email) {
+        if (this.email.equals(email)) {
+            return true;
+        }
+        if (this.userRole.equals(ROLE_ADMIN)) {
+            return true;
+        }
+        return false;
     }
 
     public void updateUserInfo(UserUpdateRequest requestDto) {

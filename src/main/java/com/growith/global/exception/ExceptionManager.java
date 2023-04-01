@@ -18,7 +18,7 @@ public class ExceptionManager {
     public ResponseEntity<?> appExceptionHandler(AppException e) {
 
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
-                .body(Response.error(e.getErrorCode()));
+                .body(Response.error(e.getErrorCode().getMessage()));
 
     }
     @ExceptionHandler(IllegalArgumentException.class)
