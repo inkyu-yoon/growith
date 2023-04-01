@@ -17,6 +17,17 @@
             </div>
             <div class="col-8">
                 <div class="card my-4">
+                    <div class="selectBox " style="margin-left: 2.4rem;margin-top: 1.5rem">
+                        <select name="category" class="select" id="input-category">
+                            <option value="0">카테고리 선택</option>
+                            <option value="QNA">Q&A</option>
+                            <option value="COMMUNITY">커뮤니티</option>
+                            <option value="STUDY">스터디</option>
+                            <div class="card-body" sec:authorize="hasRole('ROLE_ADMIN')" >
+                            <option value="NOTICE">공지사항</option>
+                            </div>
+                        </select>
+                    </div>
                     <div class="card-header pb-0 mx-4">
                         <div class="row">
                             <div class="input-group input-group-dynamic mb-4">
@@ -116,8 +127,13 @@
             let data = {
                 title: document.querySelector('#input-title').value.trim(),
                 content: editor.getHTML(),
-                category: "QNA"
+                category: document.querySelector('#input-category').value
             };
+
+            if (data.category == 0) {
+                alert("카테고리 선택은 필수입니다.")
+                return;
+            }
 
             if(data.title.length>=60){
                 alert("제목은 60자를 넘을 수 없습니다.");

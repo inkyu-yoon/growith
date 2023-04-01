@@ -1,0 +1,161 @@
+<!-- header -->
+<th:block th:replace="~{layout/header :: headerFragment}"></th:block>
+
+<body>
+<th:block th:replace="~{layout/navbar :: navbarFragment}"></th:block>
+
+<!-- Page Content -->
+
+<div class="container my-lg-5">
+        <div class="row">
+            <div class="col-2">
+            </div>
+            <div class="col-8">
+
+
+                <div class="card  my-4">
+                    <div class="pb-0 mx-lg-5 mt-lg-5">
+                        <div class=" d-flex justify-content-start mb-3" style="flex: 0 0 auto;">
+
+                        </div>
+                        <div class="d-flex justify-content-end my-2">
+                            <form action="/posts/edit" method="get">
+                                <input type="text" class="form-control" name="postId"
+                                       th:value="${post.postId}" hidden>
+
+                                <button
+                                        type="submit"
+                                        class="btn btn-sm bg-gradient-info">게시글 수정
+                                </button>
+                            </form>
+                            <button th:onclick="|post.delete(${postId})|"
+                                    type="button"
+                                    class="btn btn-sm bg-gradient-danger mx-2">게시글 삭제
+                            </button>
+                        </div>
+
+                        <div class="row">
+                            <div class="d-flex mb-3" style="overflow: hidden">
+
+                                <div style="float: left">
+                                    <th:block th:if="${post.imageUrl== null}">
+                                        <img src="https://raw.githubusercontent.com/buinq/imageServer/main/img/image-20230204013043779.png"
+                                             class="avatar avatar-sm me-3 border-radius-sm" height="50">
+                                    </th:block>
+                                    <th:block th:if="${post.imageUrl != null}">
+                                        <img th:src="${post.imageUrl}"
+                                             class="avatar avatar-sm me-3 border-radius-sm" style=" border-radius: 70%;" height="50">
+                                    </th:block>
+                                </div>
+                                <div style="float: left">
+                                    <div style="margin-left: 5px">
+                                        <p class="mb-0 text" style="font-weight: bold" th:text="|${post.nickName}|"></p>
+                                        <p class="text-xs  mb-0" style="font-size: 0.8rem;color: grey"
+                                           th:text="|${post.createdAt}|"></p>
+                                    </div>
+                                    <div style="margin-left: 5px">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h2 th:text="${post.title}" style="font-family: 'Jua', sans-serif;color: black"> </h2>
+                        </div>
+                    </div>
+
+
+                    <div class="card-body" style="padding-top: 0px">
+<!--                        <div style="overflow: hidden">-->
+<!--                            <th:block th:if="${!files.isEmpty()}">-->
+<!--                                <div style="float: right;">-->
+<!--                                    <div class="mb-3"-->
+<!--                                         style="border: 1px solid #E0E0E0;border-width: 1px; border-radius: 5px;">-->
+<!--                                        <div class="mx-3 my-3">-->
+<!--                                            <th class="align-middle text-center">-->
+<!--                                                <span class=" text-sm font-weight-bold" style="color: #5A2082"-->
+<!--                                                >첨부파일 목록</span>-->
+<!--                                            </th>-->
+<!--                                            <tr th:each="file : ${files}">-->
+<!--                                                <div class="row">-->
+<!--                                                    <th class="align-middle text-center">-->
+<!--                                                        <a th:href="${file.fileUrl}" target='_blank'>-->
+<!--                                                <span class=" text-xs font-weight-bold" style="color: #0d6efd"-->
+<!--                                                      th:text="${file.fileName}"></span>-->
+<!--                                                        </a>-->
+<!--                                                    </th>-->
+<!--                                                </div>-->
+<!--                                            </tr>-->
+
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </th:block>-->
+<!--                            <div style="clear: both"></div>-->
+                            <div >
+                                <div class="mx-lg-4">
+                                    <p
+                                            spellcheck="false"
+                                            th:utext="${post.content}" readonly></p>
+                                </div>
+                            </div>
+<!--                        </div>-->
+                    </div>
+                    <br>
+                    <div class="d-flex justify-content-center mb-3">
+                        <form action="/posts/qna" method="get">
+                            <button
+                                    type="submit"
+                                    class="btn btn-sm bg-gradient-danger mx-2">목록으로
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-2">
+            </div>
+
+        </div>
+    </div>
+<!-- Footer -->
+<th:block th:replace="~{layout/footer :: footerFragment}"></th:block>
+</main>
+
+<!-- TOAST UI Editor CDN URL(JS) -->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+<Script>
+
+
+    let post = {
+        init: function () {
+            var _this = this;
+        },
+
+        delete: function (postId) {
+            const con_check = confirm("삭제하시겠습니까?");
+            if (con_check === true) {
+                axios.delete("/api/v1/posts/" + postId ,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    }
+                ).then((response) => {
+                    alert("게시글 삭제 성공");
+                    history.back();
+                }).catch((error) => {
+                    console.log(error);
+                    alert(error.response.data.result["message"]);
+                });
+            }
+        }
+    };
+
+    announcement.init();
+
+</script>
+</body>
+
+</html>

@@ -7,7 +7,7 @@
 <!-- Page Content -->
 
 
-<div class="container">
+<div class="container ">
     <!-- Button trigger modal -->
 
 
@@ -52,10 +52,14 @@
                             <p class="card-text"style="color: gray" th:text="|${post.date}|" ></p>
                             </div>
                         </div>
+                        <a th:href="@{/posts/{postId}(postId=${post.postId})}" style="text-decoration: none">
                         <h4 class="card-title mt-3" style="color: black" th:text="${post.title}">제목</h4>
+                        </a>
+                        <a th:href="@{/posts/{postId}(postId=${post.postId})}" style="text-decoration: none">
                         <div class=" text-multi" >
-                            <p th:utext="${post.subContent}"></p>
+                            <p th:utext="${post.subContent}" ></p>
                         </div>
+                        </a>
                     </div>
                     <div align="right" class="emoticon mb-3 mx-3">
                         <i class="fa fa-thumbs-o-up" style="font-size:20px"></i> 1

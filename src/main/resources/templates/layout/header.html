@@ -92,6 +92,51 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
+
+            .select {
+                -webkit-appearance:none;
+                width: 150px;
+                height: 35px;
+                background-size: 20px;
+                padding: 5px 30px 5px 10px;
+                border-radius: 4px;
+                outline: 0 none;
+                color: #B4B6DA;
+
+            }
+
+            .select option {
+                background: black;
+                padding: 3px 0;
+            }
+
+            .selectBox {
+                background: #F0F5FA;
+
+                position: relative;
+                width: 150px;
+                height: 35px;
+                border-radius: 4px;
+                border: 1px solid #CED9E7;
+            }
+
+            .selectBox .select {
+                width: inherit;
+                height: inherit;
+                background: transparent;
+                border: 0 none;
+                outline: 0 none;
+                padding: 0 5px;
+                position: relative;
+                z-index: 3;
+            }
+
+            .selectBox .select option {
+                background: #F0F5FA;
+                padding: 3px 0;
+                font-size: 16px;
+                color: #B4B6DA;
+            }
         </style>
     </head>
 

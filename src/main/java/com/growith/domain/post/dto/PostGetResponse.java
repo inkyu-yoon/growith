@@ -18,4 +18,5 @@ public class PostGetResponse {
     private String nickName;
     private String createdAt;
     private String lastModifiedAt;
+    private String imageUrl;
 }

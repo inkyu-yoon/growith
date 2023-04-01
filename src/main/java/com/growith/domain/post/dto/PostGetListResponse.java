@@ -11,13 +11,14 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class PostGetListResponse {
-
+    private Long postId;
     private String title;
     private String subContent;
     private String date;
     private String nickName;
 
     public PostGetListResponse(Post post, User user) {
+        this.postId = post.getId();
         this.title = post.getTitle();
 
         this.subContent = post.getContent();

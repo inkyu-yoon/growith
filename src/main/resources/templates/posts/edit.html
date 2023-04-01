@@ -1,0 +1,125 @@
+<!-- header -->
+<th:block th:replace="~{layout/header :: headerFragment}"></th:block>
+
+<body>
+<th:block th:replace="~{layout/navbar :: navbarFragment}"></th:block>
+
+<!-- Page Content -->
+
+
+<div class="container">
+    <!-- Button trigger modal -->
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-2">
+            </div>
+            <div class="col-8">
+                <div class="card my-4">
+                    <div class="selectBox " style="margin-left: 2.4rem;margin-top: 1.5rem">
+                        <select name="category" class="select" id="input-category">
+                            <option value="0">카테고리 선택</option>
+                            <option value="QNA">Q&A</option>
+                            <option value="COMMUNITY">커뮤니티</option>
+                            <option value="STUDY">스터디</option>
+                            <div class="card-body" sec:authorize="hasRole('ROLE_ADMIN')" >
+                                <option value="NOTICE">공지사항</option>
+                            </div>
+                        </select>
+                    </div>
+                    <div class="card-header pb-0 mx-4">
+                        <div class="row">
+                            <div class="input-group input-group-dynamic mb-4">
+                                <input type="text" class="form-control" placeholder="제목을 입력하세요."
+                                       th:value="${post.title}" name = "title"
+                                       id="input-title">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body px-0 pb-2 mx-5">
+                        <div id="editor"></div>
+                    </div>
+                    <br>
+                    <div class="d-flex justify-content-center mb-3">
+                            <button type="submit" onclick="history.back()" class="btn btn-outline-danger">수정 취소</button>
+                        <button type="submit" th:onclick="|post.edit(${post.postId})|"
+                                class="btn btn-outline-secondary">게시글 수정</button>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-2">
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+<th:block th:replace="~{layout/footer :: footerFragment}"></th:block>
+
+<!-- Bootstrap core JavaScript -->
+<script src="../assets/vendor/jquery/jquery.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+<Script th:inline="javascript">
+    /*<![CDATA[*/
+    const editor = new toastui.Editor({
+        el: document.querySelector('#editor'),
+        previewStyle: 'vertical',
+        height: '800px',
+        initialEditType: 'wysiwyg',
+
+    });
+    var testValue = /*[[${post.content}]]*/;
+    editor.setHTML(testValue);
+    /*]]>*/
+</script>
+<Script>
+    let post = {
+        init: function () {
+            var _this = this;
+        },
+        edit: function (postId) {
+            let data = {
+                title: document.querySelector('#input-title').value.trim(),
+                content: editor.getHTML(),
+                category: document.querySelector('#input-category').value
+            };
+            if(data.title.length>=60){
+                alert("제목은 60자를 넘을 수 없습니다.");
+                document.querySelector("input[name=title]").focus();
+                return
+            }
+            if (data.category == 0) {
+                alert("카테고리 선택은 필수입니다.")
+                document.querySelector("select[name=category]").focus();
+                return;
+            }
+
+            axios.put("/api/v1/posts/" + postId ,
+                JSON.stringify(data), {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }
+            ).then((response) => {
+                alert("수정 성공");
+                history.back();
+            }).catch((error) => {
+                console.log(error);
+                alert(error.response.data.result["message"]);
+            });
+
+        }
+    };
+</Script>
+</body>
+
+</html>
