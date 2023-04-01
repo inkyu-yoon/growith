@@ -7,6 +7,7 @@ import com.growith.domain.post.dto.*;
 import com.growith.domain.user.User;
 import com.growith.domain.user.UserRepository;
 import com.growith.global.exception.AppException;
+import com.growith.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -56,7 +57,9 @@ public class PostService {
         User requestUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
-        requestUser.checkAuth(foundPost.getUser().getEmail());
+        if (!requestUser.checkAuth(foundPost.getUser().getEmail())) {
+            throw new AppException(ErrorCode.USER_NOT_MATCH);
+        }
 
         postRepository.delete(foundPost);
 
@@ -71,7 +74,10 @@ public class PostService {
         User requestUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
-        requestUser.checkAuth(foundPost.getUser().getEmail());
+        if (!requestUser.checkAuth(foundPost.getUser().getEmail())) {
+            throw new AppException(ErrorCode.USER_NOT_MATCH);
+        }
+
 
         foundPost.update(requestDto);
 

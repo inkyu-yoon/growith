@@ -13,7 +13,7 @@ import lombok.Getter;
 public class PostGetListResponse {
     private Long postId;
     private String title;
-    private String subContent;
+    private String content;
     private String date;
     private String nickName;
 
@@ -21,7 +21,7 @@ public class PostGetListResponse {
         this.postId = post.getId();
         this.title = post.getTitle();
 
-        this.subContent = post.getContent();
+        this.content = post.getContent();
 
         this.date = TimeUtil.convertLocaldatetimeToTime(post.getCreatedDate());
         this.nickName = user.getNickName();
