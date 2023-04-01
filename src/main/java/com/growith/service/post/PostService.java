@@ -1,6 +1,7 @@
 package com.growith.service.post;
 
 import com.growith.domain.post.Category;
+import com.growith.domain.post.Post;
 import com.growith.domain.post.PostRepository;
 import com.growith.domain.post.dto.PostCreateRequest;
 import com.growith.domain.post.dto.PostGetListResponse;
@@ -14,7 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.growith.domain.post.Category.*;
+import static com.growith.global.exception.ErrorCode.POST_NOT_FOUND;
 import static com.growith.global.exception.ErrorCode.USER_NOT_FOUND;
 
 @Service
@@ -37,7 +38,14 @@ public class PostService {
         postRepository.save(postCreateRequest.toEntity(foundUser));
     }
 
-    public Page<PostGetListResponse> getAllQnaPosts(Pageable pageable) {
-        return postRepository.getPostListsByCategory(QNA, pageable);
+    public Page<PostGetListResponse> getAllPostsByCategory(Category category,Pageable pageable) {
+        return postRepository.getPostsListByCategory(category, pageable);
+    }
+
+    public PostGetResponse getPost(Long postId) {
+        Post foundPost = postRepository.findById(postId)
+                .orElseThrow(() -> new AppException(POST_NOT_FOUND));
+
+        return foundPost.toPostGetResponse();
     }
 }

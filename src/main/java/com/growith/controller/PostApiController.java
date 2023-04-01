@@ -1,6 +1,8 @@
 package com.growith.controller;
 
+import com.growith.domain.post.Category;
 import com.growith.domain.post.dto.PostCreateRequest;
+import com.growith.domain.post.dto.PostGetListResponse;
 import com.growith.domain.post.dto.PostGetResponse;
 import com.growith.global.Response;
 import com.growith.service.post.PostService;
@@ -20,7 +22,7 @@ public class PostApiController {
 
     private final PostService postService;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<Response<Page<PostGetResponse>>> getAll(Pageable pageable) {
         Page<PostGetResponse> response = postService.getAllPosts(pageable);
         return ResponseEntity.ok(Response.success(response));
@@ -31,5 +33,17 @@ public class PostApiController {
         String email = authentication.getName();
         postService.createPost(email, postCreateRequest);
         return ResponseEntity.ok(Response.success("ok"));
+    }
+
+    @GetMapping("/{postId}")
+    public ResponseEntity<Response<PostGetResponse>> get(@PathVariable(name = "postId") Long postId) {
+        PostGetResponse response = postService.getPost(postId);
+        return ResponseEntity.ok(Response.success(response));
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<Response<Page<PostGetListResponse>>> getAllByCategory(@RequestParam Category category, Pageable pageable) {
+        Page<PostGetListResponse> response = postService.getAllPostsByCategory(category, pageable);
+        return ResponseEntity.ok(Response.success(response));
     }
 }

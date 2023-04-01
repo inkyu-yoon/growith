@@ -9,6 +9,9 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.util.Assert;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+
 @Entity
 @Getter
 @AllArgsConstructor
@@ -54,6 +57,8 @@ public class Post extends BaseEntity {
                 .category(this.category)
                 .userId(this.user.getId())
                 .nickName(this.user.getNickName())
+                .createdAt(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(Timestamp.valueOf(this.getCreatedDate())))
+                .lastModifiedAt(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(Timestamp.valueOf(this.getLastModifiedDate())))
                 .build();
     }
 

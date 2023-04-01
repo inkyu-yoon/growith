@@ -20,7 +20,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository{
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<PostGetListResponse> getPostListsByCategory(Category category, Pageable pageable) {
+    public Page<PostGetListResponse> getPostsListByCategory(Category category, Pageable pageable) {
         List<PostGetListResponse> posts = jpaQueryFactory.from(post)
                 .where(post.category.eq(category))
                 .join(user).on(user.id.eq(post.user.id))

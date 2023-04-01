@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostCustomRepository {
 
-    Page<PostGetListResponse> getPostListsByCategory(Category category, Pageable pageable);
+    Page<PostGetListResponse> getPostsListByCategory(Category category, Pageable pageable);
 
 }
