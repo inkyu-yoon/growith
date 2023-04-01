@@ -1,0 +1,110 @@
+<!-- header -->
+<th:block th:replace="~{layout/header :: headerFragment}"></th:block>
+
+<body>
+<th:block th:replace="~{layout/navbar :: navbarFragment}"></th:block>
+
+<!-- Page Content -->
+
+
+<div class="container">
+    <!-- Button trigger modal -->
+
+
+    <div class="row">
+
+        <div class="col-lg-3">
+
+            <h1 class="my-4">Shop Name</h1>
+            <div class="list-group">
+                <a href="#" class="list-group-item">Category 1</a>
+                <a href="#" class="list-group-item">Category 2</a>
+                <a href="#" class="list-group-item">Category 3</a>
+            </div>
+
+        </div>
+        <!-- /.col-lg-3 -->
+
+        <div class="col-lg-9">
+
+            <div class="card border-primary my-lg-5">
+                <div class="card-body">
+                    <h4 class="card-title" style="color: #70AD47;">Q&A</h4>
+                    <p class="card-text">💡 서로의 지식을 공유해봐요!</p>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-outline-primary" th:onclick="location.href = '/posts/write'"><i
+                    class="	fa fa-pencil"></i> 질문하기
+            </button>
+            <form class="d-flex my-3">
+                <input class="form-control me-sm-2" type="search" placeholder="Search">
+                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+            </form>
+
+            <th:block th:each="post : ${posts}">
+                <div class="card bg-light " style="max-height: 20rem;">
+                    <div class="card-body">
+                        <div class="row justify-content-start" >
+                            <div class="col-auto">
+                            <p class="card-text"  th:text="|${post.nickName}|"></p>
+                            </div>
+                            <div class="col-auto">
+                            <p class="card-text"style="color: gray" th:text="|${post.date}|" ></p>
+                            </div>
+                        </div>
+                        <h4 class="card-title mt-3" style="color: black" th:text="${post.title}">제목</h4>
+                        <div class=" text-multi" >
+                            <p th:utext="${post.subContent}"></p>
+                        </div>
+                    </div>
+                    <div align="right" class="emoticon mb-3 mx-3">
+                        <i class="fa fa-thumbs-o-up" style="font-size:20px"></i> 1
+                        <i class="	fa fa-comment-o" style="font-size:20px"></i> 1
+                        <i class="	fa fa-eye" style="font-size:20px"></i> 1
+                    </div>
+                </div>
+            </th:block>
+            <!-- /.row -->
+            <br>
+
+            <div>
+                <ul class="pagination pagination-sm" >
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{/posts/qna(page=${previous})}">&laquo;</a>
+                    </li>
+                    <th:block th:if="${numberOfPages !=0}">
+                    <th:block th:with="end=${numberOfPages}">
+                        <li class="page-item active" th:each="num : ${#numbers.sequence(1,end)}">
+                            <a class="page-link" th:href="@{/posts/qna(page=${num-1})}" th:text="|${num}|"></a>
+                        </li>
+                    </th:block>
+                    </th:block>
+                    <th:block th:if="${numberOfPages ==0}">
+                            <li class="page-item active">
+                                <a class="page-link" th:href="@{/posts/qna(page=0)}" th:text="1"></a>
+                            </li>
+                    </th:block>
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{/posts/qna(page=${next})}">&raquo;</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- /.col-lg-9 -->
+
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+<th:block th:replace="~{layout/footer :: footerFragment}"></th:block>
+
+<!-- Bootstrap core JavaScript -->
+<script src="../assets/vendor/jquery/jquery.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

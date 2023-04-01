@@ -6,90 +6,11 @@
 <body>
 
   <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Navbar</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarColor03">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link active" href="#">Home
-              <span class="visually-hidden">(current)</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Features</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Pricing</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="#">Action</a>
-              <a class="dropdown-item" href="#">Another action</a>
-              <a class="dropdown-item" href="#">Something else here</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Separated link</a>
-            </div>
-          </li>
-        </ul>
-        <div sec:authorize="isAnonymous()">
-
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            회원가입 · 로그인
-          </button>
-        </div>
-        <div sec:authorize="isAuthenticated()">
-          <button type="button" class="btn btn-primary" >
-            마이페이지
-          </button>
-          <button type="submit" class="btn btn-primary" th:onclick="location.href = '/logout'">
-            로그아웃
-          </button>
-        </div>
-      </div>
-    </div>
-  </nav>
+  <th:block th:replace="~{layout/navbar :: navbarFragment}"></th:block>
 
   <!-- Page Content -->
 
 
-
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog login animated">
-      <div class="modal-content">
-        <div class="modal-body">
-          <div class="box">
-            <div class="content">
-              <div class="division">
-                <div class="line l"></div>
-                <h4 style="font-family: 'Jua', sans-serif;" >GitHub 인증</h4>
-                <div class="line r"></div>
-              </div>
-              <div class="social">
-                <a class="circle github" href="https://github.com/login/oauth/authorize?client_id=Iv1.1b5b1f1e08adb92e">
-                  <i class="fa fa-github fa-fw"></i>
-                </a>
-              </div>
-              <div class="division">
-                <div style="font-family: 'Jua', sans-serif;" >↑ Click!</div>
-              </div>
-              <div align="center">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   <div class="container">
       <!-- Button trigger modal -->
 
@@ -248,12 +169,7 @@
   <!-- /.container -->
 
   <!-- Footer -->
-  <footer class="py-5 bg-dark">
-    <div class="container">
-      <p class="m-0 text-center text-white">Copyright &copy; Your Website 2019</p>
-    </div>
-    <!-- /.container -->
-  </footer>
+  <th:block th:replace="~{layout/footer :: footerFragment}"></th:block>
 
   <!-- Bootstrap core JavaScript -->
   <script src="assets/vendor/jquery/jquery.min.js"></script>

@@ -1,0 +1,173 @@
+<!-- header -->
+<th:block th:replace="~{layout/header :: headerFragment}"></th:block>
+
+<body>
+<th:block th:replace="~{layout/navbar :: navbarFragment}"></th:block>
+
+<!-- Page Content -->
+
+
+<div class="container">
+    <!-- Button trigger modal -->
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-2">
+            </div>
+            <div class="col-8">
+                <div class="card my-4">
+                    <div class="card-header pb-0 mx-4">
+                        <div class="row">
+                            <div class="input-group input-group-dynamic mb-4">
+                                <input type="text" class="form-control" placeholder="제목을 입력하세요." id="input-title">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body px-0 pb-2 mx-5">
+                        <div id="editor"></div>
+                    </div>
+                    <div class="mx-5 mb-2" style="display: flex;justify-content: flex-end">
+                        <div class="filebox">
+                            <div class="row">
+                                <div class="col">
+                                    <textarea class="form-control" value="첨부파일"
+                                              placeholder="첨부파일"
+                                              id="input-fileName" readonly></textarea>
+                                </div>
+                                <div class="col">
+
+                                    <div class="mt-2">
+                                        <label for="input-file"
+                                               style="margin-top: auto">파일첨부</label>
+                                    </div>
+
+                                    <input type="file" id="input-file" multiple>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+                    <div class="d-flex justify-content-center mb-3">
+                        <form action="/posts/qna" method="get">
+                            <button type="submit" class="btn btn-outline-danger">작성 취소</button>
+                        </form>
+                        <button type="submit" th:onclick="|post.write()|"
+                                class="btn btn-outline-secondary">게시글 작성</button>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-2">
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+<th:block th:replace="~{layout/footer :: footerFragment}"></th:block>
+
+<!-- Bootstrap core JavaScript -->
+<script src="../assets/vendor/jquery/jquery.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $("input[type=file]").change(function () {
+
+            var fileInput = document.getElementById("input-file");
+
+            var files = fileInput.files;
+            var file;
+            let name = '';
+            for (var i = 0; i < files.length; i++) {
+
+                file = files[i];
+                console.log(file);
+                name += (i + 1) + '. [' + file.name + ']\n';
+            }
+            $("#input-fileName").val(name);
+        });
+
+    });
+
+</script>
+<Script>
+    const editor = new toastui.Editor({
+        el: document.querySelector('#editor'),
+        previewStyle: 'vertical',
+        height: '800px',
+        initialEditType: 'wysiwyg'
+    });
+
+    let post = {
+        init: function () {
+            var _this = this;
+        },
+        write: function () {
+            let data = {
+                title: document.querySelector('#input-title').value.trim(),
+                content: editor.getHTML(),
+                category: "QNA"
+            };
+
+            if(data.title.length>=60){
+                alert("제목은 60자를 넘을 수 없습니다.");
+                return
+            }
+
+            axios.post("/api/v1/posts",
+                JSON.stringify(data), {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }
+            ).then((response) => {
+
+                alert("작성 성공");
+                window.location.href = '/posts/qna';
+                // var frm = new FormData();
+                // var uploadFile = document.getElementById("input-file");
+                // if (uploadFile.files.length != 0) {
+                //
+                //     for (var i = 0; i < uploadFile.files.length; i++) {
+                //
+                //         frm.append("multipartFile", uploadFile.files[i]);
+                //     }
+                //
+                //
+                //     axios.post("/api/v1/academies/" + academyId + "/announcements/" + response.data.result["id"] + "/files/upload",
+                //         frm, {
+                //             headers: {
+                //                 'Content-Type': 'multipart/form-data'
+                //             }
+                //         }).then((response) => {
+                //
+                //         window.location.href = '/academy/announcements';
+                //
+                //     }).catch((error) => {
+                //         console.log(error);
+                //         alert(error.response.data.result["message"]);
+                //     });
+                // } else {
+                //     window.location.href = '/academy/announcements';
+                // }
+
+            }).catch((error) => {
+                console.log(error);
+                alert(error.response.data.result["message"]);
+            });
+        },
+    };
+</Script>
+</body>
+
+</html>
