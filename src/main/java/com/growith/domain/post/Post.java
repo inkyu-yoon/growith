@@ -2,6 +2,8 @@ package com.growith.domain.post;
 
 import com.growith.domain.BaseEntity;
 import com.growith.domain.post.dto.PostGetResponse;
+import com.growith.domain.post.dto.PostResponse;
+import com.growith.domain.post.dto.PostUpdateRequest;
 import com.growith.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,7 +19,7 @@ import java.text.SimpleDateFormat;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Where(clause = "deleted_date is NULL")
-@SQLDelete(sql = "UPDATE POST SET deleted_at = current_timestamp WHERE post_id = ?")
+@SQLDelete(sql = "UPDATE POST SET deleted_date = current_timestamp WHERE id = ?")
 public class Post extends BaseEntity {
 
     @Id
@@ -53,6 +55,7 @@ public class Post extends BaseEntity {
         return PostGetResponse.builder()
                 .postId(this.id)
                 .title(this.title)
+                .imageUrl(this.user.getImageUrl())
                 .content(this.content)
                 .category(this.category)
                 .userId(this.user.getId())
@@ -62,4 +65,13 @@ public class Post extends BaseEntity {
                 .build();
     }
 
+    public PostResponse toPostResponse() {
+        return new PostResponse(this.id);
+    }
+
+    public void update(PostUpdateRequest requestDto) {
+        this.title = requestDto.getTitle();
+        this.content = requestDto.getContent();
+        this.category = requestDto.getCategory();
+    }
 }

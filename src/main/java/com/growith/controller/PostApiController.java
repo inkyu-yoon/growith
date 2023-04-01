@@ -1,9 +1,7 @@
 package com.growith.controller;
 
 import com.growith.domain.post.Category;
-import com.growith.domain.post.dto.PostCreateRequest;
-import com.growith.domain.post.dto.PostGetListResponse;
-import com.growith.domain.post.dto.PostGetResponse;
+import com.growith.domain.post.dto.*;
 import com.growith.global.Response;
 import com.growith.service.post.PostService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.cloud.contract.spec.internal.HttpStatus.CREATED;
 
 @RestController
 @Slf4j
@@ -29,10 +29,10 @@ public class PostApiController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<String>> create(Authentication authentication, @RequestBody PostCreateRequest postCreateRequest) {
+    public ResponseEntity<Response<PostResponse>> create(Authentication authentication, @RequestBody PostCreateRequest requestDto) {
         String email = authentication.getName();
-        postService.createPost(email, postCreateRequest);
-        return ResponseEntity.ok(Response.success("ok"));
+        PostResponse response = postService.createPost(email, requestDto);
+        return ResponseEntity.status(CREATED).body(Response.success(response));
     }
 
     @GetMapping("/{postId}")
@@ -44,6 +44,20 @@ public class PostApiController {
     @GetMapping("/categories")
     public ResponseEntity<Response<Page<PostGetListResponse>>> getAllByCategory(@RequestParam Category category, Pageable pageable) {
         Page<PostGetListResponse> response = postService.getAllPostsByCategory(category, pageable);
+        return ResponseEntity.ok(Response.success(response));
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Response<PostResponse>> delete(@PathVariable(name = "postId") Long postId, Authentication authentication) {
+        String email = authentication.getName();
+        PostResponse response = postService.deletePost(postId, email);
+        return ResponseEntity.ok(Response.success(response));
+    }
+
+    @PutMapping("/{postId}")
+    public ResponseEntity<Response<PostResponse>> update(@PathVariable(name = "postId") Long postId, @RequestBody PostUpdateRequest requestDto, Authentication authentication) {
+        String email = authentication.getName();
+        PostResponse response = postService.updatePost(postId, email, requestDto);
         return ResponseEntity.ok(Response.success(response));
     }
 }

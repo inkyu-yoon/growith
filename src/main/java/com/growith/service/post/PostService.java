@@ -3,9 +3,7 @@ package com.growith.service.post;
 import com.growith.domain.post.Category;
 import com.growith.domain.post.Post;
 import com.growith.domain.post.PostRepository;
-import com.growith.domain.post.dto.PostCreateRequest;
-import com.growith.domain.post.dto.PostGetListResponse;
-import com.growith.domain.post.dto.PostGetResponse;
+import com.growith.domain.post.dto.*;
 import com.growith.domain.user.User;
 import com.growith.domain.user.UserRepository;
 import com.growith.global.exception.AppException;
@@ -31,11 +29,13 @@ public class PostService {
     }
 
     @Transactional
-    public void createPost(String email, PostCreateRequest postCreateRequest) {
+    public PostResponse createPost(String email, PostCreateRequest postCreateRequest) {
         User foundUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
-        postRepository.save(postCreateRequest.toEntity(foundUser));
+        Post savedPost = postRepository.save(postCreateRequest.toEntity(foundUser));
+
+        return savedPost.toPostResponse();
     }
 
     public Page<PostGetListResponse> getAllPostsByCategory(Category category,Pageable pageable) {
@@ -47,5 +47,34 @@ public class PostService {
                 .orElseThrow(() -> new AppException(POST_NOT_FOUND));
 
         return foundPost.toPostGetResponse();
+    }
+    @Transactional
+    public PostResponse deletePost(Long postId, String email) {
+        Post foundPost = postRepository.findById(postId)
+                .orElseThrow(() -> new AppException(POST_NOT_FOUND));
+
+        User requestUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(USER_NOT_FOUND));
+
+        requestUser.checkAuth(foundPost.getUser().getEmail());
+
+        postRepository.delete(foundPost);
+
+        return foundPost.toPostResponse();
+    }
+
+    @Transactional
+    public PostResponse updatePost(Long postId, String email, PostUpdateRequest requestDto) {
+        Post foundPost = postRepository.findById(postId)
+                .orElseThrow(() -> new AppException(POST_NOT_FOUND));
+
+        User requestUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(USER_NOT_FOUND));
+
+        requestUser.checkAuth(foundPost.getUser().getEmail());
+
+        foundPost.update(requestDto);
+
+        return foundPost.toPostResponse();
     }
 }
