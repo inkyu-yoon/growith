@@ -107,8 +107,6 @@ class UserServiceTest {
 
             given(userRepository.findById(anyLong()))
                     .willReturn(Optional.of(mockUser));
-            given(mockUser.checkAuth(email))
-                    .willReturn(true);
 
             assertDoesNotThrow(() -> userService.updateUser(email, anyLong(), userUpdateRequest));
 
@@ -137,8 +135,8 @@ class UserServiceTest {
             given(userRepository.findById(anyLong()))
                     .willReturn(Optional.of(mockUser));
 
-            when(mockUser.checkAuth(email))
-                    .thenReturn(false);
+            doThrow(new AppException(ErrorCode.USER_NOT_MATCH))
+                    .when(mockUser).checkAuth(email);
 
             AppException appException = assertThrows(AppException.class, () -> userService.updateUser(email, anyLong(), userUpdateRequest));
             assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_MATCH);

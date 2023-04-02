@@ -57,9 +57,7 @@ public class PostService {
         User requestUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
-        if (!requestUser.checkAuth(foundPost.getUser().getEmail())) {
-            throw new AppException(ErrorCode.USER_NOT_MATCH);
-        }
+        requestUser.checkAuth(foundPost.getUser().getEmail());
 
         postRepository.delete(foundPost);
 
@@ -74,10 +72,7 @@ public class PostService {
         User requestUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
-        if (!requestUser.checkAuth(foundPost.getUser().getEmail())) {
-            throw new AppException(ErrorCode.USER_NOT_MATCH);
-        }
-
+        requestUser.checkAuth(foundPost.getUser().getEmail());
 
         foundPost.update(requestDto);
 

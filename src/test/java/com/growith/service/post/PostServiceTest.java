@@ -171,8 +171,7 @@ class PostServiceTest {
                     .willReturn(mockAuthorUser);
             given(mockAuthorUser.getEmail())
                     .willReturn(email);
-            given(mockUser.checkAuth(email))
-                    .willReturn(true);
+
 
             assertDoesNotThrow(() -> postService.updatePost(postId, email, postUpdateRequest));
 
@@ -222,6 +221,9 @@ class PostServiceTest {
             given(mockAuthorUser.getEmail())
                     .willReturn(diffEmail);
 
+            doThrow(new AppException(ErrorCode.USER_NOT_MATCH))
+                    .when(mockUser).checkAuth(diffEmail);
+
             AppException appException = assertThrows(AppException.class, () -> postService.updatePost(postId, email, postUpdateRequest));
 
             assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_MATCH);
@@ -249,8 +251,7 @@ class PostServiceTest {
                     .willReturn(mockAuthorUser);
             given(mockAuthorUser.getEmail())
                     .willReturn(email);
-            given(mockUser.checkAuth(email))
-                    .willReturn(true);
+
 
             assertDoesNotThrow(() -> postService.deletePost(postId, email));
 
@@ -299,6 +300,10 @@ class PostServiceTest {
                     .willReturn(mockAuthorUser);
             given(mockAuthorUser.getEmail())
                     .willReturn(diffEmail);
+
+
+            doThrow(new AppException(ErrorCode.USER_NOT_MATCH))
+                    .when(mockUser).checkAuth(diffEmail);
 
             AppException appException = assertThrows(AppException.class, () -> postService.deletePost(postId, email));
 

@@ -5,6 +5,8 @@ import com.growith.domain.BaseEntity;
 import com.growith.domain.user.dto.UserGetMyPageResponse;
 import com.growith.domain.user.dto.UserGetResponse;
 import com.growith.domain.user.dto.UserUpdateRequest;
+import com.growith.global.exception.AppException;
+import com.growith.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -126,14 +128,10 @@ public class User extends BaseEntity implements UserDetails {
     /**
      * 요청하는 자가 본인이면 가능, 혹은 관리자는 본인이 아니어도 가능
      */
-    public boolean checkAuth(String email) {
-        if (this.email.equals(email)) {
-            return true;
+    public void checkAuth(String email) {
+        if (!this.email.equals(email) & !this.userRole.equals(ROLE_ADMIN)) {
+            throw new AppException(ErrorCode.USER_NOT_MATCH);
         }
-        if (this.userRole.equals(ROLE_ADMIN)) {
-            return true;
-        }
-        return false;
     }
 
     public void updateUserInfo(UserUpdateRequest requestDto) {
