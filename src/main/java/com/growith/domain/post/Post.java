@@ -60,8 +60,8 @@ public class Post extends BaseEntity {
                 .category(this.category)
                 .userId(this.user.getId())
                 .nickName(this.user.getNickName())
-                .createdAt(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(Timestamp.valueOf(this.getCreatedDate())))
-                .lastModifiedAt(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(Timestamp.valueOf(this.getLastModifiedDate())))
+                .createdDate(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(Timestamp.valueOf(this.getCreatedDate())))
+                .lastModifiedDate(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(Timestamp.valueOf(this.getLastModifiedDate())))
                 .build();
     }
 

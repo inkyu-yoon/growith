@@ -16,7 +16,7 @@ public class PostGetResponse {
     private Category category;
     private Long userId;
     private String nickName;
-    private String createdAt;
-    private String lastModifiedAt;
+    private String createdDate;
+    private String lastModifiedDate;
     private String imageUrl;
 }

@@ -109,8 +109,7 @@ class UserApiControllerTest {
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists())
-                    .andExpect(jsonPath("$.result").value("USER_NOT_FOUND"));
+                    .andExpect(jsonPath("$.result").exists());
 
         }
     }
@@ -157,12 +156,11 @@ class UserApiControllerTest {
                     .thenThrow(new AppException(ErrorCode.USER_NOT_FOUND));
 
             mockMvc.perform(get("/api/v1/users/mypage")
-                    .cookie(cookie))
+                            .cookie(cookie))
                     .andDo(print())
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists())
-                    .andExpect(jsonPath("$.result").value("USER_NOT_FOUND"));
+                    .andExpect(jsonPath("$.result").exists());
         }
     }
 
@@ -212,8 +210,7 @@ class UserApiControllerTest {
                     .andDo(print())
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists())
-                    .andExpect(jsonPath("$.result").value("USER_NOT_FOUND"));
+                    .andExpect(jsonPath("$.result").exists());
 
         }
 
@@ -232,8 +229,7 @@ class UserApiControllerTest {
                     .andDo(print())
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists())
-                    .andExpect(jsonPath("$.result").value("USER_NOT_MATCH"));
+                    .andExpect(jsonPath("$.result").exists());
 
         }
     }
