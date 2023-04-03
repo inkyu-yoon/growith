@@ -5,6 +5,8 @@ import com.growith.domain.user.User;
 import com.growith.domain.user.UserRole;
 import lombok.*;
 
+import java.util.UUID;
+
 @ToString
 @Setter
 @Getter
@@ -25,7 +27,7 @@ public class UserProfile {
                 .email(this.email)
                 .imageUrl(this.imageUrl)
                 .name(this.name)
-                .nickName(this.name)
+                .nickName(this.name + UUID.randomUUID().toString())
                 .build();
     }
 }

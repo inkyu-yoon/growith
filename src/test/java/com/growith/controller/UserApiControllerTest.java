@@ -232,5 +232,24 @@ class UserApiControllerTest {
                     .andExpect(jsonPath("$.result").exists());
 
         }
+
+        @Test
+        @DisplayName("회원 정보 수정 실패 테스트 (중복된 닉네임으로 변경 요청하는 경우)")
+        void error3() throws Exception {
+
+            doThrow(new AppException(ErrorCode.DUPLICATE_NICKNAME))
+                    .when(userService).updateUser(anyString(), anyLong(), any(UserUpdateRequest.class));
+
+
+            mockMvc.perform(patch("/api/v1/users/" + userId)
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(request)))
+                    .andDo(print())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").exists());
+
+        }
     }
 }

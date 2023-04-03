@@ -145,5 +145,25 @@ class UserServiceTest {
             verify(mockUser,atLeastOnce()).checkAuth(email);
 
         }
+
+        @Test
+        @DisplayName("회원 정보 수정 실패 테스트 (중복된 닉네임으로 변경 요청하는 경우)")
+        public void updateUserError3(){
+            String email = "email";
+
+            given(userRepository.findById(anyLong()))
+                    .willReturn(Optional.of(mockUser));
+            given(userUpdateRequest.getNickName())
+                    .willReturn("nickName");
+            when(userRepository.existsByNickName("nickName"))
+                    .thenReturn(true);
+
+            AppException appException = assertThrows(AppException.class, () -> userService.updateUser(email, anyLong(), userUpdateRequest));
+            assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.DUPLICATE_NICKNAME);
+
+            verify(userRepository,atLeastOnce()).findById(anyLong());
+            verify(userRepository,atLeastOnce()).existsByNickName(anyString());
+
+        }
     }
 }

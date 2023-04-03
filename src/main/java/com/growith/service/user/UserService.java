@@ -10,8 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.growith.global.exception.ErrorCode.USER_NOT_FOUND;
-import static com.growith.global.exception.ErrorCode.USER_NOT_MATCH;
+import static com.growith.global.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,8 +39,16 @@ public class UserService {
         User foundUser = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
+        if (isExistsByNickName(requestDto)) {
+            throw new AppException(DUPLICATE_NICKNAME);
+        }
+
         foundUser.checkAuth(email);
 
         foundUser.updateUserInfo(requestDto);
+    }
+
+    private boolean isExistsByNickName(UserUpdateRequest requestDto) {
+        return userRepository.existsByNickName(requestDto.getNickName());
     }
 }
