@@ -55,7 +55,7 @@ dependencies {
 	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.0.0-alpha.11'
 
 	// Wiremock
-	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.0.1'
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.0.2'
 
 	// 객체 json화
 	implementation 'com.google.code.gson:gson:2.10.1'
@@ -66,8 +66,12 @@ dependencies {
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
+	// request dto 객체 유효성 검증
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-
+	// aop 사용
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '3.0.5'
+	testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '3.0.5'
 
 }
 
