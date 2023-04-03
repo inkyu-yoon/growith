@@ -73,24 +73,24 @@ class UserServiceTest {
         @Test
         @DisplayName("마이페이지 조회 성공 테스트")
         public void getMyPageSuccess(){
-            given(userRepository.findByEmail(anyString()))
+            given(userRepository.findByUserName(anyString()))
                     .willReturn(Optional.of(mockUser));
 
             assertDoesNotThrow(() -> userService.getMyPageUser(anyString()));
 
-            verify(userRepository, atLeastOnce()).findByEmail(anyString());
+            verify(userRepository, atLeastOnce()).findByUserName(anyString());
         }
 
         @Test
         @DisplayName("마이페이지 조회 실패 테스트 (회원이 존재하지 않는 경우) ")
         public void getMyPageError(){
-            when(userRepository.findByEmail(anyString()))
+            when(userRepository.findByUserName(anyString()))
                     .thenReturn(Optional.empty());
 
             AppException appException = assertThrows(AppException.class, () -> userService.getMyPageUser(anyString()));
             assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
 
-            verify(userRepository,atLeastOnce()).findByEmail(anyString());
+            verify(userRepository,atLeastOnce()).findByUserName(anyString());
         }
     }
 
@@ -100,27 +100,26 @@ class UserServiceTest {
         @Mock
         private UserUpdateRequest userUpdateRequest;
 
+        String userName = "userName";
+
         @Test
         @DisplayName("회원 정보 수정 성공 테스트")
         public void updateUserSuccess(){
-            String email = "email";
 
             given(userRepository.findById(anyLong()))
                     .willReturn(Optional.of(mockUser));
 
-            assertDoesNotThrow(() -> userService.updateUser(email, anyLong(), userUpdateRequest));
+            assertDoesNotThrow(() -> userService.updateUser(userName, anyLong(), userUpdateRequest));
 
         }
 
         @Test
         @DisplayName("회원 정보 수정 실패 테스트 (회원이 존재하지 않는 경우)")
         public void updateUserError1(){
-            String email = "email";
-
             when(userRepository.findById(anyLong()))
                     .thenReturn(Optional.empty());
 
-            AppException appException = assertThrows(AppException.class, () -> userService.updateUser(email, anyLong(), userUpdateRequest));
+            AppException appException = assertThrows(AppException.class, () -> userService.updateUser(userName, anyLong(), userUpdateRequest));
             assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
 
             verify(userRepository,atLeastOnce()).findById(anyLong());
@@ -130,26 +129,23 @@ class UserServiceTest {
         @Test
         @DisplayName("회원 정보 수정 실패 테스트 (수정 요청자가 본인이 아닌 경우)")
         public void updateUserError2(){
-            String email = "email";
-
             given(userRepository.findById(anyLong()))
                     .willReturn(Optional.of(mockUser));
 
             doThrow(new AppException(ErrorCode.USER_NOT_MATCH))
-                    .when(mockUser).checkAuth(email);
+                    .when(mockUser).checkAuth(userName);
 
-            AppException appException = assertThrows(AppException.class, () -> userService.updateUser(email, anyLong(), userUpdateRequest));
+            AppException appException = assertThrows(AppException.class, () -> userService.updateUser(userName, anyLong(), userUpdateRequest));
             assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_MATCH);
 
             verify(userRepository,atLeastOnce()).findById(anyLong());
-            verify(mockUser,atLeastOnce()).checkAuth(email);
+            verify(mockUser,atLeastOnce()).checkAuth(userName);
 
         }
 
         @Test
         @DisplayName("회원 정보 수정 실패 테스트 (중복된 닉네임으로 변경 요청하는 경우)")
         public void updateUserError3(){
-            String email = "email";
 
             given(userRepository.findById(anyLong()))
                     .willReturn(Optional.of(mockUser));
@@ -158,7 +154,7 @@ class UserServiceTest {
             when(userRepository.existsByNickName("nickName"))
                     .thenReturn(true);
 
-            AppException appException = assertThrows(AppException.class, () -> userService.updateUser(email, anyLong(), userUpdateRequest));
+            AppException appException = assertThrows(AppException.class, () -> userService.updateUser(userName, anyLong(), userUpdateRequest));
             assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.DUPLICATE_NICKNAME);
 
             verify(userRepository,atLeastOnce()).findById(anyLong());

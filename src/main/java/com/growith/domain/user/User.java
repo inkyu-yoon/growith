@@ -5,6 +5,7 @@ import com.growith.domain.BaseEntity;
 import com.growith.domain.user.dto.UserGetMyPageResponse;
 import com.growith.domain.user.dto.UserGetResponse;
 import com.growith.domain.user.dto.UserUpdateRequest;
+import com.growith.domain.user.dto.UserUpdateResponse;
 import com.growith.global.exception.AppException;
 import com.growith.global.exception.ErrorCode;
 import jakarta.persistence.*;
@@ -34,7 +35,7 @@ public class User extends BaseEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String userName;
 
     private String imageUrl;
 
@@ -45,6 +46,8 @@ public class User extends BaseEntity implements UserDetails {
     private String blog;
 
     private Long point;
+
+    private String githubUrl;
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
@@ -61,7 +64,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.email;
+        return this.userName;
     }
 
     @Override
@@ -83,44 +86,48 @@ public class User extends BaseEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
     @Builder
-    public User(String name, String imageUrl, String nickName, String email, String blog, Long point, UserRole userRole) {
-        Assert.hasText(name, "name must not be empty");
+    public User(String userName, String imageUrl, String nickName, String email, String blog, Long point, UserRole userRole, String githubUrl) {
+        Assert.hasText(userName, "userName must not be empty");
         Assert.hasText(imageUrl, "imageUrl must not be empty");
         Assert.hasText(nickName, "nickName must not be empty");
-        Assert.hasText(email, "email must not be empty");
         Assert.notNull(userRole, "userRole must not be empty");
+        Assert.hasText(githubUrl, "githubUrl must not be empty");
 
-        this.name = name;
+        this.userName = userName;
         this.imageUrl = imageUrl;
         this.nickName = nickName;
         this.email = email;
         this.blog = blog;
         this.point = point;
         this.userRole = userRole;
+        this.githubUrl = githubUrl;
     }
 
 
     public UserGetResponse toUserGetResponse() {
         return UserGetResponse.builder()
                 .id(this.id)
-                .name(this.name)
+                .userName(this.userName)
                 .imageUrl(this.imageUrl)
                 .nickName(this.nickName)
                 .email(this.email)
                 .blog(this.blog)
+                .githubUrl(this.githubUrl)
                 .build();
     }
 
     public UserGetMyPageResponse toUserGetMyPageResponse() {
         return UserGetMyPageResponse.builder()
                 .id(this.id)
-                .name(this.name)
+                .userName(this.userName)
                 .imageUrl(this.imageUrl)
                 .nickName(this.nickName)
                 .email(this.email)
                 .blog(this.blog)
                 .point(this.point)
+                .githubUrl(this.githubUrl)
                 .build();
     }
 
@@ -128,20 +135,23 @@ public class User extends BaseEntity implements UserDetails {
     /**
      * 요청하는 자가 본인이면 가능, 혹은 관리자는 본인이 아니어도 가능
      */
-    public void checkAuth(String email) {
-        if (!this.email.equals(email) & !this.userRole.equals(ROLE_ADMIN)) {
+    public void checkAuth(String userName) {
+        if (!this.userName.equals(userName) & !this.userRole.equals(ROLE_ADMIN)) {
             throw new AppException(ErrorCode.USER_NOT_MATCH);
         }
     }
 
     public void updateUserInfo(UserUpdateRequest requestDto) {
-        String blog = requestDto.getBlog();
-        String nickName = requestDto.getNickName();
-        if (StringUtils.hasText(blog)) {
-            this.blog = blog;
-        }
-        if (StringUtils.hasText(nickName)) {
-            this.nickName = nickName;
-        }
+        this.blog = requestDto.getBlog();
+        this.nickName = requestDto.getNickName();
+        this.email = requestDto.getEmail();
+    }
+
+    public UserUpdateResponse toUserUpdateResponse() {
+        return UserUpdateResponse.builder()
+                .id(this.id)
+                .blog(this.blog)
+                .nickName(this.nickName)
+                .build();
     }
 }

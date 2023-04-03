@@ -39,16 +39,17 @@ class UserJoinServiceImplTest {
         @Mock
         UserProfile userProfile;
 
+        String userName = "userName";
+
         @Test
         @DisplayName("로그인 성공 (회원가입 안되어있는 경우 회원 가입 후 jwt토큰 발급)")
         public void userLoginSuccess(){
 
             MockedStatic<JwtUtil> jwtUtilMockedStatic = mockStatic(JwtUtil.class);
-            String email = "email";
 
-            given(userProfile.getEmail())
-                    .willReturn(email);
-            given(userRepository.findByEmail(email))
+            given(userProfile.getUserName())
+                    .willReturn(userName);
+            given(userRepository.findByUserName(userName))
                     .willReturn(Optional.empty());
             given(userRepository.saveAndFlush(userProfile.toEntity()))
                     .willReturn(mockUser);
@@ -60,7 +61,7 @@ class UserJoinServiceImplTest {
 
             assertDoesNotThrow(() -> userJoinService.login(userProfile));
 
-            verify(userRepository, atLeastOnce()).findByEmail(email);
+            verify(userRepository, atLeastOnce()).findByUserName(userName);
             verify(userRepository, atLeastOnce()).saveAndFlush(userProfile.toEntity());
 
             jwtUtilMockedStatic.close();
@@ -70,11 +71,10 @@ class UserJoinServiceImplTest {
         public void userLoginSuccess1(){
 
             MockedStatic<JwtUtil> jwtUtilMockedStatic = mockStatic(JwtUtil.class);
-            String email = "email";
 
-            given(userProfile.getEmail())
-                    .willReturn(email);
-            given(userRepository.findByEmail(email))
+            given(userProfile.getUserName())
+                    .willReturn(userName);
+            given(userRepository.findByUserName(userName))
                     .willReturn(Optional.of(mockUser));
 
             given(mockUser.getUserRole())
@@ -85,7 +85,7 @@ class UserJoinServiceImplTest {
 
             assertDoesNotThrow(() -> userJoinService.login(userProfile));
 
-            verify(userRepository, atLeastOnce()).findByEmail(email);
+            verify(userRepository, atLeastOnce()).findByUserName(userName);
 
             jwtUtilMockedStatic.close();
         }

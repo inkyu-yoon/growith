@@ -3,6 +3,7 @@ package com.growith.controller;
 import com.growith.domain.user.dto.UserGetMyPageResponse;
 import com.growith.domain.user.dto.UserGetResponse;
 import com.growith.domain.user.dto.UserUpdateRequest;
+import com.growith.domain.user.dto.UserUpdateResponse;
 import com.growith.global.Response;
 import com.growith.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,17 +30,17 @@ public class UserApiController {
 
     @GetMapping("/mypage")
     public ResponseEntity<Response<UserGetMyPageResponse>> getMyPage(Authentication authentication) {
-        String email = authentication.getName();
-        UserGetMyPageResponse response = userService.getMyPageUser(email);
+        String userName = authentication.getName();
+        UserGetMyPageResponse response = userService.getMyPageUser(userName);
 
         return ResponseEntity.ok(Response.success(response));
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Response<Long>> update(Authentication authentication, @PathVariable(name = "userId") Long userId, @RequestBody UserUpdateRequest requestDto) {
-        String email = authentication.getName();
-        userService.updateUser(email, userId,requestDto);
+    public ResponseEntity<Response<UserUpdateResponse>> update(Authentication authentication, @PathVariable(name = "userId") Long userId, @RequestBody UserUpdateRequest requestDto) {
+        String userName = authentication.getName();
+        UserUpdateResponse response = userService.updateUser(userName, userId, requestDto);
 
-        return ResponseEntity.ok(Response.success(userId));
+        return ResponseEntity.ok(Response.success(response));
     }
 }

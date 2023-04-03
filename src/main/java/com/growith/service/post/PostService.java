@@ -7,7 +7,6 @@ import com.growith.domain.post.dto.*;
 import com.growith.domain.user.User;
 import com.growith.domain.user.UserRepository;
 import com.growith.global.exception.AppException;
-import com.growith.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,8 +29,8 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponse createPost(String email, PostCreateRequest postCreateRequest) {
-        User foundUser = userRepository.findByEmail(email)
+    public PostResponse createPost(String userName, PostCreateRequest postCreateRequest) {
+        User foundUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
         Post savedPost = postRepository.save(postCreateRequest.toEntity(foundUser));
@@ -50,14 +49,14 @@ public class PostService {
         return foundPost.toPostGetResponse();
     }
     @Transactional
-    public PostResponse deletePost(Long postId, String email) {
+    public PostResponse deletePost(Long postId, String userName) {
         Post foundPost = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(POST_NOT_FOUND));
 
-        User requestUser = userRepository.findByEmail(email)
+        User requestUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
-        requestUser.checkAuth(foundPost.getUser().getEmail());
+        requestUser.checkAuth(foundPost.getUser().getUsername());
 
         postRepository.delete(foundPost);
 
@@ -65,14 +64,14 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponse updatePost(Long postId, String email, PostUpdateRequest requestDto) {
+    public PostResponse updatePost(Long postId, String userName, PostUpdateRequest requestDto) {
         Post foundPost = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(POST_NOT_FOUND));
 
-        User requestUser = userRepository.findByEmail(email)
+        User requestUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
-        requestUser.checkAuth(foundPost.getUser().getEmail());
+        requestUser.checkAuth(foundPost.getUser().getUsername());
 
         foundPost.update(requestDto);
 

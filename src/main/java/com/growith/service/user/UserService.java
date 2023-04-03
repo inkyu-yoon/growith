@@ -5,6 +5,7 @@ import com.growith.domain.user.UserRepository;
 import com.growith.domain.user.dto.UserGetMyPageResponse;
 import com.growith.domain.user.dto.UserGetResponse;
 import com.growith.domain.user.dto.UserUpdateRequest;
+import com.growith.domain.user.dto.UserUpdateResponse;
 import com.growith.global.exception.AppException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,15 +28,15 @@ public class UserService {
         return foundUser.toUserGetResponse();
     }
 
-    public UserGetMyPageResponse getMyPageUser(String email) {
-        User foundUser = userRepository.findByEmail(email)
+    public UserGetMyPageResponse getMyPageUser(String userName) {
+        User foundUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
         return foundUser.toUserGetMyPageResponse();
     }
 
     @Transactional
-    public void updateUser(String email, Long userId, UserUpdateRequest requestDto) {
+    public UserUpdateResponse updateUser(String userName, Long userId, UserUpdateRequest requestDto) {
         User foundUser = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
@@ -43,9 +44,11 @@ public class UserService {
             throw new AppException(DUPLICATE_NICKNAME);
         }
 
-        foundUser.checkAuth(email);
+        foundUser.checkAuth(userName);
 
         foundUser.updateUserInfo(requestDto);
+
+        return foundUser.toUserUpdateResponse();
     }
 
     private boolean isExistsByNickName(UserUpdateRequest requestDto) {

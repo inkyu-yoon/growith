@@ -30,8 +30,8 @@ public class PostApiController {
 
     @PostMapping
     public ResponseEntity<Response<PostResponse>> create(Authentication authentication, @RequestBody PostCreateRequest requestDto) {
-        String email = authentication.getName();
-        PostResponse response = postService.createPost(email, requestDto);
+        String userName = authentication.getName();
+        PostResponse response = postService.createPost(userName, requestDto);
         return ResponseEntity.status(CREATED).body(Response.success(response));
     }
 
@@ -49,15 +49,15 @@ public class PostApiController {
 
     @DeleteMapping("/{postId}")
     public ResponseEntity<Response<PostResponse>> delete(@PathVariable(name = "postId") Long postId, Authentication authentication) {
-        String email = authentication.getName();
-        PostResponse response = postService.deletePost(postId, email);
+        String userName = authentication.getName();
+        PostResponse response = postService.deletePost(postId, userName);
         return ResponseEntity.ok(Response.success(response));
     }
 
     @PutMapping("/{postId}")
     public ResponseEntity<Response<PostResponse>> update(@PathVariable(name = "postId") Long postId, @RequestBody PostUpdateRequest requestDto, Authentication authentication) {
-        String email = authentication.getName();
-        PostResponse response = postService.updatePost(postId, email, requestDto);
+        String userName = authentication.getName();
+        PostResponse response = postService.updatePost(postId, userName, requestDto);
         return ResponseEntity.ok(Response.success(response));
     }
 }

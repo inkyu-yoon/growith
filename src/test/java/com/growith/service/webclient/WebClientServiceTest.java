@@ -67,24 +67,23 @@ class WebClientServiceTest {
         Gson gson = new Gson();
 
         static class GithubResponse {
-            private String email;
-            private String name;
+            private String login;
             private String avatar_url;
             private String blog;
+            private String html_url;
 
-            public GithubResponse(String email, String name, String imageUrl, String blog) {
-                this.email = email;
-                this.name = name;
-                this.avatar_url = imageUrl;
+            public GithubResponse(String login, String avatar_url, String blog, String html_url) {
+                this.login = login;
+                this.avatar_url = avatar_url;
                 this.blog = blog;
+                this.html_url = html_url;
             }
         }
-
         @Test
         @DisplayName("github user 정보 가져오기 성공 테스트")
-        public void getUserInfo() {
+        public void getUserInfoSuccess() {
 
-            String response = gson.toJson(new GithubResponse("email", "name", "imageUrl", "blog"));
+            String response = gson.toJson(new GithubResponse("userName", "imageUrl", "blog", "githubUrl"));
 
             mockWebServer.enqueue(new MockResponse()
                     .addHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -94,10 +93,10 @@ class WebClientServiceTest {
 
             UserProfile result = webClientService.getUserInfo(accessToken, "/user");
 
-            assertThat(result.getName()).isEqualTo("name");
-            assertThat(result.getEmail()).isEqualTo("email");
+            assertThat(result.getUserName()).isEqualTo("userName");
             assertThat(result.getImageUrl()).isEqualTo("imageUrl");
             assertThat(result.getBlog()).isEqualTo("blog");
+            assertThat(result.getGithubUrl()).isEqualTo("githubUrl");
 
         }
     }

@@ -66,7 +66,16 @@ class PostApiControllerTest {
                 .build();
 
         given(userDetailsService.loadUserByUsername(anyString()))
-                .willReturn(new User(1L, "name", "imageUrl", "nickName", "email", "blog", 0L, UserRole.ROLE_USER));
+                .willReturn(User.builder()
+                        .userName("userName")
+                        .email("email")
+                        .point(0L)
+                        .blog("blog")
+                        .githubUrl("githubUrl")
+                        .nickName("nickName")
+                        .imageUrl("imageUrl")
+                        .userRole(UserRole.ROLE_USER)
+                        .build());
     }
 
     @Nested
@@ -182,12 +191,12 @@ class PostApiControllerTest {
     @DisplayName("게시글 생성 테스트")
     class CreatePostTest {
 
-        String email = "email";
+        String userName = "userName";
         Long postId = 1L;
         PostResponse response = new PostResponse(postId);
         PostCreateRequest request = new PostCreateRequest("title", "content", Category.QNA);
 
-        String token = JwtUtil.createToken(email, "ROLE_USER", secretKey, 1000L * 60 * 60);
+        String token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
         Cookie cookie = new Cookie("jwt", token);
         Gson gson = new Gson();
 
@@ -234,12 +243,12 @@ class PostApiControllerTest {
     @DisplayName("게시글 수정 테스트")
     class UpdatePostTest{
 
-        String email = "email";
+        String userName = "userName";
         Long postId = 1L;
         PostResponse response = new PostResponse(postId);
         PostUpdateRequest request = new PostUpdateRequest("title", "content", Category.QNA);
 
-        String token = JwtUtil.createToken(email, "ROLE_USER", secretKey, 1000L * 60 * 60);
+        String token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
         Cookie cookie = new Cookie("jwt", token);
         Gson gson = new Gson();
 
@@ -323,11 +332,11 @@ class PostApiControllerTest {
     @DisplayName("게시글 삭제 테스트")
     class DeletePostTest{
 
-        String email = "email";
+        String userName = "userName";
         Long postId = 1L;
         PostResponse response = new PostResponse(postId);
 
-        String token = JwtUtil.createToken(email, "ROLE_USER", secretKey, 1000L * 60 * 60);
+        String token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
         Cookie cookie = new Cookie("jwt", token);
 
         @Test

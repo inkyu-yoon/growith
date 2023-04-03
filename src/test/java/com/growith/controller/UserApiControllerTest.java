@@ -6,6 +6,7 @@ import com.growith.domain.user.UserRole;
 import com.growith.domain.user.dto.UserGetMyPageResponse;
 import com.growith.domain.user.dto.UserGetResponse;
 import com.growith.domain.user.dto.UserUpdateRequest;
+import com.growith.domain.user.dto.UserUpdateResponse;
 import com.growith.global.config.SecurityConfig;
 import com.growith.global.exception.AppException;
 import com.growith.global.exception.ErrorCode;
@@ -65,14 +66,23 @@ class UserApiControllerTest {
                 .build();
 
         given(userDetailsService.loadUserByUsername(anyString()))
-                .willReturn(new User(1L, "name", "imageUrl", "nickName", "email", "blog", 0L, UserRole.ROLE_USER));
-    }
+                .willReturn(User.builder()
+                        .userName("userName")
+                        .email("email")
+                        .point(0L)
+                        .blog("blog")
+                        .githubUrl("githubUrl")
+                        .nickName("nickName")
+                        .imageUrl("imageUrl")
+                        .userRole(UserRole.ROLE_USER)
+                        .build());
+       }
 
     @Nested
     @DisplayName("회원 조회 테스트")
     class getUserTest{
         Long userId = 1L;
-        UserGetResponse response = new UserGetResponse(userId, "name", "imageUrl", "nickName", "email", "blog");
+        UserGetResponse response = new UserGetResponse(userId, "userName", "imageUrl", "nickName", "email", "blog","githubUrl");
 
         @Test
         @DisplayName("회원 조회 성공 테스트")
@@ -88,11 +98,12 @@ class UserApiControllerTest {
                     .andExpect(jsonPath("$.message").value("SUCCESS"))
                     .andExpect(jsonPath("$.result").exists())
                     .andExpect(jsonPath("$.result.id").value(1))
-                    .andExpect(jsonPath("$.result.name").value("name"))
+                    .andExpect(jsonPath("$.result.userName").value("userName"))
                     .andExpect(jsonPath("$.result.imageUrl").value("imageUrl"))
                     .andExpect(jsonPath("$.result.nickName").value("nickName"))
                     .andExpect(jsonPath("$.result.email").value("email"))
-                    .andExpect(jsonPath("$.result.blog").value("blog"));
+                    .andExpect(jsonPath("$.result.blog").value("blog"))
+                    .andExpect(jsonPath("$.result.githubUrl").value("githubUrl"));
 
         }
 
@@ -117,18 +128,18 @@ class UserApiControllerTest {
     @Nested
     @DisplayName("회원 마이페이지 조회 테스트")
     class getUserMyPageTest{
-        String email = "email";
+        String userName = "userName";
 
-        UserGetMyPageResponse response = new UserGetMyPageResponse(1L, "name", "imageUrl", "nickName", email, "blog",0L);
+        UserGetMyPageResponse response = new UserGetMyPageResponse(1L, userName, "imageUrl", "nickName", "email", "blog",0L,"githubUrl");
 
-        String token = JwtUtil.createToken(email, "ROLE_USER", secretKey, 1000L * 60 * 60);
+        String token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
         Cookie cookie = new Cookie("jwt", token);
 
 
         @Test
         @DisplayName("회원 마이페이지 조회 성공 테스트")
         void success() throws Exception {
-            given(userService.getMyPageUser(email))
+            given(userService.getMyPageUser(userName))
                     .willReturn(response);
 
 
@@ -139,12 +150,13 @@ class UserApiControllerTest {
                     .andExpect(jsonPath("$.message").value("SUCCESS"))
                     .andExpect(jsonPath("$.result").exists())
                     .andExpect(jsonPath("$.result.id").value(1L))
-                    .andExpect(jsonPath("$.result.name").value("name"))
+                    .andExpect(jsonPath("$.result.userName").value(userName))
                     .andExpect(jsonPath("$.result.imageUrl").value("imageUrl"))
                     .andExpect(jsonPath("$.result.nickName").value("nickName"))
                     .andExpect(jsonPath("$.result.email").value("email"))
                     .andExpect(jsonPath("$.result.blog").value("blog"))
-                    .andExpect(jsonPath("$.result.point").value(0L));
+                    .andExpect(jsonPath("$.result.point").value(0L))
+                    .andExpect(jsonPath("$.result.githubUrl").value("githubUrl"));
 
         }
 
@@ -152,7 +164,7 @@ class UserApiControllerTest {
         @DisplayName("회원 마이페이지 조회 실패 테스트 (회원이 존재하지 않는 경우)")
         void error() throws Exception {
 
-            when(userService.getMyPageUser(email))
+            when(userService.getMyPageUser(userName))
                     .thenThrow(new AppException(ErrorCode.USER_NOT_FOUND));
 
             mockMvc.perform(get("/api/v1/users/mypage")
@@ -168,9 +180,11 @@ class UserApiControllerTest {
     @DisplayName("회원 정보 수정 테스트")
     class updateUserTest{
         Long userId = 1L;
-        UserUpdateRequest request = new UserUpdateRequest("nickName", "blog");
-        String email = "email";
-        String token = JwtUtil.createToken(email, "ROLE_USER", secretKey, 1000L * 60 * 60);
+        UserUpdateRequest request = new UserUpdateRequest("nickName", "blog","email");
+
+        UserUpdateResponse response = new UserUpdateResponse(userId, "nickName", "blog", "email");
+        String userName = "userName";
+        String token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
         Cookie cookie = new Cookie("jwt", token);
 
         Gson gson = new Gson();
@@ -179,9 +193,8 @@ class UserApiControllerTest {
         @Test
         @DisplayName("회원 정보 수정 성공 테스트")
         void success() throws Exception {
-
-            willDoNothing().given(userService)
-                    .updateUser(email, userId, request);
+            given(userService.updateUser(eq(userName), eq(userId), any(UserUpdateRequest.class)))
+                    .willReturn(response);
 
             mockMvc.perform(patch("/api/v1/users/" + userId)
                             .cookie(cookie)
@@ -191,7 +204,10 @@ class UserApiControllerTest {
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("SUCCESS"))
                     .andExpect(jsonPath("$.result").exists())
-                    .andExpect(jsonPath("$.result").value(1L));
+                    .andExpect(jsonPath("$.result.id").value(1L))
+                    .andExpect(jsonPath("$.result.nickName").value("nickName"))
+                    .andExpect(jsonPath("$.result.blog").value("blog"))
+                    .andExpect(jsonPath("$.result.email").value("email"));
 
         }
 

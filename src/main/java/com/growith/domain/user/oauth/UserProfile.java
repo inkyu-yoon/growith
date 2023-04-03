@@ -13,21 +13,25 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserProfile {
-    private String email;
-    private String name;
+
+    @JsonProperty("login")
+    private String userName;
     @JsonProperty("avatar_url")
     private String imageUrl;
     private String blog;
+    @JsonProperty("html_url")
+    private String githubUrl;
 
     public User toEntity() {
         return User.builder()
                 .userRole(UserRole.ROLE_USER)
                 .point(0L)
                 .blog(this.blog)
-                .email(this.email)
+                .email("")
                 .imageUrl(this.imageUrl)
-                .name(this.name)
-                .nickName(this.name + UUID.randomUUID().toString())
+                .userName(this.userName)
+                .nickName(this.userName)
+                .githubUrl(this.githubUrl)
                 .build();
     }
 }

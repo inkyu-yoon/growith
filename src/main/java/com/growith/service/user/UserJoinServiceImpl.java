@@ -27,10 +27,10 @@ public class UserJoinServiceImpl implements UserJoinService {
     @Override
     @Transactional
     public String login(UserProfile userProfile) {
-        User foundUser = userRepository.findByEmail(userProfile.getEmail())
+        User foundUser = userRepository.findByUserName(userProfile.getUserName())
                 .orElseGet(() -> join(userProfile));
 
-        return JwtUtil.createToken(foundUser.getEmail(), foundUser.getUserRole().toString(), secretKey, TOKEN_VALID_MILLIS);
+        return JwtUtil.createToken(foundUser.getUsername(), foundUser.getUserRole().toString(), secretKey, TOKEN_VALID_MILLIS);
 
     }
 

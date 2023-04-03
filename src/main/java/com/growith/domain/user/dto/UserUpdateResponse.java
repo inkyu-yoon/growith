@@ -11,4 +11,5 @@ public class UserUpdateResponse {
     private Long id;
     private String nickName;
     private String blog;
+    private String email;
 }

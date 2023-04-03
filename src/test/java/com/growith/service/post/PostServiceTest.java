@@ -115,21 +115,21 @@ class PostServiceTest {
 
         @Mock
         PostCreateRequest postCreateRequest;
-        String email = "email";
+        String userName = "userName";
 
         @Test
         @DisplayName("게시글 생성 성공 테스트")
         void createSuccess(){
-            given(userRepository.findByEmail(email))
+            given(userRepository.findByUserName(userName))
                     .willReturn(Optional.of(mockUser));
             given(postCreateRequest.toEntity(mockUser))
                     .willReturn(mockPost);
             given(postRepository.save(mockPost))
                     .willReturn(mockPost);
 
-            assertDoesNotThrow(() -> postService.createPost(email, postCreateRequest));
+            assertDoesNotThrow(() -> postService.createPost(userName, postCreateRequest));
 
-            verify(userRepository, atLeastOnce()).findByEmail(email);
+            verify(userRepository, atLeastOnce()).findByUserName(userName);
             verify(postCreateRequest, atLeastOnce()).toEntity(mockUser);
             verify(postRepository, atLeastOnce()).save(mockPost);
 
@@ -138,13 +138,13 @@ class PostServiceTest {
         @Test
         @DisplayName("게시글 생성 실패 테스트")
         void createError(){
-            when(userRepository.findByEmail(email))
+            when(userRepository.findByUserName(userName))
                     .thenReturn(Optional.empty());
 
-            AppException appException = assertThrows(AppException.class, () -> postService.createPost(email, postCreateRequest));
+            AppException appException = assertThrows(AppException.class, () -> postService.createPost(userName, postCreateRequest));
             assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
 
-            verify(userRepository, atLeastOnce()).findByEmail(email);
+            verify(userRepository, atLeastOnce()).findByUserName(userName);
 
         }
     }
@@ -157,26 +157,26 @@ class PostServiceTest {
         PostUpdateRequest postUpdateRequest;
 
         Long postId = 1L;
-        String email = "email";
-        String diffEmail = "diffEmail";
+        String userName = "userName";
+        String diffUserName = "diffUserName";
 
         @Test
         @DisplayName("게시글 수정 성공")
         void updateSuccess(){
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
-            given(userRepository.findByEmail(email))
+            given(userRepository.findByUserName(userName))
                     .willReturn(Optional.of(mockUser));
             given(mockPost.getUser())
                     .willReturn(mockAuthorUser);
-            given(mockAuthorUser.getEmail())
-                    .willReturn(email);
+            given(mockAuthorUser.getUsername())
+                    .willReturn(userName);
 
 
-            assertDoesNotThrow(() -> postService.updatePost(postId, email, postUpdateRequest));
+            assertDoesNotThrow(() -> postService.updatePost(postId, userName, postUpdateRequest));
 
             verify(postRepository, atLeastOnce()).findById(postId);
-            verify(userRepository, atLeastOnce()).findByEmail(email);
+            verify(userRepository, atLeastOnce()).findByUserName(userName);
         }
 
         @Test
@@ -185,7 +185,7 @@ class PostServiceTest {
             when(postRepository.findById(postId))
                     .thenReturn(Optional.empty());
 
-            AppException appException = assertThrows(AppException.class, () -> postService.updatePost(postId, email, postUpdateRequest));
+            AppException appException = assertThrows(AppException.class, () -> postService.updatePost(postId, userName, postUpdateRequest));
 
             assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.POST_NOT_FOUND);
 
@@ -198,15 +198,15 @@ class PostServiceTest {
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
 
-            when(userRepository.findByEmail(email))
+            when(userRepository.findByUserName(userName))
                     .thenReturn(Optional.empty());
 
-            AppException appException = assertThrows(AppException.class, () -> postService.updatePost(postId, email, postUpdateRequest));
+            AppException appException = assertThrows(AppException.class, () -> postService.updatePost(postId, userName, postUpdateRequest));
 
             assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
 
             verify(postRepository, atLeastOnce()).findById(postId);
-            verify(userRepository, atLeastOnce()).findByEmail(email);
+            verify(userRepository, atLeastOnce()).findByUserName(userName);
         }
 
         @Test
@@ -214,22 +214,22 @@ class PostServiceTest {
         void updateError3(){
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
-            given(userRepository.findByEmail(email))
+            given(userRepository.findByUserName(userName))
                     .willReturn(Optional.of(mockUser));
             given(mockPost.getUser())
                     .willReturn(mockAuthorUser);
-            given(mockAuthorUser.getEmail())
-                    .willReturn(diffEmail);
+            given(mockAuthorUser.getUsername())
+                    .willReturn(diffUserName);
 
             doThrow(new AppException(ErrorCode.USER_NOT_MATCH))
-                    .when(mockUser).checkAuth(diffEmail);
+                    .when(mockUser).checkAuth(diffUserName);
 
-            AppException appException = assertThrows(AppException.class, () -> postService.updatePost(postId, email, postUpdateRequest));
+            AppException appException = assertThrows(AppException.class, () -> postService.updatePost(postId, userName, postUpdateRequest));
 
             assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_MATCH);
 
             verify(postRepository, atLeastOnce()).findById(postId);
-            verify(userRepository, atLeastOnce()).findByEmail(email);
+            verify(userRepository, atLeastOnce()).findByUserName(userName);
         }
     }
     @Nested
@@ -237,26 +237,26 @@ class PostServiceTest {
     class DeletePostTest {
 
         Long postId = 1L;
-        String email = "email";
-        String diffEmail = "diffEmail";
+        String userName = "userName";
+        String diffUserName = "diffUserName";
 
         @Test
         @DisplayName("게시글 삭제 성공")
         void deleteSuccess(){
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
-            given(userRepository.findByEmail(email))
+            given(userRepository.findByUserName(userName))
                     .willReturn(Optional.of(mockUser));
             given(mockPost.getUser())
                     .willReturn(mockAuthorUser);
-            given(mockAuthorUser.getEmail())
-                    .willReturn(email);
+            given(mockAuthorUser.getUsername())
+                    .willReturn(userName);
 
 
-            assertDoesNotThrow(() -> postService.deletePost(postId, email));
+            assertDoesNotThrow(() -> postService.deletePost(postId, userName));
 
             verify(postRepository, atLeastOnce()).findById(postId);
-            verify(userRepository, atLeastOnce()).findByEmail(email);
+            verify(userRepository, atLeastOnce()).findByUserName(userName);
         }
 
         @Test
@@ -265,7 +265,7 @@ class PostServiceTest {
             when(postRepository.findById(postId))
                     .thenReturn(Optional.empty());
 
-            AppException appException = assertThrows(AppException.class, () -> postService.deletePost(postId, email));
+            AppException appException = assertThrows(AppException.class, () -> postService.deletePost(postId, userName));
 
             assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.POST_NOT_FOUND);
 
@@ -278,15 +278,15 @@ class PostServiceTest {
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
 
-            when(userRepository.findByEmail(email))
+            when(userRepository.findByUserName(userName))
                     .thenReturn(Optional.empty());
 
-            AppException appException = assertThrows(AppException.class, () -> postService.deletePost(postId, email));
+            AppException appException = assertThrows(AppException.class, () -> postService.deletePost(postId, userName));
 
             assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
 
             verify(postRepository, atLeastOnce()).findById(postId);
-            verify(userRepository, atLeastOnce()).findByEmail(email);
+            verify(userRepository, atLeastOnce()).findByUserName(userName);
         }
 
         @Test
@@ -294,23 +294,23 @@ class PostServiceTest {
         void deleteError3(){
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
-            given(userRepository.findByEmail(email))
+            given(userRepository.findByUserName(userName))
                     .willReturn(Optional.of(mockUser));
             given(mockPost.getUser())
                     .willReturn(mockAuthorUser);
-            given(mockAuthorUser.getEmail())
-                    .willReturn(diffEmail);
+            given(mockAuthorUser.getUsername())
+                    .willReturn(diffUserName);
 
 
             doThrow(new AppException(ErrorCode.USER_NOT_MATCH))
-                    .when(mockUser).checkAuth(diffEmail);
+                    .when(mockUser).checkAuth(diffUserName);
 
-            AppException appException = assertThrows(AppException.class, () -> postService.deletePost(postId, email));
+            AppException appException = assertThrows(AppException.class, () -> postService.deletePost(postId, userName));
 
             assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_MATCH);
 
             verify(postRepository, atLeastOnce()).findById(postId);
-            verify(userRepository, atLeastOnce()).findByEmail(email);
+            verify(userRepository, atLeastOnce()).findByUserName(userName);
         }
     }
 }

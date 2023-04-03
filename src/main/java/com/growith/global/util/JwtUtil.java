@@ -12,10 +12,10 @@ import static com.growith.global.util.constant.JwtConstants.USER_ROLE_IN_CLAIM;
 public class JwtUtil {
 
 
-    public static String createToken(String email, String role, String secretKey, long tokenValidMillis) {
+    public static String createToken(String userName, String role, String secretKey, long tokenValidMillis) {
 
         Claims claims = Jwts.claims()
-                .setSubject(email);
+                .setSubject(userName);
 
         claims.put(USER_ROLE_IN_CLAIM, role);
 
@@ -29,7 +29,7 @@ public class JwtUtil {
     }
 
 
-    public static String getUserEmail(String token, String secretKey) {
+    public static String getUserName(String token, String secretKey) {
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)

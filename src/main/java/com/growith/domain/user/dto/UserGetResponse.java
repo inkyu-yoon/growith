@@ -9,9 +9,10 @@ import lombok.Getter;
 @Getter
 public class UserGetResponse {
     private Long id;
-    private String name;
+    private String userName;
     private String imageUrl;
     private String nickName;
     private String email;
     private String blog;
+    private String githubUrl;
 }
