@@ -7,6 +7,7 @@ import com.growith.domain.user.dto.UserGetMyPageResponse;
 import com.growith.domain.user.dto.UserGetResponse;
 import com.growith.domain.user.dto.UserUpdateRequest;
 import com.growith.domain.user.dto.UserUpdateResponse;
+import com.growith.global.aop.BindingCheck;
 import com.growith.global.config.SecurityConfig;
 import com.growith.global.exception.AppException;
 import com.growith.global.exception.ErrorCode;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -39,7 +41,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = UserApiController.class)
-@Import({SecurityConfig.class})
+@EnableAspectJAutoProxy
+@Import({SecurityConfig.class, BindingCheck.class})
 class UserApiControllerTest {
 
     @Autowired
@@ -180,7 +183,7 @@ class UserApiControllerTest {
     @DisplayName("회원 정보 수정 테스트")
     class updateUserTest{
         Long userId = 1L;
-        UserUpdateRequest request = new UserUpdateRequest("nickName", "blog","email");
+        UserUpdateRequest request = new UserUpdateRequest("nickName", "blog","email@email.com");
 
         UserUpdateResponse response = new UserUpdateResponse(userId, "nickName", "blog", "email");
         String userName = "userName";
@@ -256,6 +259,23 @@ class UserApiControllerTest {
             doThrow(new AppException(ErrorCode.DUPLICATE_NICKNAME))
                     .when(userService).updateUser(anyString(), anyLong(), any(UserUpdateRequest.class));
 
+
+            mockMvc.perform(patch("/api/v1/users/" + userId)
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(request)))
+                    .andDo(print())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").exists());
+
+        }
+
+        @Test
+        @DisplayName("회원 정보 수정 실패 테스트 (Binding Error 발생)")
+        void error4() throws Exception {
+
+            UserUpdateRequest request = new UserUpdateRequest(null, "blog","email");
 
             mockMvc.perform(patch("/api/v1/users/" + userId)
                             .cookie(cookie)

@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.cloud.contract.spec.internal.HttpStatus.CREATED;
@@ -29,7 +31,7 @@ public class PostApiController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<PostResponse>> create(Authentication authentication, @RequestBody PostCreateRequest requestDto) {
+    public ResponseEntity<Response<PostResponse>> create(Authentication authentication,@Validated @RequestBody PostCreateRequest requestDto,BindingResult br) {
         String userName = authentication.getName();
         PostResponse response = postService.createPost(userName, requestDto);
         return ResponseEntity.status(CREATED).body(Response.success(response));
@@ -55,7 +57,7 @@ public class PostApiController {
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<Response<PostResponse>> update(@PathVariable(name = "postId") Long postId, @RequestBody PostUpdateRequest requestDto, Authentication authentication) {
+    public ResponseEntity<Response<PostResponse>> update(Authentication authentication,@PathVariable(name = "postId") Long postId, @Validated @RequestBody PostUpdateRequest requestDto, BindingResult br) {
         String userName = authentication.getName();
         PostResponse response = postService.updatePost(postId, userName, requestDto);
         return ResponseEntity.ok(Response.success(response));

@@ -5,6 +5,7 @@ import com.growith.domain.post.Category;
 import com.growith.domain.post.dto.*;
 import com.growith.domain.user.User;
 import com.growith.domain.user.UserRole;
+import com.growith.global.aop.BindingCheck;
 import com.growith.global.config.SecurityConfig;
 import com.growith.global.exception.AppException;
 import com.growith.global.exception.ErrorCode;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -40,7 +42,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = PostApiController.class)
-@Import({SecurityConfig.class})
+@EnableAspectJAutoProxy
+@Import({SecurityConfig.class, BindingCheck.class})
 class PostApiControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -237,6 +240,24 @@ class PostApiControllerTest {
                     .andExpect(jsonPath("$.result").exists());
 
         }
+
+        @Test
+        @DisplayName("게시글 생성 에러 테스트 (BindingError)")
+        void createPostError2() throws Exception {
+
+            PostCreateRequest request = new PostCreateRequest(null, "content", Category.QNA);
+
+            mockMvc.perform(post("/api/v1/posts")
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(request)))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").exists());
+
+        }
     }
 
     @Nested
@@ -321,6 +342,24 @@ class PostApiControllerTest {
                             .content(gson.toJson(request)))
                     .andDo(print())
                     .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").exists());
+
+        }
+        @Test
+        @DisplayName("게시글 수정 에러 테스트 (BindingError 발생)")
+        void updatePostError4() throws Exception {
+
+            PostUpdateRequest request = new PostUpdateRequest("null", "content", null);
+
+
+            mockMvc.perform(put("/api/v1/posts/" + postId)
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(request)))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
                     .andExpect(jsonPath("$.result").exists());

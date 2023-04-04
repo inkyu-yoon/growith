@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,7 +39,7 @@ public class UserApiController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Response<UserUpdateResponse>> update(Authentication authentication, @PathVariable(name = "userId") Long userId, @RequestBody UserUpdateRequest requestDto) {
+    public ResponseEntity<Response<UserUpdateResponse>> update(Authentication authentication, @PathVariable(name = "userId") Long userId, @Validated @RequestBody UserUpdateRequest requestDto, BindingResult br) {
         String userName = authentication.getName();
         UserUpdateResponse response = userService.updateUser(userName, userId, requestDto);
 

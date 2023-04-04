@@ -1,4 +1,4 @@
-package com.growith.global.config.enumConverter;
+package com.growith.global.config.enumManager;
 
 import com.growith.domain.post.Category;
 import org.springframework.core.convert.converter.Converter;

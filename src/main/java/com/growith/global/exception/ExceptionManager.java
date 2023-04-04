@@ -38,4 +38,10 @@ public class ExceptionManager {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Response.error(ErrorCode.REQUEST_PARAM_NOT_MATCH.getMessage()));
     }
+
+    @ExceptionHandler(BindingException.class)
+    public ResponseEntity<?> bindingExceptionHandler(BindingException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Response.error(e.getMessage()));
+    }
 }
