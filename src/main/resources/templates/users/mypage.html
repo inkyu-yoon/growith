@@ -1,0 +1,85 @@
+
+
+<!-- header -->
+<th:block th:replace="~{layout/header :: headerFragment}"></th:block>
+
+<body>
+
+<!-- Navigation -->
+<th:block th:replace="~{layout/navbar :: navbarFragment}"></th:block>
+
+<!-- Page Content -->
+
+
+<div class="container mt-lg-5">
+  <!-- Button trigger modal -->
+
+
+  <div class="row">
+    <div class="col-lg-4">
+
+      <div class="row">
+        <img th:src="${user.imageUrl}"
+             class="avatar avatar-sm me-3 border-radius-sm" style=" border-radius: 70%;" >
+
+      </div>
+      <!-- /.row -->
+
+    </div>
+
+    <div class="col-lg-8">
+
+      <div class="row">
+        <div class="form-group">
+          <fieldset>
+            <label class="form-label mt-4" for="readOnlyInput">아이디</label>
+            <input class="form-control" id="readOnlyInput" type="text" placeholder="Readonly input here..." th:value="${user.userName}" readonly="">
+          </fieldset>
+        </div>
+        <div class="form-group">
+          <fieldset>
+            <label class="form-label mt-4" for="readOnlyInput2">닉네임</label>
+            <input class="form-control" id="readOnlyInput2" type="text" placeholder="Readonly input here..." th:value="${user.nickName}" readonly="">
+          </fieldset>
+        </div>
+        <div class="form-group">
+          <fieldset>
+            <label class="form-label mt-4" for="readOnlyInput3">블로그 주소</label>
+            <input class="form-control" id="readOnlyInput3" type="text" placeholder="Readonly input here..."th:value="${user.blog}" readonly="">
+          </fieldset>
+        </div>
+        <div class="form-group">
+          <fieldset>
+            <label class="form-label mt-4" for="readOnlyInput4">깃허브 주소</label>
+            <input class="form-control" id="readOnlyInput4" type="text" placeholder="Readonly input here..." th:value="${user.githubUrl}"readonly="">
+          </fieldset>
+        </div>
+        <div class="form-group">
+          <fieldset>
+            <label class="form-label mt-4" for="readOnlyInput5">포인트</label>
+            <input class="form-control" id="readOnlyInput5" type="text" placeholder="Readonly input here..." th:value="${user.point}" readonly="">
+          </fieldset>
+        </div>
+
+      </div>
+      <!-- /.row -->
+
+    </div>
+    <!-- /.col-lg-8 -->
+
+  </div>
+  <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+<th:block th:replace="~{layout/footer :: footerFragment}"></th:block>
+
+<!-- Bootstrap core JavaScript -->
+<script src="assets/vendor/jquery/jquery.min.js"></script>
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

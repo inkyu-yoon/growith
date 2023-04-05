@@ -34,6 +34,39 @@ public class PostViewController {
         return "posts/qna";
     }
 
+    @GetMapping("/posts/community")
+    public String postsCommunity(Model model, @PageableDefault(size = 10, sort = "{created_date}",direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.COMMUNITY,pageable);
+
+        model.addAttribute("posts", posts);
+        model.addAttribute("numberOfPages", posts.getTotalPages());
+        model.addAttribute("previous", pageable.previousOrFirst().getPageNumber());
+        model.addAttribute("next", pageable.next().getPageNumber());
+        return "posts/community";
+    }
+
+    @GetMapping("/posts/study")
+    public String postStudy(Model model, @PageableDefault(size = 10, sort = "{created_date}",direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.STUDY,pageable);
+
+        model.addAttribute("posts", posts);
+        model.addAttribute("numberOfPages", posts.getTotalPages());
+        model.addAttribute("previous", pageable.previousOrFirst().getPageNumber());
+        model.addAttribute("next", pageable.next().getPageNumber());
+        return "posts/study";
+    }
+
+    @GetMapping("/posts/notice")
+    public String postsNotice(Model model, @PageableDefault(size = 10, sort = "{created_date}",direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.NOTICE,pageable);
+
+        model.addAttribute("posts", posts);
+        model.addAttribute("numberOfPages", posts.getTotalPages());
+        model.addAttribute("previous", pageable.previousOrFirst().getPageNumber());
+        model.addAttribute("next", pageable.next().getPageNumber());
+        return "posts/notice";
+    }
+
 
     @GetMapping("/posts/write")
     public String write() {

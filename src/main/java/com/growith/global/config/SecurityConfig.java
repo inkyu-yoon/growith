@@ -39,7 +39,7 @@ public class SecurityConfig {
 
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/assets/**","/","/oauth2/redirect","/githubLogin/success","/logout").permitAll()
+                .requestMatchers("/assets/**","/","/oauth2/redirect","/githubLogin/success","/logout","/users/**").permitAll()
                 .requestMatchers("/posts/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/v1/posts/**").permitAll()
                 .requestMatchers("/api/v1/users/mypage").authenticated()

@@ -16,18 +16,23 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#"
+                        <a class="nav-link active" href="/posts/community"
                            style="font-family: 'Jua', sans-serif;font-size: 1.5rem;color: #63993E">커뮤니티
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#"
+                        <a class="nav-link active" href="/posts/study"
                            style="font-family: 'Jua', sans-serif;font-size: 1.5rem;color: #598A39"> 스터디
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#"
+                        <a class="nav-link active" href="/posts/notice"
                            style="font-family: 'Jua', sans-serif;font-size: 1.5rem;color: #3C5E26">공지사항
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/items"
+                           style="font-family: 'Jua', sans-serif;font-size: 1.5rem;color: #3C5E26">굿즈
                         </a>
                     </li>
                     <!--          <li class="nav-item dropdown">-->
@@ -44,16 +49,18 @@
                 <div style="margin-right: 20rem">
                     <div sec:authorize="isAnonymous()">
 
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#exampleModal">
+                        <button type="button" class="btn btn-sm mx-2" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal" style="color: white;background-color: #5B62F4;
+  border-color: #17a2b8;">
                             회원가입 · 로그인
                         </button>
                     </div>
                     <div sec:authorize="isAuthenticated()">
-                        <button type="button" class="btn btn-primary">
+                        <button type="button" class="btn btn-sm mx-2" style="background-color: #378DFC;color: white"
+                                th:onclick="location.href = '/users/mypage'">
                             마이페이지
                         </button>
-                        <button type="submit" class="btn btn-primary" th:onclick="location.href = '/logout'">
+                        <button type="submit" class="btn btn-sm mx-2" th:onclick="location.href = '/logout'">
                             로그아웃
                         </button>
                     </div>
@@ -83,7 +90,8 @@
                                 <div style="font-family: 'Jua', sans-serif;">↑ Click!</div>
                             </div>
                             <div align="center">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-sm mx-2" data-bs-dismiss="modal"
+                                style="background-color: #FFC107;color:white;">Close</button>
                             </div>
                         </div>
                     </div>

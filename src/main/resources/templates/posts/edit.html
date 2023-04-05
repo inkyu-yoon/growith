@@ -13,8 +13,7 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-2">
-            </div>
+            <th:block th:replace="~{layout/leftbar :: leftbarFragment}"></th:block>
             <div class="col-8">
                 <div class="card my-4">
                     <div class="selectBox " style="margin-left: 2.4rem;margin-top: 1.5rem">
@@ -50,8 +49,8 @@
                     </div>
                 </div>
 
-            </div>
-            <div class="col-2">
+                <th:block th:replace="~{layout/rightbar :: rightbarFragment}"></th:block>
+
             </div>
         </div>
     </div>

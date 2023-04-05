@@ -16,17 +16,21 @@
         <th:block th:replace="~{layout/leftbar :: leftbarFragment}"></th:block>
 
         <div class="col-lg-8">
+
             <th:block th:replace="~{layout/adbar :: adbarFragment}"></th:block>
 
             <div class="card border-primary my-lg-5">
                 <div class="card-body">
-                    <h4 class="card-title" style="color: #70AD47;">Q&A</h4>
-                    <p class="card-text">💡 서로의 지식을 공유해봐요!</p>
+                    <h4 class="card-title" style="color: #3C5E26;">공지사항</h4>
+                    <p class="card-text">📢 GrowITh의 새로운 소식을 확인해보세요!</p>
                 </div>
             </div>
-            <button type="submit" class="btn btn-outline-primary" th:onclick="location.href = '/posts/write'"><i
-                    class="	fa fa-pencil"></i> 질문하기
-            </button>
+            <div sec:authorize="hasRole('ROLE_ADMIN')">
+                <button type="submit" class="btn btn-outline-primary" th:onclick="location.href = '/posts/write'"><i
+                        class="	fa fa-pencil"></i> 작성하기
+                </button>
+            </div>
+
             <form class="d-flex my-3">
                 <input class="form-control me-sm-2" type="search" placeholder="Search">
                 <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
@@ -88,7 +92,6 @@
         <!-- /.col-lg-8 -->
 
         <th:block th:replace="~{layout/rightbar :: rightbarFragment}"></th:block>
-
 
     </div>
     <!-- /.row -->
