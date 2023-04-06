@@ -43,6 +43,6 @@ public class UserViewController {
         model.addAttribute("numberOfPages", posts.getTotalPages());
         model.addAttribute("previous", pageable.previousOrFirst().getPageNumber());
         model.addAttribute("next", pageable.next().getPageNumber());
-        return "/users/mypage";
+        return "users/mypage";
     }
 }

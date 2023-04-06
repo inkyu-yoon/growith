@@ -10,11 +10,11 @@ spring:
     show-sql: true
 
 github:
-  client-id:
-  client-secret:
+  client-id: Iv1.a2583258e956bcda
+  client-secret: 27301663f099e9178d544abb8f7845a9ce2032cb
 server:
   servlet:
     encoding:
       force-response: true
 jwt:
-  secret:
+  secret: fakekey
