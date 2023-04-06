@@ -1,5 +1,8 @@
 # growith
 
+[배포 주소](http://ec2-13-231-48-116.ap-northeast-1.compute.amazonaws.com:8080/)
+
+<br>
 
 ## 프로젝트 중 겪었던 이슈 및 고민
 <details>
