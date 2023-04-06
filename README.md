@@ -1,6 +1,6 @@
 # growith
 
-[배포 주소](http://ec2-13-231-48-116.ap-northeast-1.compute.amazonaws.com:8082/)
+[배포 주소(제작중)](http://ec2-35-72-159-167.ap-northeast-1.compute.amazonaws.com:8082/)
 
 <br>
 
