@@ -39,4 +39,25 @@ public class PostCustomRepositoryImpl implements PostCustomRepository{
 
         return new PageImpl<>(posts, pageable,total);
     }
+
+    @Override
+    public Page<PostGetListResponse> getPostsListByUserName(String userName, Pageable pageable) {
+        List<PostGetListResponse> posts = jpaQueryFactory.from(post)
+                .where(post.user.userName.eq(userName))
+                .join(user).on(user.eq(post.user))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(post.createdDate.desc())
+                .transform(groupBy(post.id)
+                        .list(Projections.constructor(PostGetListResponse.class, post, user)
+                        ));
+
+        long total = jpaQueryFactory.selectFrom(post)
+                .where(post.user.userName.eq(userName))
+                .join(user).on(user.eq(post.user))
+                .fetch()
+                .size();
+
+        return new PageImpl<>(posts, pageable,total);
+    }
 }

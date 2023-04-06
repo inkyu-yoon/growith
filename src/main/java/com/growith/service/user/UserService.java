@@ -40,7 +40,7 @@ public class UserService {
         User foundUser = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
-        if (isExistsByNickName(requestDto)) {
+        if (!foundUser.checkNickName(requestDto) & isExistsByNickName(requestDto)) {
             throw new AppException(DUPLICATE_NICKNAME);
         }
 

@@ -154,4 +154,8 @@ public class User extends BaseEntity implements UserDetails {
                 .nickName(this.nickName)
                 .build();
     }
+
+    public boolean checkNickName(UserUpdateRequest requestDto) {
+        return this.nickName.equals(requestDto.getNickName());
+    }
 }
