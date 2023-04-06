@@ -1,6 +1,7 @@
 package com.growith.controller;
 
 import com.google.gson.Gson;
+import com.growith.domain.post.dto.PostGetListResponse;
 import com.growith.domain.user.User;
 import com.growith.domain.user.UserRole;
 import com.growith.domain.user.dto.UserGetMyPageResponse;
@@ -10,8 +11,8 @@ import com.growith.domain.user.dto.UserUpdateResponse;
 import com.growith.global.aop.BindingCheck;
 import com.growith.global.config.SecurityConfig;
 import com.growith.global.exception.AppException;
-import com.growith.global.exception.ErrorCode;
 import com.growith.global.util.JwtUtil;
+import com.growith.service.post.PostService;
 import com.growith.service.user.UserService;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -32,6 +35,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.growith.global.exception.ErrorCode.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -57,6 +64,9 @@ class UserApiControllerTest {
     @MockBean
     UserDetailsService userDetailsService;
 
+    @MockBean
+    PostService postService;
+
 
     @Value("${jwt.secret}")
     String secretKey;
@@ -79,13 +89,13 @@ class UserApiControllerTest {
                         .imageUrl("imageUrl")
                         .userRole(UserRole.ROLE_USER)
                         .build());
-       }
+    }
 
     @Nested
     @DisplayName("회원 조회 테스트")
-    class getUserTest{
+    class getUserTest {
         Long userId = 1L;
-        UserGetResponse response = new UserGetResponse(userId, "userName", "imageUrl", "nickName", "email", "blog","githubUrl");
+        UserGetResponse response = new UserGetResponse(userId, "userName", "imageUrl", "nickName", "email", "blog", "githubUrl");
 
         @Test
         @DisplayName("회원 조회 성공 테스트")
@@ -116,7 +126,7 @@ class UserApiControllerTest {
         void error() throws Exception {
 
             when(userService.getUser(userId))
-                    .thenThrow(new AppException(ErrorCode.USER_NOT_FOUND));
+                    .thenThrow(new AppException(USER_NOT_FOUND));
 
             mockMvc.perform(get("/api/v1/users/" + userId))
                     .andDo(print())
@@ -130,10 +140,10 @@ class UserApiControllerTest {
 
     @Nested
     @DisplayName("회원 마이페이지 조회 테스트")
-    class getUserMyPageTest{
+    class getUserMyPageTest {
         String userName = "userName";
 
-        UserGetMyPageResponse response = new UserGetMyPageResponse(1L, userName, "imageUrl", "nickName", "email", "blog",0L,"githubUrl");
+        UserGetMyPageResponse response = new UserGetMyPageResponse(1L, userName, "imageUrl", "nickName", "email", "blog", 0L, "githubUrl");
 
         String token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
         Cookie cookie = new Cookie("jwt", token);
@@ -168,7 +178,7 @@ class UserApiControllerTest {
         void error() throws Exception {
 
             when(userService.getMyPageUser(userName))
-                    .thenThrow(new AppException(ErrorCode.USER_NOT_FOUND));
+                    .thenThrow(new AppException(USER_NOT_FOUND));
 
             mockMvc.perform(get("/api/v1/users/mypage")
                             .cookie(cookie))
@@ -180,10 +190,65 @@ class UserApiControllerTest {
     }
 
     @Nested
-    @DisplayName("회원 정보 수정 테스트")
-    class updateUserTest{
+    @DisplayName("회원 별 게시글 조회 테스트")
+    class getPostsByUserTest {
         Long userId = 1L;
-        UserUpdateRequest request = new UserUpdateRequest("nickName", "blog","email@email.com");
+        Long postId = 1L;
+        String userName = "userName";
+
+        UserGetResponse user = new UserGetResponse(userId, userName, "imageUrl", "nickName", "email", "blog", "githubUrl");
+
+        PostGetListResponse postGetListResponse = new PostGetListResponse(postId, "title", "content", "date", "nickName");
+        List<PostGetListResponse> posts = new ArrayList<>();
+        @Test
+        @DisplayName("회원 별 게시글 조회 성공")
+        void getPostsByUserSuccess() throws Exception {
+
+            posts.add(postGetListResponse);
+            Page<PostGetListResponse> postsPage = new PageImpl<>(posts);
+
+
+            given(userService.getUser(userId))
+                    .willReturn(user);
+            given(postService.getAllPostsByUserName(any(), any()))
+                    .willReturn(postsPage);
+
+            mockMvc.perform(get("/api/v1/users/" + userId + "/posts"))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("SUCCESS"))
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result.content").exists())
+                    .andExpect(jsonPath("$.result.content[0].postId").value(1))
+                    .andExpect(jsonPath("$.result.content[0].title").value("title"))
+                    .andExpect(jsonPath("$.result.content[0].content").value("content"))
+                    .andExpect(jsonPath("$.result.content[0].date").value("date"))
+                    .andExpect(jsonPath("$.result.content[0].nickName").value("nickName"));
+        }
+
+        @Test
+        @DisplayName("회원 별 게시글 조회 실패 (가입된 회원이 아닌 경우)")
+        void getPostsByUserError() throws Exception {
+
+            when(userService.getUser(userId))
+                    .thenThrow(new AppException(USER_NOT_FOUND));
+
+            mockMvc.perform(get("/api/v1/users/" + userId + "/posts"))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").exists());
+        }
+
+    }
+
+    @Nested
+    @DisplayName("회원 정보 수정 테스트")
+    class updateUserTest {
+        Long userId = 1L;
+        UserUpdateRequest request = new UserUpdateRequest("nickName", "blog", "email@email.com");
 
         UserUpdateResponse response = new UserUpdateResponse(userId, "nickName", "blog", "email");
         String userName = "userName";
@@ -218,7 +283,7 @@ class UserApiControllerTest {
         @DisplayName("회원 정보 수정 실패 테스트 (회원이 존재하지 않는 경우)")
         void error1() throws Exception {
 
-            doThrow(new AppException(ErrorCode.USER_NOT_FOUND))
+            doThrow(new AppException(USER_NOT_FOUND))
                     .when(userService).updateUser(anyString(), anyLong(), any(UserUpdateRequest.class));
 
 
@@ -237,7 +302,7 @@ class UserApiControllerTest {
         @DisplayName("회원 정보 수정 실패 테스트 (수정 요청자가 본인이 아닌 경우)")
         void error2() throws Exception {
 
-            doThrow(new AppException(ErrorCode.USER_NOT_MATCH))
+            doThrow(new AppException(USER_NOT_MATCH))
                     .when(userService).updateUser(anyString(), anyLong(), any(UserUpdateRequest.class));
 
 
@@ -256,7 +321,7 @@ class UserApiControllerTest {
         @DisplayName("회원 정보 수정 실패 테스트 (중복된 닉네임으로 변경 요청하는 경우)")
         void error3() throws Exception {
 
-            doThrow(new AppException(ErrorCode.DUPLICATE_NICKNAME))
+            doThrow(new AppException(DUPLICATE_NICKNAME))
                     .when(userService).updateUser(anyString(), anyLong(), any(UserUpdateRequest.class));
 
 
@@ -275,7 +340,7 @@ class UserApiControllerTest {
         @DisplayName("회원 정보 수정 실패 테스트 (Binding Error 발생)")
         void error4() throws Exception {
 
-            UserUpdateRequest request = new UserUpdateRequest(null, "blog","email");
+            UserUpdateRequest request = new UserUpdateRequest(null, "blog", "email");
 
             mockMvc.perform(patch("/api/v1/users/" + userId)
                             .cookie(cookie)
@@ -288,4 +353,6 @@ class UserApiControllerTest {
 
         }
     }
+
+
 }

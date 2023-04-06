@@ -83,6 +83,21 @@ class PostServiceTest {
         }
 
         @Test
+        @DisplayName("게시글 카테고리별 리스트 조회 성공")
+        void getListByUser(){
+
+            String userName = "userName";
+            PostGetListResponse postGetListResponse = new PostGetListResponse(1L, "title", "content", "date", "nickName");
+
+            given(postRepository.getPostsListByUserName(userName,pageable))
+                    .willReturn(new PageImpl<>(List.of(postGetListResponse)));
+
+            assertDoesNotThrow(() -> postService.getAllPostsByUserName(userName,pageable));
+
+            verify(postRepository, atLeastOnce()).getPostsListByUserName(userName,pageable);
+        }
+
+        @Test
         @DisplayName("게시글 단건 조회 성공")
         void getSuccess(){
             Long postId = 1L;
