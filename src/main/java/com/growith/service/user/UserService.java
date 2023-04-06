@@ -54,4 +54,8 @@ public class UserService {
     private boolean isExistsByNickName(UserUpdateRequest requestDto) {
         return userRepository.existsByNickName(requestDto.getNickName());
     }
+
+    public Long countUser() {
+        return userRepository.count();
+    }
 }

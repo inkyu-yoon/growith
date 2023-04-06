@@ -4,6 +4,7 @@ import com.growith.domain.post.Category;
 import com.growith.domain.post.dto.PostGetListResponse;
 import com.growith.domain.post.dto.PostGetResponse;
 import com.growith.service.post.PostService;
+import com.growith.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class PostViewController {
 
+    private final UserService userService;
+
     private final PostService postService;
+
+    @GetMapping("/")
+    public String home(Model model) {
+        Long numberOfUsers = userService.countUser();
+        log.info("{}",numberOfUsers);
+        model.addAttribute("numberOfUsers", numberOfUsers);
+        return "index";
+    }
 
     @GetMapping("/posts/qna")
     public String postsQNA(Model model, @PageableDefault(size = 10, sort = "{created_date}",direction = Sort.Direction.DESC) Pageable pageable) {
