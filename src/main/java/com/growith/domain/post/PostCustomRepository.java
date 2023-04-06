@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface PostCustomRepository {
 
     Page<PostGetListResponse> getPostsListByCategory(Category category, Pageable pageable);
-
+    Page<PostGetListResponse> getPostsListByUserName(String userName, Pageable pageable);
 }

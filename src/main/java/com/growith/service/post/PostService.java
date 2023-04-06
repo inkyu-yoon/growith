@@ -28,6 +28,10 @@ public class PostService {
                 .map(post -> post.toPostGetResponse());
     }
 
+    public Page<PostGetListResponse> getAllPostsByUserName(String userName, Pageable pageable) {
+        return postRepository.getPostsListByUserName(userName, pageable);
+    }
+
     @Transactional
     public PostResponse createPost(String userName, PostCreateRequest postCreateRequest) {
         User foundUser = userRepository.findByUserName(userName)
@@ -38,7 +42,7 @@ public class PostService {
         return savedPost.toPostResponse();
     }
 
-    public Page<PostGetListResponse> getAllPostsByCategory(Category category,Pageable pageable) {
+    public Page<PostGetListResponse> getAllPostsByCategory(Category category, Pageable pageable) {
         return postRepository.getPostsListByCategory(category, pageable);
     }
 
@@ -48,6 +52,7 @@ public class PostService {
 
         return foundPost.toPostGetResponse();
     }
+
     @Transactional
     public PostResponse deletePost(Long postId, String userName) {
         Post foundPost = postRepository.findById(postId)
