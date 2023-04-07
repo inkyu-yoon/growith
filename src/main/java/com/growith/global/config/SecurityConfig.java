@@ -1,6 +1,7 @@
 package com.growith.global.config;
 
-import com.growith.global.jwt.JwtAuthenticationFilter;
+import com.growith.global.config.jwt.CustomAuthenticationEntryPointHandler;
+import com.growith.global.config.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -43,10 +44,13 @@ public class SecurityConfig {
                 .requestMatchers("/posts/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/v1/posts/**").permitAll()
                 .requestMatchers("/api/v1/users/mypage").authenticated()
-                .requestMatchers(HttpMethod.POST,"/api/v1/posts").authenticated()
+                .requestMatchers(HttpMethod.POST,"/api/v1/posts/**").authenticated()
                 .requestMatchers(HttpMethod.PUT,"/api/v1/posts/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE,"/api/v1/posts/**").authenticated()
                 .requestMatchers("/api/v1/users/**").permitAll()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(new CustomAuthenticationEntryPointHandler())
 
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(userDetailsService,secretKey), UsernamePasswordAuthenticationFilter.class)

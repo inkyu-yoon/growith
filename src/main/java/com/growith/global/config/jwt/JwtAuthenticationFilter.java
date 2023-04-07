@@ -1,4 +1,4 @@
-package com.growith.global.jwt;
+package com.growith.global.config.jwt;
 
 import com.growith.global.util.CookieUtil;
 import com.growith.global.util.JwtUtil;
