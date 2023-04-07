@@ -48,7 +48,7 @@
                                     </th:block>
                                     <th:block th:if="${post.imageUrl != null}">
                                         <img th:src="${post.imageUrl}"
-                                             class="avatar avatar-sm me-3 border-radius-sm" style=" border-radius: 70%;" height="50">
+                                             class="avatar avatar-sm me-3 border-radius-sm" style=" border-radius: 70%;" height="60">
                                     </th:block>
                                 </div>
                                 <div style="float: left">
@@ -56,6 +56,7 @@
                                         <p class="mb-0 text" style="font-weight: bold" th:text="|${post.nickName}|"></p>
                                         <p class="text-xs  mb-0" style="font-size: 0.8rem;color: grey"
                                            th:text="|${post.createdDate}|"></p>
+                                        <i class="	fa fa-eye" style="font-size:20px"></i> <div th:text="${post.view}" style="display: inline"></div>
                                     </div>
                                     <div style="margin-left: 5px">
                                     </div>

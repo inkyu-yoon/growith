@@ -28,7 +28,7 @@ import static com.growith.domain.user.UserRole.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Where(clause = "deleted_date is NULL")
-@SQLDelete(sql = "UPDATE USER SET deleted_date = current_timestamp WHERE id = ?")
+@SQLDelete(sql = "UPDATE user SET deleted_date = current_timestamp WHERE id = ?")
 public class User extends BaseEntity implements UserDetails {
     @Id
     @Column(name = "user_id")

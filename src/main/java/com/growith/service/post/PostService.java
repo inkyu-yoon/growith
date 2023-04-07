@@ -46,11 +46,18 @@ public class PostService {
         return postRepository.getPostsListByCategory(category, pageable);
     }
 
+    @Transactional
     public PostGetResponse getPost(Long postId) {
         Post foundPost = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(POST_NOT_FOUND));
 
+        increaseView(foundPost);
+
         return foundPost.toPostGetResponse();
+    }
+
+    public void increaseView(Post foundPost) {
+        foundPost.increaseView();
     }
 
     @Transactional

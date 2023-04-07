@@ -36,55 +36,30 @@
                 <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
             </form>
 
-            <th:block th:each="post : ${posts}">
-                <div class="card bg-light mb-2" style="max-height: 15rem;">
-                    <div class="card-body">
-                        <div class="row justify-content-start" >
-                            <div class="col-auto">
-                            <p class="card-text"  th:text="|${post.nickName}|"></p>
-                            </div>
-                            <div class="col-auto">
-                            <p class="card-text"style="color: gray" th:text="|${post.date}|" ></p>
-                            </div>
-                        </div>
-                        <a th:href="@{/posts/{postId}(postId=${post.postId})}" style="text-decoration: none">
-                        <h4 class="card-title mt-3" style="color: black" th:text="${post.title}">제목</h4>
-                        </a>
-                        <a th:href="@{/posts/{postId}(postId=${post.postId})}" style="text-decoration: none">
-                        <div class=" text-multi" >
-                            <p th:utext="${post.content}" ></p>
-                        </div>
-                        </a>
-                    </div>
-                    <div align="right" class="emoticon mb-3 mx-3">
-                        <i class="fa fa-thumbs-o-up" style="font-size:20px"></i> 1
-                        <i class="	fa fa-comment-o" style="font-size:20px"></i> 1
-                        <i class="	fa fa-eye" style="font-size:20px"></i> 1
-                    </div>
-                </div>
-            </th:block>
+            <th:block th:replace="~{layout/postBlock :: postBlockFragment}"></th:block>
+
             <!-- /.row -->
             <br>
 
             <div>
                 <ul class="pagination pagination-sm" >
                     <li class="page-item">
-                        <a class="page-link" th:href="@{/posts/qna(page=${previous})}">&laquo;</a>
+                        <a class="page-link" th:href="@{/posts/notice(page=${previous})}">&laquo;</a>
                     </li>
                     <th:block th:if="${numberOfPages !=0}">
                     <th:block th:with="end=${numberOfPages}">
                         <li class="page-item active" th:each="num : ${#numbers.sequence(1,end)}">
-                            <a class="page-link" th:href="@{/posts/qna(page=${num-1})}" th:text="|${num}|"></a>
+                            <a class="page-link" th:href="@{/posts/notice(page=${num-1})}" th:text="|${num}|"></a>
                         </li>
                     </th:block>
                     </th:block>
                     <th:block th:if="${numberOfPages ==0}">
                             <li class="page-item active">
-                                <a class="page-link" th:href="@{/posts/qna(page=0)}" th:text="1"></a>
+                                <a class="page-link" th:href="@{/posts/notice(page=0)}" th:text="1"></a>
                             </li>
                     </th:block>
                     <li class="page-item">
-                        <a class="page-link" th:href="@{/posts/qna(page=${next})}">&raquo;</a>
+                        <a class="page-link" th:href="@{/posts/notice(page=${next})}">&raquo;</a>
                     </li>
                 </ul>
             </div>

@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Where(clause = "deleted_date is NULL")
-@SQLDelete(sql = "UPDATE POST SET deleted_date = current_timestamp WHERE id = ?")
+@SQLDelete(sql = "UPDATE post SET deleted_date = current_timestamp WHERE id = ?")
 public class Post extends BaseEntity {
 
     @Id
@@ -38,8 +38,10 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private Long view;
+
     @Builder
-    public Post(String title, String content, Category category, User user) {
+    public Post(String title, String content, Category category, User user, Long view) {
         Assert.hasText(title, "title must not be empty");
         Assert.hasText(content, "content must not be empty");
         Assert.notNull(category, "category must not be empty");
@@ -49,6 +51,7 @@ public class Post extends BaseEntity {
         this.content = content;
         this.category = category;
         this.user = user;
+        this.view = view;
     }
 
     public PostGetResponse toPostGetResponse() {
@@ -62,6 +65,7 @@ public class Post extends BaseEntity {
                 .nickName(this.user.getNickName())
                 .createdDate(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(Timestamp.valueOf(this.getCreatedDate())))
                 .lastModifiedDate(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(Timestamp.valueOf(this.getLastModifiedDate())))
+                .view(this.view)
                 .build();
     }
 
@@ -73,5 +77,9 @@ public class Post extends BaseEntity {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
         this.category = requestDto.getCategory();
+    }
+
+    public void increaseView() {
+        this.view += 1;
     }
 }

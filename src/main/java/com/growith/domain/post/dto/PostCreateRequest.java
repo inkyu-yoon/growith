@@ -28,6 +28,7 @@ public class PostCreateRequest {
                 .content(this.content)
                 .category(this.category)
                 .user(user)
+                .view(0L)
                 .build();
     }
 }

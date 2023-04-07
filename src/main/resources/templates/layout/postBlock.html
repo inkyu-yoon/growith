@@ -1,0 +1,30 @@
+<th:block th:fragment="postBlockFragment">
+
+    <th:block th:each="post : ${posts}">
+        <div class="card bg-light mb-2" style="max-height: 15rem;">
+            <div class="card-body">
+                <div class="row justify-content-start">
+                    <div class="col-auto">
+                        <p class="card-text" th:text="|${post.nickName}|"></p>
+                    </div>
+                    <div class="col-auto">
+                        <p class="card-text" style="color: gray" th:text="|${post.date}|"></p>
+                    </div>
+                </div>
+                <a th:href="@{/posts/{postId}(postId=${post.postId})}" style="text-decoration: none">
+                    <h4 class="card-title mt-3" style="color: black" th:text="${post.title}">제목</h4>
+                </a>
+                <a th:href="@{/posts/{postId}(postId=${post.postId})}" style="text-decoration: none">
+                    <div class=" text-multi">
+                        <p th:utext="${post.content}"></p>
+                    </div>
+                </a>
+            </div>
+            <div align="right" class="emoticon mb-3 mx-3">
+                <i class="fa fa-thumbs-o-up" style="font-size:20px"></i> 1
+                <i class="	fa fa-comment-o" style="font-size:20px"></i> 1
+                <i class="	fa fa-eye" style="font-size:20px"></i> <div th:text="${post.view}" style="display: inline"></div>
+            </div>
+        </div>
+    </th:block>
+</th:block>

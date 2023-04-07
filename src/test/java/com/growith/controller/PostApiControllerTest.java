@@ -86,7 +86,18 @@ class PostApiControllerTest {
     class GetPostTest {
         Long postId = 1L;
 
-        PostGetResponse response = new PostGetResponse(postId, "title", "content", Category.QNA, 1L, "nickName", "createdDate", "lastModifiedDate", "imageUrl");
+        PostGetResponse response = PostGetResponse.builder()
+                .postId(postId)
+                .title("title")
+                .content("content")
+                .category(Category.QNA)
+                .userId(1L)
+                .nickName("nickName")
+                .createdDate("createdDate")
+                .lastModifiedDate("lastModifiedDate")
+                .imageUrl("imageUrl")
+                .view(0L)
+                .build();
 
         @Test
         @DisplayName("게시글 페이지 조회 성공 테스트")
@@ -115,6 +126,7 @@ class PostApiControllerTest {
                     .andExpect(jsonPath("$.result.content[0].nickName").value("nickName"))
                     .andExpect(jsonPath("$.result.content[0].createdDate").value("createdDate"))
                     .andExpect(jsonPath("$.result.content[0].lastModifiedDate").value("lastModifiedDate"))
+                    .andExpect(jsonPath("$.result.content[0].view").value(0))
                     .andExpect(jsonPath("$.result.content[0].imageUrl").value("imageUrl"));
         }
 
@@ -140,6 +152,7 @@ class PostApiControllerTest {
                     .andExpect(jsonPath("$.result.nickName").value("nickName"))
                     .andExpect(jsonPath("$.result.createdDate").value("createdDate"))
                     .andExpect(jsonPath("$.result.lastModifiedDate").value("lastModifiedDate"))
+                    .andExpect(jsonPath("$.result.view").value(0))
                     .andExpect(jsonPath("$.result.imageUrl").value("imageUrl"));
         }
 
@@ -163,7 +176,15 @@ class PostApiControllerTest {
         @DisplayName("게시글 카테고리별 리스트 조회 성공")
         void getPostsByCategorySuccess() throws Exception {
 
-            PostGetListResponse postGetListResponse = new PostGetListResponse(postId, "title", "content", "date", "nickName");
+            PostGetListResponse postGetListResponse = PostGetListResponse
+                    .builder()
+                    .postId(postId)
+                    .title("title")
+                    .content("content")
+                    .date("date")
+                    .nickName("nickName")
+                    .view(0L)
+                    .build();
 
             List<PostGetListResponse> posts = new ArrayList<>();
             posts.add(postGetListResponse);
@@ -185,6 +206,7 @@ class PostApiControllerTest {
                     .andExpect(jsonPath("$.result.content[0].title").value("title"))
                     .andExpect(jsonPath("$.result.content[0].content").value("content"))
                     .andExpect(jsonPath("$.result.content[0].date").value("date"))
+                    .andExpect(jsonPath("$.result.content[0].view").value(0))
                     .andExpect(jsonPath("$.result.content[0].nickName").value("nickName"));
         }
 

@@ -29,7 +29,6 @@ public class PostViewController {
     @GetMapping("/")
     public String home(Model model) {
         Long numberOfUsers = userService.countUser();
-        log.info("{}",numberOfUsers);
         model.addAttribute("numberOfUsers", numberOfUsers);
         return "index";
     }

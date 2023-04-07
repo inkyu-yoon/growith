@@ -198,7 +198,15 @@ class UserApiControllerTest {
 
         UserGetResponse user = new UserGetResponse(userId, userName, "imageUrl", "nickName", "email", "blog", "githubUrl");
 
-        PostGetListResponse postGetListResponse = new PostGetListResponse(postId, "title", "content", "date", "nickName");
+        PostGetListResponse postGetListResponse = PostGetListResponse
+                .builder()
+                .postId(postId)
+                .title("title")
+                .content("content")
+                .date("date")
+                .nickName("nickName")
+                .view(0L)
+                .build();
         List<PostGetListResponse> posts = new ArrayList<>();
         @Test
         @DisplayName("회원 별 게시글 조회 성공")

@@ -16,14 +16,14 @@ public class PostGetListResponse {
     private String content;
     private String date;
     private String nickName;
+    private Long view;
 
     public PostGetListResponse(Post post, User user) {
         this.postId = post.getId();
         this.title = post.getTitle();
-
         this.content = post.getContent();
-
         this.date = TimeUtil.convertLocaldatetimeToTime(post.getCreatedDate());
         this.nickName = user.getNickName();
+        this.view = post.getView();
     }
 }

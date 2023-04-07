@@ -55,6 +55,16 @@ class PostServiceTest {
 
         PageRequest pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
 
+        PostGetListResponse postGetListResponse = PostGetListResponse
+                .builder()
+                .postId(1L)
+                .title("title")
+                .content("content")
+                .date("date")
+                .nickName("nickName")
+                .view(0L)
+                .build();
+
         @Test
         @DisplayName("게시글 리스트 조회 성공")
         void getList(){
@@ -70,8 +80,6 @@ class PostServiceTest {
         @DisplayName("게시글 카테고리별 리스트 조회 성공")
         void getListByCategory(){
 
-            PostGetListResponse postGetListResponse = new PostGetListResponse(1L, "title", "content", "date", "nickName");
-
             Category category = Category.QNA;
 
             given(postRepository.getPostsListByCategory(category,pageable))
@@ -83,11 +91,10 @@ class PostServiceTest {
         }
 
         @Test
-        @DisplayName("게시글 카테고리별 리스트 조회 성공")
+        @DisplayName("게시글 회원별 리스트 조회 성공")
         void getListByUser(){
 
             String userName = "userName";
-            PostGetListResponse postGetListResponse = new PostGetListResponse(1L, "title", "content", "date", "nickName");
 
             given(postRepository.getPostsListByUserName(userName,pageable))
                     .willReturn(new PageImpl<>(List.of(postGetListResponse)));

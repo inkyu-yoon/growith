@@ -19,4 +19,6 @@ public class PostGetResponse {
     private String createdDate;
     private String lastModifiedDate;
     private String imageUrl;
+    private Long view;
+
 }
