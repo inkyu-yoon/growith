@@ -2,6 +2,7 @@ package com.growith.global.config;
 
 import com.growith.global.config.jwt.CustomAuthenticationEntryPointHandler;
 import com.growith.global.config.jwt.JwtAuthenticationFilter;
+import com.growith.global.config.jwt.JwtExceptionHandlerFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -54,6 +55,7 @@ public class SecurityConfig {
 
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(userDetailsService,secretKey), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtExceptionHandlerFilter(), JwtAuthenticationFilter.class)
                 .build();
     }
 

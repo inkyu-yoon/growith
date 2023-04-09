@@ -16,7 +16,9 @@ public enum ErrorCode {
 
     REQUEST_PARAM_NOT_MATCH(HttpStatus.BAD_REQUEST,"Request Parameter가 유효한지 확인해주세요."),
 
-    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "로그인 후 이용해주세요!");
+    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "로그인 후 이용해주세요!"),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "다시 로그인 해주세요!");
+
     private HttpStatus httpStatus;
     private String message;
 }

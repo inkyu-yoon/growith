@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //쿠키가 없는 경우 그냥 진행
         String token = CookieUtil.getCookie(request, JWT_COOKIE_NAME);
-        if (token == null || token.equals(JWT_COOKIE_NAME_DELETED) || JwtUtil.isExpired(token,secretKey)) {
+        if (!StringUtils.hasText(token) || token.equals(JWT_COOKIE_NAME_DELETED) || JwtUtil.isExpired(token,secretKey)) {
             filterChain.doFilter(request, response);
             return;
         }
