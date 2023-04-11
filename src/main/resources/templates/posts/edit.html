@@ -113,7 +113,8 @@
                 history.back();
             }).catch((error) => {
                 console.log(error);
-                alert(error.response.data.result);
+                $('#alertMessage').text(error.response.data.result);
+                $('#alertModal').modal('show');
             });
 
         }

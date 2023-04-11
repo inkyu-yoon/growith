@@ -1,8 +1,12 @@
 package com.growith.controller;
 
+import com.growith.domain.comment.dto.CommentCreateRequest;
+import com.growith.domain.comment.dto.CommentGetResponse;
+import com.growith.domain.comment.dto.CommentResponse;
 import com.growith.domain.post.Category;
 import com.growith.domain.post.dto.*;
 import com.growith.global.Response;
+import com.growith.service.comment.CommentService;
 import com.growith.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +27,7 @@ import static org.springframework.cloud.contract.spec.internal.HttpStatus.CREATE
 public class PostApiController {
 
     private final PostService postService;
+    private final CommentService commentService;
 
     @GetMapping
     public ResponseEntity<Response<Page<PostGetResponse>>> getAll(Pageable pageable) {
@@ -62,4 +67,21 @@ public class PostApiController {
         PostResponse response = postService.updatePost(postId, userName, requestDto);
         return ResponseEntity.ok(Response.success(response));
     }
+
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<Response<CommentResponse>> createComment(Authentication authentication, @PathVariable(name = "postId") Long postId, @Validated @RequestBody CommentCreateRequest requestDto, BindingResult br) {
+        String userName = authentication.getName();
+        CommentResponse response = commentService.createComment(postId, userName, requestDto);
+
+        return ResponseEntity.ok(Response.success(response));
+    }
+
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<Response<Page<CommentGetResponse>>> getAllComments(@PathVariable(name = "postId") Long postId, Pageable pageable) {
+        Page<CommentGetResponse> response = commentService.getAllComments(postId, pageable);
+
+        return ResponseEntity.ok(Response.success(response));
+    }
+
+
 }

@@ -78,6 +78,7 @@
     </div>
     <!-- /.row -->
 
+
 </div>
 <!-- /.container -->
 
@@ -130,12 +131,14 @@
             };
 
             if (data.category == 0) {
-                alert("카테고리 선택은 필수입니다.")
+                $('#alertMessage').text("카테고리 선택은 필수 입니다.");
+                $('#alertModal').modal('show');
                 return;
             }
 
             if(data.title.length>=60){
-                alert("제목은 60자를 넘을 수 없습니다.");
+                $('#alertMessage').text("제목은 60자를 넘을 수 없습니다.");
+                $('#alertModal').modal('show');
                 return
             }
 
@@ -180,7 +183,8 @@
 
             }).catch((error) => {
                 console.log(error);
-                alert(error.response.data.result);
+                $('#alertMessage').text(error.response.data.result);
+                $('#alertModal').modal('show');
 
             });
         },

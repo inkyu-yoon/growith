@@ -7,123 +7,202 @@
 <!-- Page Content -->
 
 <div class="container my-lg-5">
-        <div class="row">
+    <div class="row">
 
 
-            <th:block th:replace="~{layout/leftbar :: leftbarFragment}"></th:block>
+        <th:block th:replace="~{layout/leftbar :: leftbarFragment}"></th:block>
 
 
-            <div class="col-8">
+        <div class="col-8">
 
-                <th:block th:replace="~{layout/adbar :: adbarFragment}"></th:block>
+            <th:block th:replace="~{layout/adbar :: adbarFragment}"></th:block>
 
-                <div class="card  my-4">
-                    <div class="pb-0 mx-lg-5 mt-lg-5">
-                        <div class=" d-flex justify-content-start mb-3" style="flex: 0 0 auto;">
+            <div class="card bg-light  my-4">
+                <div class="pb-0 mx-lg-5 mt-lg-5">
+                    <div class=" d-flex justify-content-start mb-3" style="flex: 0 0 auto;">
 
-                        </div>
-                        <div class="d-flex justify-content-end my-2">
-                            <form action="/posts/edit" method="get">
-                                <input type="text" class="form-control" name="postId"
-                                       th:value="${post.postId}" hidden>
-
-                                <button
-                                        type="submit"
-                                        class="btn btn-sm bg-gradient-info">게시글 수정
-                                </button>
-                            </form>
-                            <button th:onclick="|post.delete(${postId})|"
-                                    type="button"
-                                    class="btn btn-sm bg-gradient-danger mx-2">게시글 삭제
-                            </button>
-                        </div>
-
-                        <div class="row">
-                            <div class="d-flex mb-3" style="overflow: hidden">
-
-                                <div style="float: left">
-                                    <th:block th:if="${post.imageUrl== null}">
-                                        <img src="https://raw.githubusercontent.com/buinq/imageServer/main/img/image-20230204013043779.png"
-                                             class="avatar avatar-sm me-3 border-radius-sm" height="50">
-                                    </th:block>
-                                    <th:block th:if="${post.imageUrl != null}">
-                                        <img th:src="${post.imageUrl}"
-                                             class="avatar avatar-sm me-3 border-radius-sm" style=" border-radius: 70%;" height="60">
-                                    </th:block>
-                                </div>
-                                <div style="float: left">
-                                    <div style="margin-left: 5px">
-                                        <p class="mb-0 text" style="font-weight: bold" th:text="|${post.nickName}|"></p>
-                                        <p class="text-xs  mb-0" style="font-size: 0.8rem;color: grey"
-                                           th:text="|${post.createdDate}|"></p>
-                                        <i class="	fa fa-eye" style="font-size:20px"></i> <div th:text="${post.view}" style="display: inline"></div>
-                                    </div>
-                                    <div style="margin-left: 5px">
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <h2 th:text="${post.title}" style="font-family: 'Jua', sans-serif;color: black"> </h2>
-                        </div>
                     </div>
+                    <div class="d-flex justify-content-end my-2">
+                        <form action="/posts/edit" method="get">
+                            <input type="text" class="form-control" name="postId"
+                                   th:value="${post.postId}" hidden>
 
-
-                    <div class="card-body" style="padding-top: 0px">
-<!--                        <div style="overflow: hidden">-->
-<!--                            <th:block th:if="${!files.isEmpty()}">-->
-<!--                                <div style="float: right;">-->
-<!--                                    <div class="mb-3"-->
-<!--                                         style="border: 1px solid #E0E0E0;border-width: 1px; border-radius: 5px;">-->
-<!--                                        <div class="mx-3 my-3">-->
-<!--                                            <th class="align-middle text-center">-->
-<!--                                                <span class=" text-sm font-weight-bold" style="color: #5A2082"-->
-<!--                                                >첨부파일 목록</span>-->
-<!--                                            </th>-->
-<!--                                            <tr th:each="file : ${files}">-->
-<!--                                                <div class="row">-->
-<!--                                                    <th class="align-middle text-center">-->
-<!--                                                        <a th:href="${file.fileUrl}" target='_blank'>-->
-<!--                                                <span class=" text-xs font-weight-bold" style="color: #0d6efd"-->
-<!--                                                      th:text="${file.fileName}"></span>-->
-<!--                                                        </a>-->
-<!--                                                    </th>-->
-<!--                                                </div>-->
-<!--                                            </tr>-->
-
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </th:block>-->
-<!--                            <div style="clear: both"></div>-->
-                            <div >
-                                <div class="mx-lg-4">
-                                    <p
-                                            spellcheck="false"
-                                            th:utext="${post.content}" readonly></p>
-                                </div>
-                            </div>
-<!--                        </div>-->
-                    </div>
-                    <br>
-                    <div class="d-flex justify-content-center mb-3">
-                        <form action="/posts/qna" method="get">
                             <button
                                     type="submit"
-                                    class="btn btn-sm bg-gradient-danger mx-2">목록으로
+                                    class="btn btn-sm bg-gradient-info">게시글 수정
                             </button>
                         </form>
+                        <button th:onclick="|post.delete(${postId})|"
+                                type="button"
+                                class="btn btn-sm bg-gradient-danger mx-2">게시글 삭제
+                        </button>
+                    </div>
+
+                    <div class="row">
+                        <div class="d-flex mb-3" style="overflow: hidden">
+
+                            <div style="float: left">
+                                <th:block th:if="${post.imageUrl== null}">
+                                    <img src="https://raw.githubusercontent.com/buinq/imageServer/main/img/image-20230204013043779.png"
+                                         class="avatar avatar-sm me-3 border-radius-sm" height="50">
+                                </th:block>
+                                <th:block th:if="${post.imageUrl != null}">
+                                    <img th:src="${post.imageUrl}"
+                                         class="avatar avatar-sm me-3 border-radius-sm" style=" border-radius: 70%;"
+                                         height="60">
+                                </th:block>
+                            </div>
+                            <div style="float: left">
+                                <div style="margin-left: 5px">
+                                    <p class="mb-0 text" style="font-weight: bold" th:text="|${post.nickName}|"></p>
+                                    <p class="text-xs  mb-0" style="font-size: 0.8rem;color: grey"
+                                       th:text="|${post.createdDate}|"></p>
+                                    <i class="	fa fa-eye" style="font-size:20px"></i>
+                                    <div th:text="${post.view}" style="display: inline"></div>
+                                </div>
+                                <div style="margin-left: 5px">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h2 th:text="${post.title}" style="font-family: 'Jua', sans-serif;color: black"></h2>
                     </div>
                 </div>
 
+
+                <div class="card-body" style="padding-top: 0px">
+                    <!--                        <div style="overflow: hidden">-->
+                    <!--                            <th:block th:if="${!files.isEmpty()}">-->
+                    <!--                                <div style="float: right;">-->
+                    <!--                                    <div class="mb-3"-->
+                    <!--                                         style="border: 1px solid #E0E0E0;border-width: 1px; border-radius: 5px;">-->
+                    <!--                                        <div class="mx-3 my-3">-->
+                    <!--                                            <th class="align-middle text-center">-->
+                    <!--                                                <span class=" text-sm font-weight-bold" style="color: #5A2082"-->
+                    <!--                                                >첨부파일 목록</span>-->
+                    <!--                                            </th>-->
+                    <!--                                            <tr th:each="file : ${files}">-->
+                    <!--                                                <div class="row">-->
+                    <!--                                                    <th class="align-middle text-center">-->
+                    <!--                                                        <a th:href="${file.fileUrl}" target='_blank'>-->
+                    <!--                                                <span class=" text-xs font-weight-bold" style="color: #0d6efd"-->
+                    <!--                                                      th:text="${file.fileName}"></span>-->
+                    <!--                                                        </a>-->
+                    <!--                                                    </th>-->
+                    <!--                                                </div>-->
+                    <!--                                            </tr>-->
+
+                    <!--                                        </div>-->
+                    <!--                                    </div>-->
+                    <!--                                </div>-->
+                    <!--                            </th:block>-->
+                    <!--                            <div style="clear: both"></div>-->
+                    <div>
+                        <div class="mx-lg-4">
+                            <p
+                                    spellcheck="false"
+                                    th:utext="${post.content}" readonly></p>
+                        </div>
+                    </div>
+                    <!--                        </div>-->
+                </div>
+                <br>
+                <div class="d-flex justify-content-center mb-3">
+                    <form action="/posts/qna" method="get">
+                        <button
+                                type="submit"
+                                class="btn btn-sm mx-2">목록으로
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            <th:block th:replace="~{layout/rightbar :: rightbarFragment}"></th:block>
+            <form class="container">
+                <div class="mb-3">
+                    <input class="form-control" id="input-write-comment" rows="1" name="comment" placeholder="댓글 입력">
+                </div>
+                <div align="right">
+                    <button type="button" class="btn bg-primary btn-sm mx-2" id="comment-write-btn"
+                            style="color: white"
+                            th:onclick="|post.commentWrite(${post.postId})|">댓글 등록
+                    </button>
+                </div>
+            </form>
+
+
+            <div class="card bg-light  my-4">
+                <div class="card-header bi bi-chat-dots" th:text="|${comments.numberOfElements} Comments|">
+                    {{#comments.size}}{{comments.numberOfElements}}{{/comments.size}}
+                    Comments
+                </div>
+                <ul class="list-group-flush">
+                    <th:block th:each="comment : ${comments}">
+                        <li th:id="|comments-${comment.commentId}|" class="list-group-item">
+                            <div class="d-flex my-2" style="overflow: hidden">
+
+                                <div style="float: left">
+                                    <img th:src="${post.imageUrl}"
+                                         class="avatar avatar-sm me-3 border-radius-sm" style=" border-radius: 70%;"
+                                         height="40">
+                                </div>
+                                <div style="float: left">
+                                    <div style="margin-left: 5px">
+                                        <p class="mb-0 text" style="font-weight: bold"
+                                           th:text="|${comment.userName}|"></p>
+                                        <div class="d-flex" style="overflow: hidden">
+                                            <p class="text-xs  mb-0" style="font-size: 0.8rem;color: grey"
+                                               th:text="|${comment.createdDate}|"></p>
+                                            <a type="button" class="comment-edit-btn mx-1" data-bs-toggle="collapse"
+                                               th:attr="data-bs-target='#multi-collapse-'+${comment.commentId}"
+                                               style="font-size: xx-small; display: flex;align-items: center;">
+                                                수정
+                                            </a>
+
+                                            <a type="button" class="mx-0"
+                                               style="font-size: xx-small;color: darkred;display: flex;align-items: center;"
+                                               th:onclick="|comment.commentDelete(${post.postId},${comment.commentId})|">
+                                                삭제
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div th:text="${comment.comment}">{{comment}}</div>
+
+                            <hr style="border-top: 1px solid #bbb; border-bottom: 1px solid #fff">
+
+                            <form class="collapse px-lg-3" th:id="|multi-collapse-${comment.commentId}|" >
+                                <div class="form-group">
+                                    <textarea class="form-control" id="comment-content" rows="1" th:text="${comment.comment}">{{comment}}</textarea>
+                                </div>
+                                <input type="hidden" id="comment-id" th:value="${comment.commentId}">
+                                <input type="hidden" id="post-id" th:value="${post.postId}">
+                                <div align="right">
+                                    <button
+                                            type="submit"
+                                            class="btn btn-sm bg-warning mx-2 mt-2" id="comment-update-btn" style="color: white">수정 완료
+                                    </button>
+                                </div>
+                            </form>
+
+                        </li>
+                    </th:block>
+                </ul>
+            </div>
 
 
         </div>
+
+        <th:block th:replace="~{layout/rightbar :: rightbarFragment}"></th:block>
+
+
     </div>
+</div>
 <!-- Footer -->
 <th:block th:replace="~{layout/footer :: footerFragment}"></th:block>
 </main>
@@ -133,33 +212,69 @@
 
 <Script>
 
-
     let post = {
         init: function () {
             var _this = this;
+
         },
 
         delete: function (postId) {
+
             const con_check = confirm("삭제하시겠습니까?");
             if (con_check === true) {
-                axios.delete("/api/v1/posts/" + postId ,
+                axios.delete("/api/v1/posts/" + postId,
                     {
                         headers: {
-                            'Content-Type': 'application/json',
+                            'Content-Type': 'application/json'
                         }
                     }
                 ).then((response) => {
-                    alert("게시글 삭제 성공");
+                    $('#alertMessage').text("게시글 삭제 성공");
+                    $('#alertModal').modal('show');
                     history.back();
                 }).catch((error) => {
                     console.log(error);
-                    alert(error.response.data.result["message"]);
+                    if(error.response.status==401){
+                    $('#alertMessage').text("로그인 후 이용해주세요.");
+                    $('#alertModal').modal('show');
+                    }
+                });
+            }
+        },
+
+        commentWrite: function (postId) {
+
+            let data = {
+                comment: document.querySelector('#input-write-comment').value.trim()
+            };
+
+            console.log(data);
+
+
+            const con_check = confirm("댓글을 작성 하시겠습니까?");
+
+            if (con_check === true) {
+                axios.post("/api/v1/posts/" + postId + "/comments",
+                    JSON.stringify(data), { // dto 처럼 만든 객체 data를 stringify 함수로 JSON 형식으로 만든다.
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                ).then((response) => {
+                    alert("댓글 작성이 완료되었습니다.");
+                    window.location.href = '/posts/' + postId;
+                }).catch((error) => {
+                    console.log(error)
+                    if(error.response.status==401){
+                        $('#alertMessage').text("로그인 후 이용해주세요.");
+                        $('#alertModal').modal('show');
+                    }
                 });
             }
         }
-    };
+        ,
 
-    announcement.init();
+    };
 
 </script>
 </body>

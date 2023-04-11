@@ -1,8 +1,10 @@
 package com.growith.controller;
 
+import com.growith.domain.comment.dto.CommentGetResponse;
 import com.growith.domain.post.Category;
 import com.growith.domain.post.dto.PostGetListResponse;
 import com.growith.domain.post.dto.PostGetResponse;
+import com.growith.service.comment.CommentService;
 import com.growith.service.post.PostService;
 import com.growith.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ public class PostViewController {
     private final UserService userService;
 
     private final PostService postService;
+    private final CommentService commentService;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -84,9 +87,11 @@ public class PostViewController {
     }
 
     @GetMapping("/posts/{postId}")
-    public String read(@PathVariable(name = "postId") Long postId, Model model) {
+    public String read(@PathVariable(name = "postId") Long postId, Model model,@PageableDefault(size = 10, sort = "{created_date}",direction = Sort.Direction.DESC) Pageable pageable) {
         PostGetResponse post = postService.getPost(postId);
+        Page<CommentGetResponse> comments = commentService.getAllComments(postId, pageable);
         model.addAttribute("post", post);
+        model.addAttribute("comments", comments);
         return "posts/detail";
     }
 
