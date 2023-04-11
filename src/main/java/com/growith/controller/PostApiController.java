@@ -3,6 +3,7 @@ package com.growith.controller;
 import com.growith.domain.comment.dto.CommentCreateRequest;
 import com.growith.domain.comment.dto.CommentGetResponse;
 import com.growith.domain.comment.dto.CommentResponse;
+import com.growith.domain.comment.dto.CommentUpdateRequest;
 import com.growith.domain.post.Category;
 import com.growith.domain.post.dto.*;
 import com.growith.global.Response;
@@ -36,7 +37,7 @@ public class PostApiController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<PostResponse>> create(Authentication authentication,@Validated @RequestBody PostCreateRequest requestDto,BindingResult br) {
+    public ResponseEntity<Response<PostResponse>> create(Authentication authentication, @Validated @RequestBody PostCreateRequest requestDto, BindingResult br) {
         String userName = authentication.getName();
         PostResponse response = postService.createPost(userName, requestDto);
         return ResponseEntity.status(CREATED).body(Response.success(response));
@@ -62,7 +63,7 @@ public class PostApiController {
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<Response<PostResponse>> update(Authentication authentication,@PathVariable(name = "postId") Long postId, @Validated @RequestBody PostUpdateRequest requestDto, BindingResult br) {
+    public ResponseEntity<Response<PostResponse>> update(Authentication authentication, @PathVariable(name = "postId") Long postId, @Validated @RequestBody PostUpdateRequest requestDto, BindingResult br) {
         String userName = authentication.getName();
         PostResponse response = postService.updatePost(postId, userName, requestDto);
         return ResponseEntity.ok(Response.success(response));
@@ -83,5 +84,19 @@ public class PostApiController {
         return ResponseEntity.ok(Response.success(response));
     }
 
+    @DeleteMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<Response<CommentResponse>> deleteComments(Authentication authentication, @PathVariable(name = "postId") Long postId, @PathVariable(name = "commentId") Long commentId) {
+        String userName = authentication.getName();
+        CommentResponse response = commentService.deleteComment(postId, userName, commentId);
 
+        return ResponseEntity.ok(Response.success(response));
+    }
+
+    @PutMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<Response<CommentResponse>> updateComments(Authentication authentication, @PathVariable(name = "postId") Long postId, @PathVariable(name = "commentId") Long commentId ,@Validated @RequestBody CommentUpdateRequest requestDto,BindingResult br) {
+        String userName = authentication.getName();
+        CommentResponse response = commentService.updateComment(postId, userName, commentId, requestDto);
+
+        return ResponseEntity.ok(Response.success(response));
+    }
 }

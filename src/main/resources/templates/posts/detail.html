@@ -143,7 +143,7 @@
                             <div class="d-flex my-2" style="overflow: hidden">
 
                                 <div style="float: left">
-                                    <img th:src="${post.imageUrl}"
+                                    <img th:src="${comment.imageUrl}"
                                          class="avatar avatar-sm me-3 border-radius-sm" style=" border-radius: 70%;"
                                          height="40">
                                 </div>
@@ -162,7 +162,7 @@
 
                                             <a type="button" class="mx-0"
                                                style="font-size: xx-small;color: darkred;display: flex;align-items: center;"
-                                               th:onclick="|comment.commentDelete(${post.postId},${comment.commentId})|">
+                                               th:onclick="|post.commentDelete(${post.postId},${comment.commentId})|">
                                                 삭제
                                             </a>
                                         </div>
@@ -176,16 +176,17 @@
 
                             <hr style="border-top: 1px solid #bbb; border-bottom: 1px solid #fff">
 
-                            <form class="collapse px-lg-3" th:id="|multi-collapse-${comment.commentId}|" >
+                            <form class="collapse px-lg-3" th:id="|multi-collapse-${comment.commentId}|">
                                 <div class="form-group">
-                                    <textarea class="form-control" id="comment-content" rows="1" th:text="${comment.comment}">{{comment}}</textarea>
+                                    <textarea class="form-control" id="input-update-comment" rows="1"
+                                              th:text="${comment.comment}">{{comment}}</textarea>
                                 </div>
-                                <input type="hidden" id="comment-id" th:value="${comment.commentId}">
-                                <input type="hidden" id="post-id" th:value="${post.postId}">
                                 <div align="right">
                                     <button
-                                            type="submit"
-                                            class="btn btn-sm bg-warning mx-2 mt-2" id="comment-update-btn" style="color: white">수정 완료
+                                            type="button"
+                                            th:onclick="|post.commentUpdate(${post.postId},${comment.commentId})|"
+                                            class="btn btn-sm bg-warning mx-2 mt-2" id="comment-update-btn"
+                                            style="color: white">수정 완료
                                     </button>
                                 </div>
                             </form>
@@ -229,15 +230,11 @@
                         }
                     }
                 ).then((response) => {
-                    $('#alertMessage').text("게시글 삭제 성공");
-                    $('#alertModal').modal('show');
                     history.back();
                 }).catch((error) => {
                     console.log(error);
-                    if(error.response.status==401){
-                    $('#alertMessage').text("로그인 후 이용해주세요.");
+                    $('#alertMessage').text(error.response.data.result);
                     $('#alertModal').modal('show');
-                    }
                 });
             }
         },
@@ -261,18 +258,68 @@
                         }
                     }
                 ).then((response) => {
-                    alert("댓글 작성이 완료되었습니다.");
                     window.location.href = '/posts/' + postId;
                 }).catch((error) => {
                     console.log(error)
-                    if(error.response.status==401){
-                        $('#alertMessage').text("로그인 후 이용해주세요.");
-                        $('#alertModal').modal('show');
+                    $('#alertMessage').text(error.response.data.result);
+                    $('#alertModal').modal('show');
+                });
+            }
+        },
+
+        commentDelete: function (postId, commentId) {
+
+            const url = `/api/v1/posts/${postId}/comments/${commentId}`;
+
+            const con_check = confirm("삭제하시겠습니까?");
+            if (con_check === true) {
+
+                axios.delete(url, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
                     }
+                ).then((response) => {
+                        console.log(response);
+                        window.location.href = '/posts/' + postId;
+                    }
+                ).catch((error) => {
+                    console.log(error);
+                    $('#alertMessage').text(error.response.data.result);
+                    $('#alertModal').modal('show');
+
+                });
+            }
+        },
+
+        commentUpdate: function (postId, commentId) {
+
+
+            let data = {
+                comment: document.querySelector('#input-update-comment').value.trim()
+            };
+            console.log(data)
+            const url = `/api/v1/posts/${postId}/comments/${commentId}`;
+
+            const con_check = confirm("수정하시겠습니까?");
+            if (con_check === true) {
+                axios.put(url,
+                    JSON.stringify(data), {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                ).then((response) => {
+                        console.log(response);
+                        window.location.href = '/posts/' + postId;
+                    }
+                ).catch((error) => {
+                    console.log(error.response.data.result);
+                    $('#alertMessage').text(error.response.data.result);
+                    $('#alertModal').modal('show');
                 });
             }
         }
-        ,
 
     };
 

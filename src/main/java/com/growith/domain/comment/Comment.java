@@ -2,6 +2,7 @@ package com.growith.domain.comment;
 
 import com.growith.domain.BaseEntity;
 import com.growith.domain.comment.dto.CommentResponse;
+import com.growith.domain.comment.dto.CommentUpdateRequest;
 import com.growith.domain.post.Category;
 import com.growith.domain.post.Post;
 import com.growith.domain.post.dto.PostGetResponse;
@@ -66,4 +67,7 @@ public class Comment extends BaseEntity {
                 .build();
     }
 
+    public void update(CommentUpdateRequest requestDto) {
+        this.comment = requestDto.getComment();
+    }
 }

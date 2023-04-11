@@ -23,11 +23,16 @@ public class ErrorHandlingUtil {
 
     public static void sendAlert(HttpServletResponse response) throws IOException {
 
-        CookieUtil.setCookie(response,"jwt","deleted",0);
+        CookieUtil.setCookie(response, "jwt", "deleted", 0);
 
-        response.setContentType("text/html; charset=utf-8");
-        PrintWriter writer = response.getWriter();
-        writer.println("<script>alert('다시 로그인해주세요');  location.reload();</script>");
-        writer.flush();
+        response.setStatus(ErrorCode.TOKEN_NOT_FOUND.getHttpStatus().value());
+        response.setContentType("application/json;charset=UTF-8");
+
+        Response<String> errorMessage = Response.error(ErrorCode.TOKEN_NOT_FOUND.getMessage());
+
+        Gson gson = new Gson();
+        String responseBody = gson.toJson(errorMessage);
+
+        response.getWriter().write(responseBody);
     }
 }
