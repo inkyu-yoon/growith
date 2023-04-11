@@ -1,6 +1,7 @@
 package com.growith.domain.post;
 
 import com.growith.domain.BaseEntity;
+import com.growith.domain.comment.Comment;
 import com.growith.domain.post.dto.PostGetResponse;
 import com.growith.domain.post.dto.PostResponse;
 import com.growith.domain.post.dto.PostUpdateRequest;
@@ -13,6 +14,8 @@ import org.springframework.util.Assert;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -39,6 +42,9 @@ public class Post extends BaseEntity {
     private User user;
 
     private Long view;
+
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comments = new ArrayList<>();
 
     @Builder
     public Post(String title, String content, Category category, User user, Long view) {

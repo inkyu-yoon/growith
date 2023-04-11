@@ -22,7 +22,7 @@
             </div>
             <div align="right" class="emoticon mb-3 mx-3">
                 <i class="fa fa-thumbs-o-up" style="font-size:20px"></i> 1
-                <i class="	fa fa-comment-o" style="font-size:20px"></i> 1
+                <i class="	fa fa-comment-o" style="font-size:20px"></i> <div th:text="${post.numOfComments}" style="display: inline"></div>
                 <i class="	fa fa-eye" style="font-size:20px"></i> <div th:text="${post.view}" style="display: inline"></div>
             </div>
         </div>

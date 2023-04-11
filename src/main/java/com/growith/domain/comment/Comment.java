@@ -58,6 +58,7 @@ public class Comment extends BaseEntity {
         this.comment = comment;
         this.user = user;
         this.post = post;
+        this.post.getComments().add(this);
     }
 
     public CommentResponse toCommentResponse() {
