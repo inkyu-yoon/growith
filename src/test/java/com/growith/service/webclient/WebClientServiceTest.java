@@ -2,6 +2,7 @@ package com.growith.service.webclient;
 
 import com.google.gson.Gson;
 import com.growith.domain.user.oauth.UserProfile;
+import com.growith.service.WebClientService;
 import mockwebserver3.MockResponse;
 import mockwebserver3.MockWebServer;
 import org.junit.jupiter.api.*;

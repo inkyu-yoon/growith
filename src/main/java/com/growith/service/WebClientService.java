@@ -1,4 +1,4 @@
-package com.growith.service.webclient;
+package com.growith.service;
 
 import com.growith.domain.user.oauth.AccessTokenRequest;
 import com.growith.domain.user.oauth.UserProfile;

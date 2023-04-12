@@ -1,4 +1,4 @@
-package com.growith.service.comment;
+package com.growith.service;
 
 import com.growith.domain.comment.Comment;
 import com.growith.domain.comment.CommentRepository;

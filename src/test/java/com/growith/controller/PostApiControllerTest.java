@@ -10,7 +10,8 @@ import com.growith.global.config.SecurityConfig;
 import com.growith.global.exception.AppException;
 import com.growith.global.exception.ErrorCode;
 import com.growith.global.util.JwtUtil;
-import com.growith.service.post.PostService;
+import com.growith.service.CommentService;
+import com.growith.service.PostService;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,7 +54,8 @@ class PostApiControllerTest {
 
     @MockBean
     PostService postService;
-
+    @MockBean
+    CommentService commentService;
     @MockBean
     UserDetailsService userDetailsService;
 

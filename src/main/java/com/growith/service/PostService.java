@@ -1,4 +1,4 @@
-package com.growith.service.post;
+package com.growith.service;
 
 import com.growith.domain.post.Category;
 import com.growith.domain.post.Post;

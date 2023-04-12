@@ -10,6 +10,7 @@ import com.growith.domain.user.User;
 import com.growith.domain.user.UserRepository;
 import com.growith.global.exception.AppException;
 import com.growith.global.exception.ErrorCode;
+import com.growith.service.PostService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

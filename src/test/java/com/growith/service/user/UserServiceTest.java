@@ -5,6 +5,7 @@ import com.growith.domain.user.UserRepository;
 import com.growith.domain.user.dto.UserUpdateRequest;
 import com.growith.global.exception.AppException;
 import com.growith.global.exception.ErrorCode;
+import com.growith.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

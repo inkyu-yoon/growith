@@ -2,8 +2,8 @@ package com.growith.controller;
 
 import com.growith.domain.user.oauth.UserProfile;
 import com.growith.global.util.CookieUtil;
-import com.growith.service.user.UserJoinService;
-import com.growith.service.webclient.WebClientService;
+import com.growith.service.UserJoinService;
+import com.growith.service.WebClientService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -5,13 +5,12 @@ import com.growith.domain.user.UserRepository;
 import com.growith.domain.user.UserRole;
 import com.growith.domain.user.oauth.UserProfile;
 import com.growith.global.util.JwtUtil;
-import org.junit.jupiter.api.Assertions;
+import com.growith.service.UserJoinServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
-import org.mockito.internal.MockedStaticImpl;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.growith.service.user;
+package com.growith.service;
 
 import com.growith.domain.user.User;
 import com.growith.domain.user.UserRepository;

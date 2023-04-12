@@ -3,6 +3,7 @@ package com.growith.service.webclient;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.google.gson.Gson;
 import com.growith.domain.user.oauth.UserProfile;
+import com.growith.service.WebClientService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;

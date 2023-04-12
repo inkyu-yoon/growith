@@ -2,8 +2,8 @@ package com.growith.controller;
 
 import com.growith.domain.post.dto.PostGetListResponse;
 import com.growith.domain.user.dto.UserGetMyPageResponse;
-import com.growith.service.post.PostService;
-import com.growith.service.user.UserService;
+import com.growith.service.PostService;
+import com.growith.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
