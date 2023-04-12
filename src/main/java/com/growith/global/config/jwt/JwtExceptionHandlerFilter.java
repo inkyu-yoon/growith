@@ -25,10 +25,8 @@ public class JwtExceptionHandlerFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
             ErrorHandlingUtil.sendErrorMessage(response, TOKEN_EXPIRED);
-            ErrorHandlingUtil.sendAlert(response);
         } catch (JwtException | IllegalArgumentException e) {
             ErrorHandlingUtil.sendErrorMessage(response, TOKEN_NOT_FOUND);
-            ErrorHandlingUtil.sendAlert(response);
         } catch (NullPointerException e) {
             filterChain.doFilter(request, response);
         }

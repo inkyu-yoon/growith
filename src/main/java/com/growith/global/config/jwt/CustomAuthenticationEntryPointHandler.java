@@ -21,7 +21,6 @@ public class CustomAuthenticationEntryPointHandler implements AuthenticationEntr
         String jwt = CookieUtil.getCookie(request, JWT_COOKIE_NAME);
         if (jwt == null) {
             ErrorHandlingUtil.sendErrorMessage(response, TOKEN_NOT_FOUND);
-            ErrorHandlingUtil.sendAlert(response);
         }
     }
 }
