@@ -19,6 +19,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static org.springframework.cloud.contract.spec.internal.HttpStatus.CREATED;
 
 @RestController
@@ -78,8 +80,8 @@ public class PostApiController {
     }
 
     @GetMapping("/{postId}/comments")
-    public ResponseEntity<Response<Page<CommentGetResponse>>> getAllComments(@PathVariable(name = "postId") Long postId, Pageable pageable) {
-        Page<CommentGetResponse> response = commentService.getAllComments(postId, pageable);
+    public ResponseEntity<Response<List<CommentGetResponse>>> getAllComments(@PathVariable(name = "postId") Long postId) {
+        List<CommentGetResponse> response = commentService.getAllComments(postId);
 
         return ResponseEntity.ok(Response.success(response));
     }
@@ -93,10 +95,19 @@ public class PostApiController {
     }
 
     @PutMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<Response<CommentResponse>> updateComments(Authentication authentication, @PathVariable(name = "postId") Long postId, @PathVariable(name = "commentId") Long commentId ,@Validated @RequestBody CommentUpdateRequest requestDto,BindingResult br) {
+    public ResponseEntity<Response<CommentResponse>> updateComments(Authentication authentication, @PathVariable(name = "postId") Long postId, @PathVariable(name = "commentId") Long commentId, @Validated @RequestBody CommentUpdateRequest requestDto, BindingResult br) {
         String userName = authentication.getName();
         CommentResponse response = commentService.updateComment(postId, userName, commentId, requestDto);
 
         return ResponseEntity.ok(Response.success(response));
     }
+
+    @PostMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<Response<CommentResponse>> createCommentReply(Authentication authentication, @PathVariable(name = "postId") Long postId, @PathVariable(name = "commentId") Long commentId, @Validated @RequestBody CommentCreateRequest requestDto, BindingResult br) {
+        String userName = authentication.getName();
+        CommentResponse response = commentService.createCommentReply(postId, userName, commentId, requestDto);
+
+        return ResponseEntity.ok(Response.success(response));
+    }
+
 }

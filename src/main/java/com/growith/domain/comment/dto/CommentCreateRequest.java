@@ -26,4 +26,13 @@ public class CommentCreateRequest {
                 .post(post)
                 .build();
     }
+
+    public Comment toEntity(User user, Post post, Comment comment) {
+        return Comment.builder()
+                .comment(this.comment)
+                .user(user)
+                .post(post)
+                .parent(comment)
+                .build();
+    }
 }

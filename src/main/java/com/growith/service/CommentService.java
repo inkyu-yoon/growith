@@ -12,10 +12,10 @@ import com.growith.domain.user.User;
 import com.growith.domain.user.UserRepository;
 import com.growith.global.exception.AppException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.growith.global.exception.ErrorCode.*;
 
@@ -39,11 +39,11 @@ public class CommentService {
         return comment.toCommentResponse();
     }
     @Transactional(readOnly = true)
-    public Page<CommentGetResponse> getAllComments(Long postId, Pageable pageable) {
+    public List<CommentGetResponse> getAllComments(Long postId) {
         Post foundPost = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(POST_NOT_FOUND));
 
-        return commentRepository.getComments(foundPost, pageable);
+        return commentRepository.getComments(foundPost);
     }
 
     public CommentResponse deleteComment(Long postId, String userName, Long commentId ) {
@@ -79,4 +79,20 @@ public class CommentService {
 
         return foundComment.toCommentResponse();
     }
+
+    public CommentResponse createCommentReply(Long postId, String userName, Long commentId, CommentCreateRequest requestDto) {
+        User foundUser = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(USER_NOT_FOUND));
+
+        Post foundPost = postRepository.findById(postId)
+                .orElseThrow(() -> new AppException(POST_NOT_FOUND));
+
+        Comment foundComment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new AppException(COMMENT_NOT_FOUND));
+
+        Comment comment = commentRepository.save(requestDto.toEntity(foundUser, foundPost, foundComment));
+
+        return comment.toCommentResponse();
+    }
+
 }

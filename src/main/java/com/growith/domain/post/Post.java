@@ -62,6 +62,7 @@ public class Post extends BaseEntity {
 
     public PostGetResponse toPostGetResponse() {
         return PostGetResponse.builder()
+                .userName(this.user.getUsername())
                 .postId(this.id)
                 .title(this.title)
                 .imageUrl(this.user.getImageUrl())
@@ -72,6 +73,7 @@ public class Post extends BaseEntity {
                 .createdDate(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(Timestamp.valueOf(this.getCreatedDate())))
                 .lastModifiedDate(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(Timestamp.valueOf(this.getLastModifiedDate())))
                 .view(this.view)
+                .totalNumOfComments(this.getComments().size())
                 .build();
     }
 

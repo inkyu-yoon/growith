@@ -2,12 +2,10 @@ package com.growith.domain.comment;
 
 import com.growith.domain.comment.dto.CommentGetResponse;
 import com.growith.domain.post.Post;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -21,21 +19,24 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
 
 
     @Override
-    public Page<CommentGetResponse> getComments(Post post, Pageable pageable) {
+    public List<CommentGetResponse> getComments(Post post) {
         List<CommentGetResponse> comments = jpaQueryFactory.from(comment1)
-                .where(comment1.post.eq(post))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(comment1.createdDate.desc())
+                .where(foundByPost(post),isParent())
+                .orderBy(comment1.createdDate.asc())
                 .transform(groupBy(comment1.id)
                         .list(Projections.constructor(CommentGetResponse.class, comment1, comment1.user)
                         ));
 
-        long total = jpaQueryFactory.selectFrom(comment1)
-                .where(comment1.post.eq(post))
-                .fetch()
-                .size();
 
-        return new PageImpl<>(comments, pageable,total);
+        return comments;
     }
+
+    private Predicate foundByPost(Post post) {
+        return comment1.post.eq(post);
+    }
+
+    private Predicate isParent() {
+        return comment1.parent.isNull();
+    }
+
 }

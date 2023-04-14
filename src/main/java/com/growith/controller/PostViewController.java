@@ -11,13 +11,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @Controller
 @Slf4j
@@ -37,7 +37,7 @@ public class PostViewController {
     }
 
     @GetMapping("/posts/qna")
-    public String postsQNA(Model model, @PageableDefault(size = 10, sort = "{created_date}",direction = Sort.Direction.DESC) Pageable pageable) {
+    public String postsQNA(Model model, Pageable pageable) {
         Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.QNA,pageable);
 
         model.addAttribute("posts", posts);
@@ -48,7 +48,7 @@ public class PostViewController {
     }
 
     @GetMapping("/posts/community")
-    public String postsCommunity(Model model, @PageableDefault(size = 10, sort = "{created_date}",direction = Sort.Direction.DESC) Pageable pageable) {
+    public String postsCommunity(Model model,Pageable pageable) {
         Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.COMMUNITY,pageable);
 
         model.addAttribute("posts", posts);
@@ -59,7 +59,7 @@ public class PostViewController {
     }
 
     @GetMapping("/posts/study")
-    public String postStudy(Model model, @PageableDefault(size = 10, sort = "{created_date}",direction = Sort.Direction.DESC) Pageable pageable) {
+    public String postStudy(Model model,Pageable pageable) {
         Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.STUDY,pageable);
 
         model.addAttribute("posts", posts);
@@ -70,7 +70,7 @@ public class PostViewController {
     }
 
     @GetMapping("/posts/notice")
-    public String postsNotice(Model model, @PageableDefault(size = 10, sort = "{created_date}",direction = Sort.Direction.DESC) Pageable pageable) {
+    public String postsNotice(Model model,Pageable pageable) {
         Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.NOTICE,pageable);
 
         model.addAttribute("posts", posts);
@@ -87,9 +87,9 @@ public class PostViewController {
     }
 
     @GetMapping("/posts/{postId}")
-    public String read(@PathVariable(name = "postId") Long postId, Model model,@PageableDefault(size = 10, sort = "{created_date}",direction = Sort.Direction.DESC) Pageable pageable) {
+    public String read(@PathVariable(name = "postId") Long postId, Model model) {
         PostGetResponse post = postService.getPost(postId);
-        Page<CommentGetResponse> comments = commentService.getAllComments(postId, pageable);
+        List<CommentGetResponse> comments = commentService.getAllComments(postId);
         model.addAttribute("post", post);
         model.addAttribute("comments", comments);
         return "posts/detail";

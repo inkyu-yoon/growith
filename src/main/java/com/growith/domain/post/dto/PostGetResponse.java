@@ -16,9 +16,11 @@ public class PostGetResponse {
     private Category category;
     private Long userId;
     private String nickName;
+    private String userName;
     private String createdDate;
     private String lastModifiedDate;
     private String imageUrl;
     private Long view;
+    private int totalNumOfComments;
 
 }

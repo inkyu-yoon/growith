@@ -3,11 +3,7 @@ package com.growith.domain.comment;
 import com.growith.domain.BaseEntity;
 import com.growith.domain.comment.dto.CommentResponse;
 import com.growith.domain.comment.dto.CommentUpdateRequest;
-import com.growith.domain.post.Category;
 import com.growith.domain.post.Post;
-import com.growith.domain.post.dto.PostGetResponse;
-import com.growith.domain.post.dto.PostResponse;
-import com.growith.domain.post.dto.PostUpdateRequest;
 import com.growith.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,8 +11,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.util.Assert;
 
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +44,7 @@ public class Comment extends BaseEntity {
     private List<Comment> children = new ArrayList<>();
 
     @Builder
-    public Comment(String comment, User user, Post post) {
+    public Comment(String comment, User user, Post post, Comment parent) {
         Assert.hasText(comment, "comment must not be empty");
         Assert.notNull(user, "user must not be empty");
         Assert.notNull(post, "post must not be empty");
@@ -58,6 +52,7 @@ public class Comment extends BaseEntity {
         this.comment = comment;
         this.user = user;
         this.post = post;
+        this.parent = parent;
         this.post.getComments().add(this);
     }
 

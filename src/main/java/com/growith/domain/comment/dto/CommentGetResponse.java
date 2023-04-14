@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Builder
 @Getter
 @AllArgsConstructor
@@ -16,6 +19,8 @@ public class CommentGetResponse {
     private String userName;
     private String createdDate;
     private String imageUrl;
+    private List<CommentGetResponse> replies;
+    private int replySize;
 
     public CommentGetResponse(Comment comment, User user) {
         this.commentId = comment.getId();
@@ -23,5 +28,12 @@ public class CommentGetResponse {
         this.userName = user.getNickName();
         this.imageUrl = user.getImageUrl();
         this.createdDate = TimeUtil.convertLocaldatetimeToTime(comment.getCreatedDate());
+        if (comment.getParent() == null) {
+            this.replies = comment.getChildren()
+                    .stream()
+                    .map(c -> new CommentGetResponse(c, c.getUser()))
+                    .collect(Collectors.toList());
+            this.replySize = replies.size();
+        }
     }
 }

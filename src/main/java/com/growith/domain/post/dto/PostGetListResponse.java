@@ -16,6 +16,7 @@ public class PostGetListResponse {
     private String content;
     private String date;
     private String nickName;
+    private String imageUrl;
     private Long view;
     private int numOfComments;
 
@@ -27,5 +28,6 @@ public class PostGetListResponse {
         this.nickName = user.getNickName();
         this.view = post.getView();
         this.numOfComments = post.getComments().size();
+        this.imageUrl = user.getImageUrl();
     }
 }

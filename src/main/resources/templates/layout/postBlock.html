@@ -5,6 +5,18 @@
             <div class="card-body">
                 <div class="row justify-content-start">
                     <div class="col-auto">
+
+                    <th:block th:if="${post.imageUrl== null}">
+                        <img src="https://raw.githubusercontent.com/buinq/imageServer/main/img/image-20230204013043779.png"
+                             class="avatar avatar-sm border-radius-sm" height="35">
+                    </th:block>
+                    <th:block th:if="${post.imageUrl != null}">
+                        <img th:src="${post.imageUrl}"
+                             class="avatar avatar-sm border-radius-sm" style=" border-radius: 70%;"
+                             height="35">
+                    </th:block>
+                    </div>
+                    <div class="col-auto">
                         <p class="card-text" th:text="|${post.nickName}|"></p>
                     </div>
                     <div class="col-auto">

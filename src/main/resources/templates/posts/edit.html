@@ -91,31 +91,44 @@
                 content: editor.getHTML(),
                 category: document.querySelector('#input-category').value
             };
+
             if(data.title.length>=60){
-                alert("제목은 60자를 넘을 수 없습니다.");
-                document.querySelector("input[name=title]").focus();
+                $('#alertMessage').text("제목은 60자를 넘을 수 없습니다.");
+                $('#alertModal').modal('show');
                 return
             }
+
             if (data.category == 0) {
-                alert("카테고리 선택은 필수입니다.")
-                document.querySelector("select[name=category]").focus();
+                $('#alertMessage').text("카테고리 선택은 필수 입니다.");
+                $('#alertModal').modal('show');
                 return;
             }
+            var con_check = false;
 
-            axios.put("/api/v1/posts/" + postId ,
-                JSON.stringify(data), {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                }
-            ).then((response) => {
-                alert("수정 성공");
-                history.back();
-            }).catch((error) => {
-                console.log(error);
-                $('#alertMessage').text(error.response.data.result);
-                $('#alertModal').modal('show');
+            console.log(data);
+            $('#askMessage').text("게시글을 수정 하시겠습니까?");
+            $('#askModal').modal('show');
+
+            var confirmBtn = document.getElementById('confirm-Btn');
+            confirmBtn.addEventListener("click", function() {
+                con_check = true;
+                if (con_check === true) {
+                    axios.put("/api/v1/posts/" + postId ,
+                        JSON.stringify(data), {
+                            headers: {
+                                'Content-Type': 'application/json',
+                            }
+                        }
+                    ).then((response) => {
+                        history.back();
+                    }).catch((error) => {
+                        console.log(error);
+                        $('#alertMessage').text(error.response.data.result);
+                        $('#alertModal').modal('show');
+                    });
+                };
             });
+
 
         }
     };
