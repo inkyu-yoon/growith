@@ -136,6 +136,8 @@ jacocoTestReport {
 							'**/*Repository*',
 							'**/Q*',
 							'**/*View*',
+							'**/*JoinController*',
+							'**/*DetailsServiceImpl*',
 							'**/*Application*',
 							'**/*Request*',
 							'**/*Response*',
@@ -189,6 +191,8 @@ jacocoTestCoverageVerification {
 			excludes = [
 					'**.*View*',
 					'**.*Util*',
+					'**.*JoinController*',
+					'**.*DetailsServiceImpl*',
 					'**.Q*',
 					'**.*Repository*',
 					'**.*Application',

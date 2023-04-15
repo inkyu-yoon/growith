@@ -112,6 +112,23 @@ class UserServiceTest {
 
             assertDoesNotThrow(() -> userService.updateUser(userName, anyLong(), userUpdateRequest));
 
+            verify(userRepository,atLeastOnce()).findById(anyLong());
+
+        }
+
+        @Test
+        @DisplayName("회원 정보 수정 성공 테스트 (이미 본인이 쓰고있는 닉네임으로 요청시 성공)")
+        public void updateUserSuccess2(){
+
+            given(userRepository.findById(anyLong()))
+                    .willReturn(Optional.of(mockUser));
+            given(mockUser.checkNickName(userUpdateRequest))
+                    .willReturn(true);
+
+            assertDoesNotThrow(() -> userService.updateUser(userName, anyLong(), userUpdateRequest));
+
+            verify(userRepository,atLeastOnce()).findById(anyLong());
+
         }
 
         @Test
@@ -152,6 +169,8 @@ class UserServiceTest {
                     .willReturn(Optional.of(mockUser));
             given(userUpdateRequest.getNickName())
                     .willReturn("nickName");
+            given(mockUser.checkNickName(userUpdateRequest))
+                    .willReturn(false);
             when(userRepository.existsByNickName("nickName"))
                     .thenReturn(true);
 

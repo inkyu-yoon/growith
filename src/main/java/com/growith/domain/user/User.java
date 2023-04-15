@@ -155,6 +155,9 @@ public class User extends BaseEntity implements UserDetails {
                 .build();
     }
 
+    /**
+     * 닉네임 변경 요청 시, 이미 자신이 쓰고 있는 닉네임인 경우는 제외하기 위해
+     */
     public boolean checkNickName(UserUpdateRequest requestDto) {
         return this.nickName.equals(requestDto.getNickName());
     }
