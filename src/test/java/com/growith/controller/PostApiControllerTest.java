@@ -1,6 +1,10 @@
 package com.growith.controller;
 
 import com.google.gson.Gson;
+import com.growith.domain.comment.dto.CommentCreateRequest;
+import com.growith.domain.comment.dto.CommentGetResponse;
+import com.growith.domain.comment.dto.CommentResponse;
+import com.growith.domain.comment.dto.CommentUpdateRequest;
 import com.growith.domain.post.Category;
 import com.growith.domain.post.dto.*;
 import com.growith.domain.user.User;
@@ -35,6 +39,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.growith.global.exception.ErrorCode.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -52,6 +57,9 @@ class PostApiControllerTest {
     @Autowired
     WebApplicationContext wac;
 
+    @Autowired
+    Gson gson;
+
     @MockBean
     PostService postService;
     @MockBean
@@ -62,6 +70,19 @@ class PostApiControllerTest {
 
     @Value("${jwt.secret}")
     String secretKey;
+
+    Long postId;
+    Long commentId;
+    String userName;
+    String comment;
+    String token;
+    Cookie cookie;
+    PostResponse postResponse;
+    PostGetResponse postGetresponse;
+    CommentResponse commentResponse;
+    CommentCreateRequest commentCreateRequest;
+    CommentGetResponse commentGetResponse;
+    CommentUpdateRequest commentUpdateRequest;
 
     @BeforeEach
     public void setUpMockMvc() {
@@ -81,14 +102,19 @@ class PostApiControllerTest {
                         .imageUrl("imageUrl")
                         .userRole(UserRole.ROLE_USER)
                         .build());
-    }
 
-    @Nested
-    @DisplayName("게시글 조회 테스트")
-    class GetPostTest {
-        Long postId = 1L;
+        postId = 1L;
+        userName = "userName";
+        token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
+        cookie = new Cookie("jwt", token);
+        commentId = 1L;
+        comment = "comment";
 
-        PostGetResponse response = PostGetResponse.builder()
+        postResponse = PostResponse.builder()
+                .postId(postId)
+                .build();
+
+        postGetresponse = PostGetResponse.builder()
                 .postId(postId)
                 .title("title")
                 .content("content")
@@ -101,13 +127,39 @@ class PostApiControllerTest {
                 .view(0L)
                 .build();
 
+        commentResponse = CommentResponse.builder()
+                .comment(comment)
+                .commentId(commentId)
+                .build();
+
+        commentCreateRequest = CommentCreateRequest.builder()
+                .comment("comment")
+                .build();
+
+        commentGetResponse = CommentGetResponse.builder()
+                .commentId(commentId)
+                .comment(comment)
+                .createdDate("1일전")
+                .imageUrl("imageUrl")
+                .userName(userName)
+                .replySize(1)
+                .build();
+
+        commentUpdateRequest = CommentUpdateRequest.builder()
+                .comment(comment)
+                .build();
+    }
+
+    @Nested
+    @DisplayName("게시글 조회 테스트")
+    class GetPostTest {
+
         @Test
         @DisplayName("게시글 페이지 조회 성공 테스트")
         void getPageSuccess() throws Exception {
 
-
             List<PostGetResponse> posts = new ArrayList<>();
-            posts.add(response);
+            posts.add(postGetresponse);
 
             Page<PostGetResponse> postsPage = new PageImpl<>(posts);
 
@@ -138,7 +190,7 @@ class PostApiControllerTest {
 
 
             given(postService.getPost(postId))
-                    .willReturn(response);
+                    .willReturn(postGetresponse);
 
             mockMvc.perform(get("/api/v1/posts/" + postId))
                     .andDo(print())
@@ -164,7 +216,7 @@ class PostApiControllerTest {
 
 
             when(postService.getPost(postId))
-                    .thenThrow(new AppException(ErrorCode.POST_NOT_FOUND));
+                    .thenThrow(new AppException(POST_NOT_FOUND));
 
             mockMvc.perform(get("/api/v1/posts/" + postId))
                     .andDo(print())
@@ -217,21 +269,13 @@ class PostApiControllerTest {
     @Nested
     @DisplayName("게시글 생성 테스트")
     class CreatePostTest {
-
-        String userName = "userName";
-        Long postId = 1L;
-        PostResponse response = new PostResponse(postId);
         PostCreateRequest request = new PostCreateRequest("title", "content", Category.QNA);
-
-        String token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
-        Cookie cookie = new Cookie("jwt", token);
-        Gson gson = new Gson();
 
         @Test
         @DisplayName("게시글 생성 성공 테스트")
         void createPostSuccess() throws Exception {
             given(postService.createPost(anyString(), any()))
-                    .willReturn(response);
+                    .willReturn(postResponse);
 
             mockMvc.perform(post("/api/v1/posts")
                             .cookie(cookie)
@@ -251,7 +295,7 @@ class PostApiControllerTest {
         void createPostError() throws Exception {
 
             when(postService.createPost(anyString(), any(PostCreateRequest.class)))
-                    .thenThrow(new AppException(ErrorCode.USER_NOT_FOUND));
+                    .thenThrow(new AppException(USER_NOT_FOUND));
 
             mockMvc.perform(post("/api/v1/posts")
                             .cookie(cookie)
@@ -286,22 +330,14 @@ class PostApiControllerTest {
 
     @Nested
     @DisplayName("게시글 수정 테스트")
-    class UpdatePostTest{
-
-        String userName = "userName";
-        Long postId = 1L;
-        PostResponse response = new PostResponse(postId);
+    class UpdatePostTest {
         PostUpdateRequest request = new PostUpdateRequest("title", "content", Category.QNA);
-
-        String token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
-        Cookie cookie = new Cookie("jwt", token);
-        Gson gson = new Gson();
 
         @Test
         @DisplayName("게시글 수정 성공 테스트")
         void updatePostSuccess() throws Exception {
-            given(postService.updatePost(anyLong(), anyString(),any(PostUpdateRequest.class)))
-                    .willReturn(response);
+            given(postService.updatePost(anyLong(), anyString(), any(PostUpdateRequest.class)))
+                    .willReturn(postResponse);
 
             mockMvc.perform(put("/api/v1/posts/" + postId)
                             .cookie(cookie)
@@ -319,8 +355,8 @@ class PostApiControllerTest {
         @DisplayName("게시글 수정 에러 테스트 (게시글을 찾을 수 없는 경우)")
         void updatePostError1() throws Exception {
 
-            when(postService.updatePost(anyLong(), anyString(),any(PostUpdateRequest.class)))
-                    .thenThrow(new AppException(ErrorCode.POST_NOT_FOUND));
+            when(postService.updatePost(anyLong(), anyString(), any(PostUpdateRequest.class)))
+                    .thenThrow(new AppException(POST_NOT_FOUND));
 
             mockMvc.perform(put("/api/v1/posts/" + postId)
                             .cookie(cookie)
@@ -338,8 +374,8 @@ class PostApiControllerTest {
         @DisplayName("게시글 수정 에러 테스트 (회원을 찾을 수 없는 경우)")
         void updatePostError2() throws Exception {
 
-            when(postService.updatePost(anyLong(), anyString(),any(PostUpdateRequest.class)))
-                    .thenThrow(new AppException(ErrorCode.USER_NOT_FOUND));
+            when(postService.updatePost(anyLong(), anyString(), any(PostUpdateRequest.class)))
+                    .thenThrow(new AppException(USER_NOT_FOUND));
 
             mockMvc.perform(put("/api/v1/posts/" + postId)
                             .cookie(cookie)
@@ -357,8 +393,8 @@ class PostApiControllerTest {
         @DisplayName("게시글 수정 에러 테스트 (삭제 요청자가 본인이 아닌 경우)")
         void updatePostError3() throws Exception {
 
-            when(postService.updatePost(anyLong(), anyString(),any(PostUpdateRequest.class)))
-                    .thenThrow(new AppException(ErrorCode.USER_NOT_MATCH));
+            when(postService.updatePost(anyLong(), anyString(), any(PostUpdateRequest.class)))
+                    .thenThrow(new AppException(USER_NOT_MATCH));
 
             mockMvc.perform(put("/api/v1/posts/" + postId)
                             .cookie(cookie)
@@ -371,6 +407,7 @@ class PostApiControllerTest {
                     .andExpect(jsonPath("$.result").exists());
 
         }
+
         @Test
         @DisplayName("게시글 수정 에러 테스트 (BindingError 발생)")
         void updatePostError4() throws Exception {
@@ -393,21 +430,12 @@ class PostApiControllerTest {
 
     @Nested
     @DisplayName("게시글 삭제 테스트")
-    class DeletePostTest{
-
-        String userName = "userName";
-        Long postId = 1L;
-        PostResponse response = new PostResponse(postId);
-
-        String token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
-        Cookie cookie = new Cookie("jwt", token);
-
+    class DeletePostTest {
         @Test
         @DisplayName("게시글 삭제 성공 테스트")
         void deletePostSuccess() throws Exception {
             given(postService.deletePost(anyLong(), anyString()))
-                    .willReturn(response);
-
+                    .willReturn(postResponse);
             mockMvc.perform(delete("/api/v1/posts/" + postId)
                             .cookie(cookie))
                     .andDo(print())
@@ -419,11 +447,11 @@ class PostApiControllerTest {
         }
 
         @Test
-        @DisplayName("게시글 생성 에러 테스트 (게시글을 찾을 수 없는 경우)")
+        @DisplayName("게시글 삭제 에러 테스트 (게시글을 찾을 수 없는 경우)")
         void deletePostError1() throws Exception {
 
             when(postService.deletePost(anyLong(), anyString()))
-                    .thenThrow(new AppException(ErrorCode.POST_NOT_FOUND));
+                    .thenThrow(new AppException(POST_NOT_FOUND));
 
             mockMvc.perform(delete("/api/v1/posts/" + postId)
                             .cookie(cookie))
@@ -436,11 +464,11 @@ class PostApiControllerTest {
         }
 
         @Test
-        @DisplayName("게시글 생성 에러 테스트 (회원을 찾을 수 없는 경우)")
+        @DisplayName("게시글 삭제 에러 테스트 (회원을 찾을 수 없는 경우)")
         void deletePostError2() throws Exception {
 
             when(postService.deletePost(anyLong(), anyString()))
-                    .thenThrow(new AppException(ErrorCode.USER_NOT_FOUND));
+                    .thenThrow(new AppException(USER_NOT_FOUND));
 
             mockMvc.perform(delete("/api/v1/posts/" + postId)
                             .cookie(cookie))
@@ -453,11 +481,11 @@ class PostApiControllerTest {
         }
 
         @Test
-        @DisplayName("게시글 생성 에러 테스트 (삭제 요청자가 본인이 아닌 경우)")
+        @DisplayName("게시글 삭제 에러 테스트 (삭제 요청자가 본인이 아닌 경우)")
         void deletePostError3() throws Exception {
 
             when(postService.deletePost(anyLong(), anyString()))
-                    .thenThrow(new AppException(ErrorCode.USER_NOT_MATCH));
+                    .thenThrow(new AppException(USER_NOT_MATCH));
 
             mockMvc.perform(delete("/api/v1/posts/" + postId)
                             .cookie(cookie))
@@ -469,4 +497,229 @@ class PostApiControllerTest {
 
         }
     }
+
+    @Nested
+    @DisplayName("댓글 등록 테스트")
+    class writeComment {
+
+        @Test
+        @DisplayName("댓글 등록 성공 테스트")
+        void writeCommentSuccess() throws Exception {
+            given(commentService.createComment(anyLong(), anyString(), any(CommentCreateRequest.class)))
+                    .willReturn(commentResponse);
+
+            mockMvc.perform(post("/api/v1/posts/" + postId + "/comments")
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(commentCreateRequest)))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("SUCCESS"))
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result.commentId").value(commentId))
+                    .andExpect(jsonPath("$.result.comment").value(comment));
+        }
+
+        @Test
+        @DisplayName("댓글 등록 실패 테스트(가입된 회원이 아닌 경우)")
+        void writeCommentError1() throws Exception {
+            when(commentService.createComment(anyLong(), anyString(), any(CommentCreateRequest.class)))
+                    .thenThrow(new AppException(USER_NOT_FOUND));
+
+            mockMvc.perform(post("/api/v1/posts/" + postId + "/comments")
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(commentCreateRequest)))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").exists());
+        }
+
+        @Test
+        @DisplayName("댓글 등록 실패 테스트(게시글이 존재하지 않는 경우)")
+        void writeCommentError2() throws Exception {
+            when(commentService.createComment(anyLong(), anyString(), any(CommentCreateRequest.class)))
+                    .thenThrow(new AppException(POST_NOT_FOUND));
+
+            mockMvc.perform(post("/api/v1/posts/" + postId + "/comments")
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(commentCreateRequest)))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").exists());
+        }
+    }
+
+    @Nested
+    @DisplayName("댓글 조회 테스트")
+    class getAllComment {
+
+        @Test
+        @DisplayName("댓글 조회 성공 테스트")
+        void getAllCommentSuccess() throws Exception {
+            given(commentService.getAllComments(anyLong()))
+                    .willReturn(List.of(commentGetResponse));
+
+            mockMvc.perform(get("/api/v1/posts/" + postId + "/comments")
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(commentCreateRequest)))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("SUCCESS"))
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result[0].commentId").value(commentId))
+                    .andExpect(jsonPath("$.result[0].comment").value(comment))
+                    .andExpect(jsonPath("$.result[0].userName").value(userName))
+                    .andExpect(jsonPath("$.result[0].createdDate").exists())
+                    .andExpect(jsonPath("$.result[0].imageUrl").exists())
+                    .andExpect(jsonPath("$.result[0].replySize").exists());
+        }
+
+        @Test
+        @DisplayName("댓글 조회 실패 (게시글이 존재하지 않는 경우)")
+        void getAllCommentError() throws Exception {
+            when(commentService.getAllComments(anyLong()))
+                    .thenThrow(new AppException(POST_NOT_FOUND));
+
+            mockMvc.perform(get("/api/v1/posts/" + postId + "/comments")
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(commentCreateRequest)))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").exists());
+        }
+    }
+
+    @Nested
+    @DisplayName("댓글 삭제 테스트")
+    class DeleteCommentTest {
+
+        @Test
+        @DisplayName("댓글 삭제 성공 테스트")
+        void deleteCommentSuccess() throws Exception {
+            given(commentService.deleteComment(anyLong(), anyString(), anyLong()))
+                    .willReturn(commentResponse);
+
+            mockMvc.perform(delete("/api/v1/posts/" + postId + "/comments/" + commentId)
+                            .cookie(cookie))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("SUCCESS"))
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result.commentId").value(commentId))
+                    .andExpect(jsonPath("$.result.comment").value(comment));
+        }
+
+        @Test
+        @DisplayName("댓글 삭제 실패")
+        void deleteCommentError() throws Exception {
+            when(commentService.deleteComment(anyLong(), anyString(), anyLong()))
+                    .thenThrow(new AppException(USER_NOT_FOUND));
+
+            mockMvc.perform(delete("/api/v1/posts/" + postId + "/comments/" + commentId)
+                            .cookie(cookie))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").exists());
+        }
+
+    }
+
+    @Nested
+    @DisplayName("댓글 수정 테스트")
+    class UpdateCommentTest {
+
+        @Test
+        @DisplayName("댓글 수정 성공 테스트")
+        void updateCommentSuccess() throws Exception {
+            given(commentService.updateComment(anyLong(), anyString(), anyLong(), any(CommentUpdateRequest.class)))
+                    .willReturn(commentResponse);
+
+            mockMvc.perform(put("/api/v1/posts/" + postId + "/comments/" + commentId)
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(commentUpdateRequest)))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("SUCCESS"))
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result.commentId").value(commentId))
+                    .andExpect(jsonPath("$.result.comment").value(comment));
+        }
+
+        @Test
+        @DisplayName("댓글 수정 실패")
+        void updateCommentError() throws Exception {
+            when(commentService.updateComment(anyLong(), anyString(), anyLong(), any(CommentUpdateRequest.class)))
+                    .thenThrow(new AppException(USER_NOT_FOUND));
+
+            mockMvc.perform(put("/api/v1/posts/" + postId + "/comments/" + commentId)
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(commentUpdateRequest)))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").exists());
+        }
+    }
+
+    @Nested
+    @DisplayName("대댓글 등록 테스트")
+    class writeCommentReply {
+
+        @Test
+        @DisplayName("대댓글 등록 성공 테스트")
+        void writeCommentReplySuccess() throws Exception {
+            given(commentService.createCommentReply(anyLong(), anyString(), anyLong(), any(CommentCreateRequest.class)))
+                    .willReturn(commentResponse);
+
+            mockMvc.perform(post("/api/v1/posts/" + postId + "/comments/"+commentId)
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(commentCreateRequest)))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("SUCCESS"))
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result.commentId").value(commentId))
+                    .andExpect(jsonPath("$.result.comment").value(comment));
+        }
+
+        @Test
+        @DisplayName("대댓글 등록 실패 테스트")
+        void writeCommentReplyError1() throws Exception {
+            when(commentService.createCommentReply(anyLong(), anyString(), anyLong(), any(CommentCreateRequest.class)))
+                    .thenThrow(new AppException(USER_NOT_FOUND));
+
+            mockMvc.perform(post("/api/v1/posts/" + postId + "/comments/"+commentId)
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(gson.toJson(commentCreateRequest)))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").exists());
+        }
+
+    }
+
 }
