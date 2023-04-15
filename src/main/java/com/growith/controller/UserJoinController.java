@@ -34,7 +34,7 @@ public class UserJoinController {
 
         String jwt = userJoinService.login(userInfo);
 
-        CookieUtil.setCookie(response, JWT_COOKIE_NAME,jwt,COOKIE_AGE);
+        CookieUtil.setCookie(response, JWT_COOKIE_NAME,jwt, JWT_COOKIE_AGE);
 
         return "redirect:/";
     }

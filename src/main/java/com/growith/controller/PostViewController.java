@@ -7,6 +7,8 @@ import com.growith.domain.post.dto.PostGetResponse;
 import com.growith.service.CommentService;
 import com.growith.service.PostService;
 import com.growith.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -87,7 +89,8 @@ public class PostViewController {
     }
 
     @GetMapping("/posts/{postId}")
-    public String read(@PathVariable(name = "postId") Long postId, Model model) {
+    public String read(@PathVariable(name = "postId") Long postId, Model model, HttpServletRequest req, HttpServletResponse res) {
+        postService.increaseView(postId, req, res);
         PostGetResponse post = postService.getPost(postId);
         List<CommentGetResponse> comments = commentService.getAllComments(postId);
         model.addAttribute("post", post);
