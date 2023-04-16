@@ -33,9 +33,9 @@
                 </a>
             </div>
             <div align="right" class="emoticon mb-3 mx-3">
-                <i class="fa fa-thumbs-o-up" style="font-size:20px"></i> 1
-                <i class="	fa fa-comment-o" style="font-size:20px"></i> <div th:text="${post.numOfComments}" style="display: inline"></div>
-                <i class="	fa fa-eye" style="font-size:20px"></i> <div th:text="${post.view}" style="display: inline"></div>
+                <i class="fas fa-sun" style="font-size:15px;color: #e0a800"></i> <div th:text="${post.numOfLikes}" style="display: inline;color: #e0a800"></div>
+                <i class="	fa fa-leaf" style="font-size:15px;color: #5cb85c"></i> <div th:text="${post.numOfComments}" style="display: inline;color: #5cb85c"></div>
+                <i class="	far fa-eye" style="font-size:15px"></i> <div th:text="${post.view}" style="display: inline"></div>
             </div>
         </div>
     </th:block>

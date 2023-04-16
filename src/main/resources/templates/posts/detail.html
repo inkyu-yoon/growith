@@ -59,7 +59,7 @@
                                     <p class="mb-0 text" style="font-weight: bold" th:text="|${post.nickName}|"></p>
                                     <p class="text-xs  mb-0" style="font-size: 0.8rem;color: grey"
                                        th:text="|${post.createdDate}|"></p>
-                                    <i class="	fa fa-eye" style="font-size:20px"></i>
+                                    <i class="	far fa-eye" style="font-size:15px"></i>
                                     <div th:text="${post.view}" style="display: inline"></div>
                                 </div>
                                 <div style="margin-left: 5px">
@@ -111,6 +111,11 @@
                     <!--                        </div>-->
                 </div>
                 <br>
+
+                <div class="d-flex justify-content-center mb-3">
+                    <button type="button" class="btn btn-outline-light"
+                            th:onclick="|post.addLike(${post.postId})|">  <i class="fas fa-sun" style="font-size:20px;color: #e0a800"></i> <div th:text="${post.totalNumOfLikes}" style="display: inline;color: #e0a800"></div></button>
+                </div>
                 <div class="d-flex justify-content-center mb-3">
                     <form action="/posts/qna" method="get">
                         <button
@@ -135,8 +140,11 @@
 
 
             <div class="card bg-light  my-4">
-                <div class="card-header bi bi-chat-dots" th:text="|${post.totalNumOfComments} Comments|">
+                <div class="card-header bi bi-chat-dots d-flex" >
+                    <p class="mx-1 my-3" th:text="|${post.totalNumOfComments} Comments|"></p>
+                    <i class="	fa fa-leaf my-3" style="font-size:20px;color: #5cb85c"></i>
                 </div>
+
                 <ul class="list-group-flush">
                     <th:block th:each="comment : ${comments}">
                         <li th:id="|comments-${comment.commentId}|" class="list-group-item">
@@ -464,8 +472,23 @@
                     });
                 };
             });
-        }
+        },
+        addLike: function (postId) {
 
+            axios.post("/api/v1/posts/" + postId + "/likes",
+                null, { // dto 처럼 만든 객체 data를 stringify 함수로 JSON 형식으로 만든다.
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            ).then((response) => {
+                window.location.href = '/posts/' + postId;
+            }).catch((error) => {
+                console.log(error)
+                $('#alertMessage').text(error.response.data.result);
+                $('#alertModal').modal('show');
+            });
+        }
     };
 
 </script>

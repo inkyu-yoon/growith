@@ -19,6 +19,7 @@ public class PostGetListResponse {
     private String imageUrl;
     private Long view;
     private int numOfComments;
+    private int numOfLikes;
 
     public PostGetListResponse(Post post, User user) {
         this.postId = post.getId();
@@ -28,6 +29,7 @@ public class PostGetListResponse {
         this.nickName = user.getNickName();
         this.view = post.getView();
         this.numOfComments = post.getComments().size();
+        this.numOfLikes = post.getLikes().size();
         this.imageUrl = user.getImageUrl();
     }
 }

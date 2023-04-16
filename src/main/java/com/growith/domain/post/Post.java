@@ -2,6 +2,7 @@ package com.growith.domain.post;
 
 import com.growith.domain.BaseEntity;
 import com.growith.domain.comment.Comment;
+import com.growith.domain.likes.PostLike;
 import com.growith.domain.post.dto.PostGetResponse;
 import com.growith.domain.post.dto.PostResponse;
 import com.growith.domain.post.dto.PostUpdateRequest;
@@ -46,6 +47,9 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post")
+    private List<PostLike> likes = new ArrayList<>();
+
     @Builder
     public Post(String title, String content, Category category, User user, Long view) {
         Assert.hasText(title, "title must not be empty");
@@ -74,6 +78,7 @@ public class Post extends BaseEntity {
                 .lastModifiedDate(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(Timestamp.valueOf(this.getLastModifiedDate())))
                 .view(this.view)
                 .totalNumOfComments(this.getComments().size())
+                .totalNumOfLikes(this.likes.size())
                 .build();
     }
 

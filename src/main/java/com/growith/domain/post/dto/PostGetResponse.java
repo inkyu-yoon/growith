@@ -22,5 +22,6 @@ public class PostGetResponse {
     private String imageUrl;
     private Long view;
     private int totalNumOfComments;
+    private int totalNumOfLikes;
 
 }

@@ -4,10 +4,12 @@ import com.growith.domain.comment.dto.CommentCreateRequest;
 import com.growith.domain.comment.dto.CommentGetResponse;
 import com.growith.domain.comment.dto.CommentResponse;
 import com.growith.domain.comment.dto.CommentUpdateRequest;
+import com.growith.domain.likes.dto.LikeResponse;
 import com.growith.domain.post.Category;
 import com.growith.domain.post.dto.*;
 import com.growith.global.Response;
 import com.growith.service.CommentService;
+import com.growith.service.PostLikeService;
 import com.growith.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ public class PostApiController {
 
     private final PostService postService;
     private final CommentService commentService;
+    private final PostLikeService likeService;
 
     @GetMapping
     public ResponseEntity<Response<Page<PostGetResponse>>> getAll(Pageable pageable) {
@@ -110,4 +113,11 @@ public class PostApiController {
         return ResponseEntity.ok(Response.success(response));
     }
 
+    @PostMapping("/{postId}/likes")
+    public ResponseEntity<Response<LikeResponse>> changePostLike(Authentication authentication, @PathVariable(name = "postId") Long postId) {
+        String userName = authentication.getName();
+        LikeResponse response = likeService.addLike(userName, postId);
+
+        return ResponseEntity.ok(Response.success(response));
+    }
 }
