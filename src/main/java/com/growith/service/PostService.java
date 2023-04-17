@@ -12,6 +12,7 @@ import com.growith.global.util.TextParsingUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -73,19 +74,22 @@ public class PostService {
          */
         String viewHistory = CookieUtil.getCookie(req, "viewHistory");
 
-        if (StringUtils.hasText(viewHistory)) {
-            HashSet<String> history = TextParsingUtil.parsingViewHistory(viewHistory);
+        // 쿠키가 존재하나, 해당 postId 기록이 없는 경우 조회수 증가
+        if (!hasHistory(postId, viewHistory)) {
+            foundPost.increaseView();
+            CookieUtil.setCookie(res, "viewHistory", String.format("%s%d_", viewHistory, postId), VIEW_HISTORY_COOKIE_AGE);
 
-            if (!history.contains(String.valueOf(postId))) {
-
-                foundPost.increaseView();
-
-                CookieUtil.setCookie(res, "viewHistory", String.format("%s%d_", viewHistory, postId), VIEW_HISTORY_COOKIE_AGE);
-            }
-        }else{
-            CookieUtil.setCookie(res,"viewHistory",String.format("%d_",postId), VIEW_HISTORY_COOKIE_AGE);
+        // 쿠키 자체가 존재하지 않는 경우 조회수 증가(어떠한 게시글도 읽지 않았다는 의미이므로)
+        } else {
+            foundPost.increaseView();
+            CookieUtil.setCookie(res, "viewHistory", String.format("%d_", postId), VIEW_HISTORY_COOKIE_AGE);
         }
 
+    }
+
+    @NotNull
+    private static boolean hasHistory(Long postId, String viewHistory) {
+        return StringUtils.hasText(viewHistory) && TextParsingUtil.parsingViewHistory(viewHistory).contains(String.valueOf(postId));
     }
 
     @Transactional
