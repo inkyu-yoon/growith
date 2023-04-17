@@ -24,6 +24,7 @@ import java.util.HashSet;
 import static com.growith.global.exception.ErrorCode.POST_NOT_FOUND;
 import static com.growith.global.exception.ErrorCode.USER_NOT_FOUND;
 import static com.growith.global.util.constant.CookieConstants.VIEW_HISTORY_COOKIE_AGE;
+import static com.growith.global.util.constant.CookieConstants.VIEW_HISTORY_COOKIE_NAME;
 
 @Service
 @RequiredArgsConstructor
@@ -72,17 +73,17 @@ public class PostService {
          * 쿠키에서 번호와 일치하는 값이 나오면 증가 안시킴
          * 번호와 일치하는 값이 없을 경우 조회수 증가 후 쿠키 추가
          */
-        String viewHistory = CookieUtil.getCookie(req, "viewHistory");
+        String viewHistory = CookieUtil.getCookie(req, VIEW_HISTORY_COOKIE_NAME);
 
         // 쿠키가 존재하나, 해당 postId 기록이 없는 경우 조회수 증가
         if (!hasHistory(postId, viewHistory)) {
             foundPost.increaseView();
-            CookieUtil.setCookie(res, "viewHistory", String.format("%s%d_", viewHistory, postId), VIEW_HISTORY_COOKIE_AGE);
+            CookieUtil.setCookie(res, VIEW_HISTORY_COOKIE_NAME, String.format("%s%d_", viewHistory, postId), VIEW_HISTORY_COOKIE_AGE);
 
         // 쿠키 자체가 존재하지 않는 경우 조회수 증가(어떠한 게시글도 읽지 않았다는 의미이므로)
-        } else {
+        } else if(!StringUtils.hasText(viewHistory)) {
             foundPost.increaseView();
-            CookieUtil.setCookie(res, "viewHistory", String.format("%d_", postId), VIEW_HISTORY_COOKIE_AGE);
+            CookieUtil.setCookie(res, VIEW_HISTORY_COOKIE_NAME, String.format("%d_", postId), VIEW_HISTORY_COOKIE_AGE);
         }
 
     }
