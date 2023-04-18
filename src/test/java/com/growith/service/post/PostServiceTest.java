@@ -10,18 +10,23 @@ import com.growith.domain.user.User;
 import com.growith.domain.user.UserRepository;
 import com.growith.global.exception.AppException;
 import com.growith.global.exception.ErrorCode;
+import com.growith.global.util.CookieUtil;
+import com.growith.global.util.TextParsingUtil;
 import com.growith.service.PostService;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.internal.MockedStaticImpl;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,10 +54,21 @@ class PostServiceTest {
 
     @Mock
     private Post mockPost;
+    String userName;
+    Long postId;
+    String diffUserName;
+
+    @BeforeEach
+    void setUp() {
+        userName = "userName";
+        postId = 1L;
+        diffUserName = "diffUserName";
+
+    }
 
     @Nested
     @DisplayName("게시글 조회 테스트")
-    class getPostTest{
+    class getPostTest {
 
         PageRequest pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
 
@@ -68,7 +84,7 @@ class PostServiceTest {
 
         @Test
         @DisplayName("게시글 리스트 조회 성공")
-        void getList(){
+        void getList() {
             given(postRepository.findAll(pageable))
                     .willReturn(new PageImpl<>(List.of(mockPost)));
 
@@ -79,36 +95,34 @@ class PostServiceTest {
 
         @Test
         @DisplayName("게시글 카테고리별 리스트 조회 성공")
-        void getListByCategory(){
+        void getListByCategory() {
 
             Category category = Category.QNA;
 
-            given(postRepository.getPostsListByCategory(category,pageable))
+            given(postRepository.getPostsListByCategory(category, pageable))
                     .willReturn(new PageImpl<>(List.of(postGetListResponse)));
 
-            assertDoesNotThrow(() -> postService.getAllPostsByCategory(category,pageable));
+            assertDoesNotThrow(() -> postService.getAllPostsByCategory(category, pageable));
 
-            verify(postRepository, atLeastOnce()).getPostsListByCategory(category,pageable);
+            verify(postRepository, atLeastOnce()).getPostsListByCategory(category, pageable);
         }
 
         @Test
         @DisplayName("게시글 회원별 리스트 조회 성공")
-        void getListByUser(){
+        void getListByUser() {
 
-            String userName = "userName";
 
-            given(postRepository.getPostsListByUserName(userName,pageable))
+            given(postRepository.getPostsListByUserName(userName, pageable))
                     .willReturn(new PageImpl<>(List.of(postGetListResponse)));
 
-            assertDoesNotThrow(() -> postService.getAllPostsByUserName(userName,pageable));
+            assertDoesNotThrow(() -> postService.getAllPostsByUserName(userName, pageable));
 
-            verify(postRepository, atLeastOnce()).getPostsListByUserName(userName,pageable);
+            verify(postRepository, atLeastOnce()).getPostsListByUserName(userName, pageable);
         }
 
         @Test
         @DisplayName("게시글 단건 조회 성공")
-        void getSuccess(){
-            Long postId = 1L;
+        void getSuccess() {
 
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
@@ -120,8 +134,7 @@ class PostServiceTest {
 
         @Test
         @DisplayName("게시글 단건 조회 실패 (게시글이 존재하지 않은 경우)")
-        void getError(){
-            Long postId = 1L;
+        void getError() {
 
             when(postRepository.findById(postId))
                     .thenReturn(Optional.empty());
@@ -138,11 +151,10 @@ class PostServiceTest {
 
         @Mock
         PostCreateRequest postCreateRequest;
-        String userName = "userName";
 
         @Test
         @DisplayName("게시글 생성 성공 테스트")
-        void createSuccess(){
+        void createSuccess() {
             given(userRepository.findByUserName(userName))
                     .willReturn(Optional.of(mockUser));
             given(postCreateRequest.toEntity(mockUser))
@@ -160,7 +172,7 @@ class PostServiceTest {
 
         @Test
         @DisplayName("게시글 생성 실패 테스트")
-        void createError(){
+        void createError() {
             when(userRepository.findByUserName(userName))
                     .thenReturn(Optional.empty());
 
@@ -179,13 +191,9 @@ class PostServiceTest {
         @Mock
         PostUpdateRequest postUpdateRequest;
 
-        Long postId = 1L;
-        String userName = "userName";
-        String diffUserName = "diffUserName";
-
         @Test
         @DisplayName("게시글 수정 성공")
-        void updateSuccess(){
+        void updateSuccess() {
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
             given(userRepository.findByUserName(userName))
@@ -204,7 +212,7 @@ class PostServiceTest {
 
         @Test
         @DisplayName("게시글 수정 실패 (게시글이 존재하지 않는 경우)")
-        void updateError1(){
+        void updateError1() {
             when(postRepository.findById(postId))
                     .thenReturn(Optional.empty());
 
@@ -217,7 +225,7 @@ class PostServiceTest {
 
         @Test
         @DisplayName("게시글 수정 실패 (회원이 존재하지 않는 경우)")
-        void updateError2(){
+        void updateError2() {
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
 
@@ -234,7 +242,7 @@ class PostServiceTest {
 
         @Test
         @DisplayName("게시글 수정 실패 (요청자가 게시글 작성자가 아닌 경우)")
-        void updateError3(){
+        void updateError3() {
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
             given(userRepository.findByUserName(userName))
@@ -255,17 +263,15 @@ class PostServiceTest {
             verify(userRepository, atLeastOnce()).findByUserName(userName);
         }
     }
+
     @Nested
     @DisplayName("게시글 삭제 테스트")
     class DeletePostTest {
 
-        Long postId = 1L;
-        String userName = "userName";
-        String diffUserName = "diffUserName";
 
         @Test
         @DisplayName("게시글 삭제 성공")
-        void deleteSuccess(){
+        void deleteSuccess() {
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
             given(userRepository.findByUserName(userName))
@@ -284,7 +290,7 @@ class PostServiceTest {
 
         @Test
         @DisplayName("게시글 삭제 실패 (게시글이 존재하지 않는 경우)")
-        void deleteError1(){
+        void deleteError1() {
             when(postRepository.findById(postId))
                     .thenReturn(Optional.empty());
 
@@ -297,7 +303,7 @@ class PostServiceTest {
 
         @Test
         @DisplayName("게시글 삭제 실패 (회원이 존재하지 않는 경우)")
-        void deleteError2(){
+        void deleteError2() {
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
 
@@ -314,7 +320,7 @@ class PostServiceTest {
 
         @Test
         @DisplayName("게시글 삭제 실패 (요청자가 게시글 작성자가 아닌 경우)")
-        void deleteError3(){
+        void deleteError3() {
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
             given(userRepository.findByUserName(userName))
@@ -334,6 +340,74 @@ class PostServiceTest {
 
             verify(postRepository, atLeastOnce()).findById(postId);
             verify(userRepository, atLeastOnce()).findByUserName(userName);
+        }
+    }
+
+    @Nested
+    @DisplayName("조회수 증가 테스트")
+    class IncreaseViewTest {
+        String viewHistory = "viewHistory";
+
+        @Mock
+        HttpServletRequest httpServletRequest;
+        @Mock
+        HttpServletResponse httpServletResponse;
+        MockedStatic<CookieUtil> cookieUtilMockedStatic;
+        MockedStatic<TextParsingUtil> textParsingUtilMockedStatic;
+        @BeforeEach
+        void setUp(){
+            cookieUtilMockedStatic = mockStatic(CookieUtil.class);
+             textParsingUtilMockedStatic = mockStatic(TextParsingUtil.class);
+        }
+
+        @AfterEach
+        void close(){
+            cookieUtilMockedStatic.close();
+            textParsingUtilMockedStatic.close();
+        }
+
+        @Test
+        @DisplayName("조회수 증가 성공 테스트 (쿠키는 존재하나, 해당 게시글 방문 이력이 쿠키에 없는 경우)")
+        void increaseSuccess() {
+            given(postRepository.findById(postId))
+                    .willReturn(Optional.of(mockPost));
+            given(CookieUtil.getCookie(any(), anyString()))
+                    .willReturn(viewHistory);
+            given(TextParsingUtil.parsingViewHistory(viewHistory))
+                    .willReturn(new HashSet<>());
+
+            assertDoesNotThrow(() -> postService.increaseView(postId, httpServletRequest, httpServletResponse));
+
+            verify(postRepository, atLeastOnce()).findById(postId);
+            verify(mockPost,atLeastOnce()).increaseView();
+        }
+        @Test
+        @DisplayName("조회수 증가 성공 테스트 (쿠키가 존재하지 않는 경우)")
+        void increaseSuccess2() {
+            given(postRepository.findById(postId))
+                    .willReturn(Optional.of(mockPost));
+            given(CookieUtil.getCookie(any(), anyString()))
+                    .willReturn(null);
+
+            assertDoesNotThrow(() -> postService.increaseView(postId, httpServletRequest, httpServletResponse));
+
+            verify(postRepository, atLeastOnce()).findById(postId);
+            verify(mockPost,atLeastOnce()).increaseView();
+        }
+        @Test
+        @DisplayName("조회수 증가 실패 테스트 (쿠키는 존재하나, 해당 게시글 방문 이력이 쿠키에 있는 경우)")
+        void increaseError() {
+            given(postRepository.findById(postId))
+                    .willReturn(Optional.of(mockPost));
+            given(CookieUtil.getCookie(any(), anyString()))
+                    .willReturn(viewHistory);
+            given(TextParsingUtil.parsingViewHistory(viewHistory))
+                    .willReturn(new HashSet<>(List.of(String.valueOf(postId))));
+
+            assertDoesNotThrow(() -> postService.increaseView(postId, httpServletRequest, httpServletResponse));
+
+            verify(postRepository, atLeastOnce()).findById(postId);
+            verify(mockPost,never()).increaseView(); //increaseView 메서드 실행되지 않음
         }
     }
 }

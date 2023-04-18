@@ -33,7 +33,7 @@ public class PostApiController {
 
     private final PostService postService;
     private final CommentService commentService;
-    private final PostLikeService likeService;
+    private final PostLikeService postLikeService;
 
     @GetMapping
     public ResponseEntity<Response<Page<PostGetResponse>>> getAll(Pageable pageable) {
@@ -116,7 +116,7 @@ public class PostApiController {
     @PostMapping("/{postId}/likes")
     public ResponseEntity<Response<LikeResponse>> changePostLike(Authentication authentication, @PathVariable(name = "postId") Long postId) {
         String userName = authentication.getName();
-        LikeResponse response = likeService.addLike(userName, postId);
+        LikeResponse response = postLikeService.addLike(userName, postId);
 
         return ResponseEntity.ok(Response.success(response));
     }

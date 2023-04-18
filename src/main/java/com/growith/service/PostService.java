@@ -88,8 +88,7 @@ public class PostService {
 
     }
 
-    @NotNull
-    private static boolean hasHistory(Long postId, String viewHistory) {
+    public boolean hasHistory(Long postId, String viewHistory) {
         return StringUtils.hasText(viewHistory) && TextParsingUtil.parsingViewHistory(viewHistory).contains(String.valueOf(postId));
     }
 

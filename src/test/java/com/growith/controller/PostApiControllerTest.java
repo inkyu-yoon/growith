@@ -5,6 +5,7 @@ import com.growith.domain.comment.dto.CommentCreateRequest;
 import com.growith.domain.comment.dto.CommentGetResponse;
 import com.growith.domain.comment.dto.CommentResponse;
 import com.growith.domain.comment.dto.CommentUpdateRequest;
+import com.growith.domain.likes.dto.LikeResponse;
 import com.growith.domain.post.Category;
 import com.growith.domain.post.dto.*;
 import com.growith.domain.user.User;
@@ -15,6 +16,7 @@ import com.growith.global.exception.AppException;
 import com.growith.global.exception.ErrorCode;
 import com.growith.global.util.JwtUtil;
 import com.growith.service.CommentService;
+import com.growith.service.PostLikeService;
 import com.growith.service.PostService;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,6 +68,8 @@ class PostApiControllerTest {
     CommentService commentService;
     @MockBean
     UserDetailsService userDetailsService;
+    @MockBean
+    PostLikeService postLikeService;
 
 
     @Value("${jwt.secret}")
@@ -83,6 +87,7 @@ class PostApiControllerTest {
     CommentCreateRequest commentCreateRequest;
     CommentGetResponse commentGetResponse;
     CommentUpdateRequest commentUpdateRequest;
+    LikeResponse likeResponse;
 
     @BeforeEach
     public void setUpMockMvc() {
@@ -147,6 +152,10 @@ class PostApiControllerTest {
 
         commentUpdateRequest = CommentUpdateRequest.builder()
                 .comment(comment)
+                .build();
+
+        likeResponse = LikeResponse.builder()
+                .postId(postId)
                 .build();
     }
 
@@ -690,7 +699,7 @@ class PostApiControllerTest {
             given(commentService.createCommentReply(anyLong(), anyString(), anyLong(), any(CommentCreateRequest.class)))
                     .willReturn(commentResponse);
 
-            mockMvc.perform(post("/api/v1/posts/" + postId + "/comments/"+commentId)
+            mockMvc.perform(post("/api/v1/posts/" + postId + "/comments/" + commentId)
                             .cookie(cookie)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(gson.toJson(commentCreateRequest)))
@@ -709,10 +718,63 @@ class PostApiControllerTest {
             when(commentService.createCommentReply(anyLong(), anyString(), anyLong(), any(CommentCreateRequest.class)))
                     .thenThrow(new AppException(USER_NOT_FOUND));
 
-            mockMvc.perform(post("/api/v1/posts/" + postId + "/comments/"+commentId)
+            mockMvc.perform(post("/api/v1/posts/" + postId + "/comments/" + commentId)
                             .cookie(cookie)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(gson.toJson(commentCreateRequest)))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").exists());
+        }
+
+    }
+
+    @Nested
+    @DisplayName("게시글 좋아요 테스트")
+    class PostLikeTest {
+
+        @Test
+        @DisplayName("게시글 좋아요 성공 테스트")
+        void PostLikeSuccess() throws Exception {
+            given(postLikeService.addLike(anyString(), anyLong()))
+                    .willReturn(likeResponse);
+
+            mockMvc.perform(post("/api/v1/posts/" + postId + "/likes")
+                            .cookie(cookie))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("SUCCESS"))
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result.postId").value(postId));
+        }
+
+        @Test
+        @DisplayName("게시글 좋아요 실패 테스트 (가입된 회원이 아닌 경우)")
+        void PostLikeError1() throws Exception {
+
+            when(postLikeService.addLike(anyString(), anyLong()))
+                    .thenThrow(new AppException(USER_NOT_FOUND));
+
+            mockMvc.perform(post("/api/v1/posts/" + postId + "/likes")
+                            .cookie(cookie))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").exists());
+        }
+        @Test
+        @DisplayName("게시글 좋아요 실패 테스트 (게시글이 존재하지 않는 경우)")
+        void PostLikeError2() throws Exception {
+
+            when(postLikeService.addLike(anyString(), anyLong()))
+                    .thenThrow(new AppException(POST_NOT_FOUND));
+
+            mockMvc.perform(post("/api/v1/posts/" + postId + "/likes")
+                            .cookie(cookie))
                     .andDo(print())
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.message").exists())
