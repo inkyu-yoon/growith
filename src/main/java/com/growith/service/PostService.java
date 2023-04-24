@@ -12,14 +12,11 @@ import com.growith.global.util.TextParsingUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import java.util.HashSet;
 
 import static com.growith.global.exception.ErrorCode.POST_NOT_FOUND;
 import static com.growith.global.exception.ErrorCode.USER_NOT_FOUND;
@@ -76,20 +73,17 @@ public class PostService {
         String viewHistory = CookieUtil.getCookie(req, VIEW_HISTORY_COOKIE_NAME);
 
         // 쿠키가 존재하나, 해당 postId 기록이 없는 경우 조회수 증가
-        if (!hasHistory(postId, viewHistory)) {
-            foundPost.increaseView();
-            CookieUtil.setCookie(res, VIEW_HISTORY_COOKIE_NAME, String.format("%s%d_", viewHistory, postId), VIEW_HISTORY_COOKIE_AGE);
-
+        if (StringUtils.hasText(viewHistory)) {
+            if(!TextParsingUtil.parsingViewHistory(viewHistory).contains(String.valueOf(postId))){
+                foundPost.increaseView();
+                CookieUtil.setCookie(res, VIEW_HISTORY_COOKIE_NAME, String.format("%s%d_", viewHistory, postId), VIEW_HISTORY_COOKIE_AGE);
+            }
         // 쿠키 자체가 존재하지 않는 경우 조회수 증가(어떠한 게시글도 읽지 않았다는 의미이므로)
-        } else if(!StringUtils.hasText(viewHistory)) {
+        } else{
             foundPost.increaseView();
             CookieUtil.setCookie(res, VIEW_HISTORY_COOKIE_NAME, String.format("%d_", postId), VIEW_HISTORY_COOKIE_AGE);
         }
 
-    }
-
-    public boolean hasHistory(Long postId, String viewHistory) {
-        return StringUtils.hasText(viewHistory) && TextParsingUtil.parsingViewHistory(viewHistory).contains(String.valueOf(postId));
     }
 
     @Transactional

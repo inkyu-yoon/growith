@@ -9,7 +9,6 @@ import com.growith.domain.post.dto.PostUpdateRequest;
 import com.growith.domain.user.User;
 import com.growith.domain.user.UserRepository;
 import com.growith.global.exception.AppException;
-import com.growith.global.exception.ErrorCode;
 import com.growith.global.util.CookieUtil;
 import com.growith.global.util.TextParsingUtil;
 import com.growith.service.PostService;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.internal.MockedStaticImpl;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,8 +28,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.growith.global.exception.ErrorCode.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -140,7 +140,7 @@ class PostServiceTest {
                     .thenReturn(Optional.empty());
 
             AppException appException = assertThrows(AppException.class, () -> postService.getPost(postId));
-            assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.POST_NOT_FOUND);
+            assertThat(appException.getErrorCode()).isEqualTo(POST_NOT_FOUND);
             verify(postRepository, atLeastOnce()).findById(postId);
         }
     }
@@ -177,7 +177,7 @@ class PostServiceTest {
                     .thenReturn(Optional.empty());
 
             AppException appException = assertThrows(AppException.class, () -> postService.createPost(userName, postCreateRequest));
-            assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+            assertThat(appException.getErrorCode()).isEqualTo(USER_NOT_FOUND);
 
             verify(userRepository, atLeastOnce()).findByUserName(userName);
 
@@ -218,7 +218,7 @@ class PostServiceTest {
 
             AppException appException = assertThrows(AppException.class, () -> postService.updatePost(postId, userName, postUpdateRequest));
 
-            assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.POST_NOT_FOUND);
+            assertThat(appException.getErrorCode()).isEqualTo(POST_NOT_FOUND);
 
             verify(postRepository, atLeastOnce()).findById(postId);
         }
@@ -234,7 +234,7 @@ class PostServiceTest {
 
             AppException appException = assertThrows(AppException.class, () -> postService.updatePost(postId, userName, postUpdateRequest));
 
-            assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+            assertThat(appException.getErrorCode()).isEqualTo(USER_NOT_FOUND);
 
             verify(postRepository, atLeastOnce()).findById(postId);
             verify(userRepository, atLeastOnce()).findByUserName(userName);
@@ -252,12 +252,12 @@ class PostServiceTest {
             given(mockAuthorUser.getUsername())
                     .willReturn(diffUserName);
 
-            doThrow(new AppException(ErrorCode.USER_NOT_MATCH))
+            doThrow(new AppException(USER_NOT_MATCH))
                     .when(mockUser).checkAuth(diffUserName);
 
             AppException appException = assertThrows(AppException.class, () -> postService.updatePost(postId, userName, postUpdateRequest));
 
-            assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_MATCH);
+            assertThat(appException.getErrorCode()).isEqualTo(USER_NOT_MATCH);
 
             verify(postRepository, atLeastOnce()).findById(postId);
             verify(userRepository, atLeastOnce()).findByUserName(userName);
@@ -296,7 +296,7 @@ class PostServiceTest {
 
             AppException appException = assertThrows(AppException.class, () -> postService.deletePost(postId, userName));
 
-            assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.POST_NOT_FOUND);
+            assertThat(appException.getErrorCode()).isEqualTo(POST_NOT_FOUND);
 
             verify(postRepository, atLeastOnce()).findById(postId);
         }
@@ -312,7 +312,7 @@ class PostServiceTest {
 
             AppException appException = assertThrows(AppException.class, () -> postService.deletePost(postId, userName));
 
-            assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+            assertThat(appException.getErrorCode()).isEqualTo(USER_NOT_FOUND);
 
             verify(postRepository, atLeastOnce()).findById(postId);
             verify(userRepository, atLeastOnce()).findByUserName(userName);
@@ -331,12 +331,12 @@ class PostServiceTest {
                     .willReturn(diffUserName);
 
 
-            doThrow(new AppException(ErrorCode.USER_NOT_MATCH))
+            doThrow(new AppException(USER_NOT_MATCH))
                     .when(mockUser).checkAuth(diffUserName);
 
             AppException appException = assertThrows(AppException.class, () -> postService.deletePost(postId, userName));
 
-            assertThat(appException.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_MATCH);
+            assertThat(appException.getErrorCode()).isEqualTo(USER_NOT_MATCH);
 
             verify(postRepository, atLeastOnce()).findById(postId);
             verify(userRepository, atLeastOnce()).findByUserName(userName);
@@ -354,14 +354,15 @@ class PostServiceTest {
         HttpServletResponse httpServletResponse;
         MockedStatic<CookieUtil> cookieUtilMockedStatic;
         MockedStatic<TextParsingUtil> textParsingUtilMockedStatic;
+
         @BeforeEach
-        void setUp(){
+        void setUp() {
             cookieUtilMockedStatic = mockStatic(CookieUtil.class);
-             textParsingUtilMockedStatic = mockStatic(TextParsingUtil.class);
+            textParsingUtilMockedStatic = mockStatic(TextParsingUtil.class);
         }
 
         @AfterEach
-        void close(){
+        void close() {
             cookieUtilMockedStatic.close();
             textParsingUtilMockedStatic.close();
         }
@@ -379,24 +380,39 @@ class PostServiceTest {
             assertDoesNotThrow(() -> postService.increaseView(postId, httpServletRequest, httpServletResponse));
 
             verify(postRepository, atLeastOnce()).findById(postId);
-            verify(mockPost,atLeastOnce()).increaseView();
+            verify(mockPost, atLeastOnce()).increaseView();
         }
+
         @Test
-        @DisplayName("조회수 증가 성공 테스트 (쿠키가 존재하지 않는 경우)")
+        @DisplayName("조회수 증가 성공 테스트 (쿠키가 자체가 존재하지 않는 경우)")
         void increaseSuccess2() {
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
             given(CookieUtil.getCookie(any(), anyString()))
                     .willReturn(null);
 
+
             assertDoesNotThrow(() -> postService.increaseView(postId, httpServletRequest, httpServletResponse));
 
             verify(postRepository, atLeastOnce()).findById(postId);
-            verify(mockPost,atLeastOnce()).increaseView();
+            verify(mockPost, atLeastOnce()).increaseView();
         }
+
+        @Test
+        @DisplayName("조회수 증가 실패 테스트 (게시글이 존재하지 않는 경우)")
+        void increaseError1() {
+            given(postRepository.findById(postId))
+                    .willReturn(Optional.empty());
+
+            AppException exception = assertThrows(AppException.class, () -> postService.increaseView(postId, httpServletRequest, httpServletResponse));
+            assertThat(exception.getErrorCode()).isEqualTo(POST_NOT_FOUND);
+
+            verify(postRepository, atLeastOnce()).findById(postId);
+        }
+
         @Test
         @DisplayName("조회수 증가 실패 테스트 (쿠키는 존재하나, 해당 게시글 방문 이력이 쿠키에 있는 경우)")
-        void increaseError() {
+        void increaseError2() {
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
             given(CookieUtil.getCookie(any(), anyString()))
@@ -407,7 +423,9 @@ class PostServiceTest {
             assertDoesNotThrow(() -> postService.increaseView(postId, httpServletRequest, httpServletResponse));
 
             verify(postRepository, atLeastOnce()).findById(postId);
-            verify(mockPost,never()).increaseView(); //increaseView 메서드 실행되지 않음
+            verify(mockPost, never()).increaseView(); //increaseView 메서드 실행되지 않음
         }
+
+
     }
 }
