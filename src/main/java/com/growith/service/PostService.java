@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 import static com.growith.global.exception.ErrorCode.POST_NOT_FOUND;
 import static com.growith.global.exception.ErrorCode.USER_NOT_FOUND;
 import static com.growith.global.util.constant.CookieConstants.VIEW_HISTORY_COOKIE_AGE;
@@ -25,21 +27,22 @@ import static com.growith.global.util.constant.CookieConstants.VIEW_HISTORY_COOK
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
     public Page<PostGetResponse> getAllPosts(Pageable pageable) {
         return postRepository.findAll(pageable)
                 .map(post -> post.toPostGetResponse());
     }
-
+    @Transactional(readOnly = true)
     public Page<PostGetListResponse> getAllPostsByUserName(String userName, Pageable pageable) {
         return postRepository.getPostsListByUserName(userName, pageable);
     }
 
-    @Transactional
     public PostResponse createPost(String userName, PostCreateRequest postCreateRequest) {
         User foundUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
@@ -48,12 +51,12 @@ public class PostService {
 
         return savedPost.toPostResponse();
     }
-
+    @Transactional(readOnly = true)
     public Page<PostGetListResponse> getAllPostsByCategory(Category category, Pageable pageable) {
         return postRepository.getPostsListByCategory(category, pageable);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public PostGetResponse getPost(Long postId) {
         Post foundPost = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(POST_NOT_FOUND));
@@ -61,7 +64,11 @@ public class PostService {
         return foundPost.toPostGetResponse();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
+    public List<PostGetListResponse> getBestPosts() {
+        return postRepository.getBestPosts();
+    }
+
     public void increaseView(Long postId, HttpServletRequest req, HttpServletResponse res) {
         Post foundPost = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(POST_NOT_FOUND));
@@ -86,7 +93,6 @@ public class PostService {
 
     }
 
-    @Transactional
     public PostResponse deletePost(Long postId, String userName) {
         Post foundPost = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(POST_NOT_FOUND));
@@ -101,7 +107,6 @@ public class PostService {
         return foundPost.toPostResponse();
     }
 
-    @Transactional
     public PostResponse updatePost(Long postId, String userName, PostUpdateRequest requestDto) {
         Post foundPost = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(POST_NOT_FOUND));
@@ -115,4 +120,5 @@ public class PostService {
 
         return foundPost.toPostResponse();
     }
+
 }

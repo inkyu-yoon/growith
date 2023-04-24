@@ -8,6 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 import static com.growith.domain.post.QPost.post;
@@ -59,5 +63,22 @@ public class PostCustomRepositoryImpl implements PostCustomRepository{
                 .size();
 
         return new PageImpl<>(posts, pageable,total);
+    }
+
+    @Override
+    public List<PostGetListResponse> getBestPosts() {
+        LocalDate now = LocalDate.now(); // 현재 시간
+        LocalDateTime monday = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).atStartOfDay(); // 이번주 월요일
+        LocalDateTime sunday = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).atStartOfDay(); // 이번주 일요일
+
+        List<PostGetListResponse> posts = jpaQueryFactory.from(post)
+                .where(post.createdDate.between(monday,sunday).and(post.category.ne(Category.NOTICE)))
+                .join(user).on(user.id.eq(post.user.id))
+                .orderBy(post.likes.size().desc())
+                .limit(5)
+                .transform(groupBy(post.id)
+                        .list(Projections.constructor(PostGetListResponse.class, post, user)
+                        ));
+        return posts;
     }
 }

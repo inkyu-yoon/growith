@@ -32,8 +32,14 @@ public class PostViewController {
     private final CommentService commentService;
 
     @GetMapping("/")
-    public String home(Model model) {
+    public String home(Model model, Pageable pageable) {
         Long numberOfUsers = userService.countUser();
+        int maxSize = 5;
+        Page<PostGetListResponse> allPostsByCategory = postService.getAllPostsByCategory(Category.NOTICE, pageable);
+        List<PostGetListResponse> posts = allPostsByCategory.getContent().subList(0, (int) Math.min(maxSize, allPostsByCategory.getTotalElements()));
+        List<PostGetListResponse> bests = postService.getBestPosts();
+        model.addAttribute("posts", posts);
+        model.addAttribute("bests", bests);
         model.addAttribute("numberOfUsers", numberOfUsers);
         return "index";
     }

@@ -82,7 +82,7 @@
                             </div>
                             <div class="social">
                                 <a class="circle github"
-                                   th:onclick="'window.open(\'https://github.com/login/oauth/authorize?client_id=' + @{{clientId}(clientId=${@environment.getProperty('github.client-id')})} + '\')'">
+                                   th:onclick="'window.open(\'https://github.com/login/oauth/authorize?client_id=' + @{{clientId}(clientId=${@environment.getProperty('github.client-id')})} + '\',\'_self\')'">
                                     <i class="fa fa-github fa-fw"></i>
                                 </a>
                             </div>

@@ -28,7 +28,97 @@
             <th:block th:replace="~{layout/adbar :: adbarFragment}"></th:block>
 
             <div class="row">
+                <div class="col">
+                    <ol class="breadcrumb" style="background-color: white">
+                        <li class="breadcrumb-item active" style="font-family: 'Jua', sans-serif;font-size: 1.5rem;color: #dc3545">
+                            Weekly Best 🔥
+                        </li>
+                    </ol>
+                    <th:block th:each="best : ${bests}">
+                        <div class="card bg-white mb-1" style="height: 6rem;">
+                            <div class="card-body p-2">
+                                <div class="row"  style="overflow: hidden">
+                                    <div class="col-auto">
+                                        <th:block th:if="${best.imageUrl== null}">
+                                            <img src="https://raw.githubusercontent.com/buinq/imageServer/main/img/image-20230204013043779.png"
+                                                 class="avatar avatar-sm border-radius-sm" height="20">
+                                        </th:block>
+                                        <th:block th:if="${best.imageUrl != null}">
+                                            <img th:src="${best.imageUrl}"
+                                                 class="avatar avatar-sm border-radius-sm" style=" border-radius: 70%;"
+                                                 height="20">
+                                        </th:block>
+                                    </div>
+                                    <div class="col-auto">
+                                        <p class="card-text" style="font-size: 13px" th:text="|${best.nickName}|"></p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <p class="card-text" style="color: gray;font-size: 13px" th:text="|${best.date}|"></p>
+                                    </div>
 
+                                </div>
+
+                                <a th:href="@{/posts/{postId}(postId=${best.postId})}" style="text-decoration: none">
+                                    <div class=" text-multi" style="-webkit-line-clamp:1">
+                                        <h4 class="card-title mt-3" style="color: black;font-size: 15px" th:text="${best.title}">제목</h4>
+                                    </div>
+                                </a>
+                                <div class="col-auto emoticon" style="float: right" >
+                                    <i class="fas fa-sun" style="font-size:12px;color: #e0a800"></i> <div th:text="${best.numOfLikes}" style="display: inline;color: #e0a800;font-size:12px;"></div>
+                                    <i class="	fa fa-leaf" style="font-size:12px;color: #5cb85c"></i> <div th:text="${best.numOfComments}" style="display: inline;color: #5cb85c;font-size:12px;"></div>
+                                    <i class="fa-solid fa-eye" style="font-size:12px"></i> <div th:text="${best.view}" style="display: inline;font-size:12px;"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </th:block>
+
+                </div>
+                <div class="col">
+                <ol class="breadcrumb" style="background-color: white;align-items: center">
+                    <li class="breadcrumb-item active" style="font-family: 'Jua', sans-serif;font-size: 1.5rem;color: #3C5E26" >
+                        공지사항 📢
+                    </li>
+                </ol>
+                    <th:block th:each="post : ${posts}">
+                        <div class="card bg-white mb-1" style="height: 6rem;">
+                            <div class="card-body p-2">
+                                <div class="row"  style="overflow: hidden">
+                                    <div class="col-auto">
+                                        <th:block th:if="${post.imageUrl== null}">
+                                            <img src="https://raw.githubusercontent.com/buinq/imageServer/main/img/image-20230204013043779.png"
+                                                 class="avatar avatar-sm border-radius-sm" height="20">
+                                        </th:block>
+                                        <th:block th:if="${post.imageUrl != null}">
+                                            <img th:src="${post.imageUrl}"
+                                                 class="avatar avatar-sm border-radius-sm" style=" border-radius: 70%;"
+                                                 height="20">
+                                        </th:block>
+                                    </div>
+                                    <div class="col-auto">
+                                        <p class="card-text" style="font-size: 13px" th:text="|${post.nickName}|"></p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <p class="card-text" style="color: gray;font-size: 13px" th:text="|${post.date}|"></p>
+                                    </div>
+
+                                </div>
+
+                                <a th:href="@{/posts/{postId}(postId=${post.postId})}" style="text-decoration: none">
+                                    <div class=" text-multi" style="-webkit-line-clamp:1">
+                                        <h4 class="card-title mt-3" style="color: black;font-size: 15px" th:text="${post.title}">제목</h4>
+                                    </div>
+                                </a>
+                                <div class="col-auto emoticon" style="float: right" >
+                                    <i class="fas fa-sun" style="font-size:12px;color: #e0a800"></i> <div th:text="${post.numOfLikes}" style="display: inline;color: #e0a800;font-size:12px;"></div>
+                                    <i class="	fa fa-leaf" style="font-size:12px;color: #5cb85c"></i> <div th:text="${post.numOfComments}" style="display: inline;color: #5cb85c;font-size:12px;"></div>
+                                    <i class="fa-solid fa-eye" style="font-size:12px"></i> <div th:text="${post.view}" style="display: inline;font-size:12px;"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </th:block>
+                </div>
 
             </div>
             <!-- /.row -->
