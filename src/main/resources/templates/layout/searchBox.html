@@ -1,0 +1,48 @@
+<th:block th:fragment="searchBoxFragment">
+
+        <form class="d-flex my-3">
+            <th:block th:if="${searchCondition == 'title'}">
+
+            <select name="searchCondition" class="form-select" id="search-input" style="max-width: 12rem;">
+                <option value="title">게시글 제목</option>
+                <option value="content">게시글 내용</option>
+                <option value="author">작성자</option>
+            </select>
+            </th:block>
+            <th:block th:if="${searchCondition == 'content'}">
+
+                <select name="searchCondition" class="form-select" id="search-input" style="max-width: 12rem;">
+                    <option value="content">게시글 내용</option>
+                    <option value="title">게시글 제목</option>
+                    <option value="author">작성자</option>
+                </select>
+            </th:block>
+            <th:block th:if="${searchCondition == 'author'}">
+
+                <select name="searchCondition" class="form-select" id="search-input" style="max-width: 12rem;">
+                    <option value="author">작성자</option>
+                    <option value="title">게시글 제목</option>
+                    <option value="content">게시글 내용</option>
+                </select>
+            </th:block>
+            <th:block th:if="${searchCondition == 'none'}">
+
+                <select name="searchCondition" class="form-select" id="search-input" style="max-width: 12rem;">
+                    <option value="title">게시글 제목</option>
+                    <option value="content">게시글 내용</option>
+                    <option value="author">작성자</option>
+                </select>
+            </th:block>
+
+            <th:block th:if="${keyword != null}">
+            <input class="form-control me-sm-2 mx-2" type="search" placeholder="Search" name="keyword" th:value="${keyword}" >
+            </th:block>
+            <th:block th:if="${keyword == null}">
+                <input class="form-control me-sm-2 mx-2" type="search" placeholder="Search" name="keyword"  >
+            </th:block>
+
+            <button class="btn btn-outline-primary " type="submit" style="width: 10rem"><i
+                    class="fa-solid fa-magnifying-glass"></i> 검색
+            </button>
+        </form>
+</th:block>

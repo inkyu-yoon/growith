@@ -299,7 +299,11 @@
                             }
                         }
                     ).then((response) => {
-                        location.reload();
+                        $('#finalMessage').text("완료되었습니다.");
+                        $('#finalModal').modal('show');
+                        $('#final-Btn').click(function() {
+                            location.reload();
+                        });
                     }).catch((error) => {
                         console.log(error);
                         $('#alertMessage').text(error.response.data.result);

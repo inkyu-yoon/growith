@@ -22,7 +22,7 @@
                             <option value="QNA">Q&A</option>
                             <option value="COMMUNITY">커뮤니티</option>
                             <option value="STUDY">스터디</option>
-                            <div class="card-body" sec:authorize="hasRole('ROLE_ADMIN')" >
+                            <div class="card-body" sec:authorize="hasRole('ROLE_ADMIN')">
                                 <option value="NOTICE">공지사항</option>
                             </div>
                         </select>
@@ -31,7 +31,7 @@
                         <div class="row">
                             <div class="input-group input-group-dynamic mb-4">
                                 <input type="text" class="form-control" placeholder="제목을 입력하세요."
-                                       th:value="${post.title}" name = "title"
+                                       th:value="${post.title}" name="title"
                                        id="input-title">
                             </div>
                         </div>
@@ -42,16 +42,17 @@
                     </div>
                     <br>
                     <div class="d-flex justify-content-center mb-3">
-                            <button type="submit" onclick="history.back()" class="btn btn-outline-danger">수정 취소</button>
+                        <button type="submit" onclick="history.back()" class="btn btn-outline-danger">수정 취소</button>
                         <button type="submit" th:onclick="|post.edit(${post.postId})|"
-                                class="btn btn-outline-secondary">게시글 수정</button>
+                                class="btn btn-outline-secondary">게시글 수정
+                        </button>
                         </button>
                     </div>
                 </div>
 
-                <th:block th:replace="~{layout/rightbar :: rightbarFragment}"></th:block>
 
             </div>
+            <th:block th:replace="~{layout/rightbar :: rightbarFragment}"></th:block>
         </div>
     </div>
     <!-- /.row -->
@@ -92,7 +93,7 @@
                 category: document.querySelector('#input-category').value
             };
 
-            if(data.title.length>=60){
+            if (data.title.length >= 60) {
                 $('#alertMessage').text("제목은 60자를 넘을 수 없습니다.");
                 $('#alertModal').modal('show');
                 return
@@ -110,23 +111,28 @@
             $('#askModal').modal('show');
 
             var confirmBtn = document.getElementById('confirm-Btn');
-            confirmBtn.addEventListener("click", function() {
+            confirmBtn.addEventListener("click", function () {
                 con_check = true;
                 if (con_check === true) {
-                    axios.put("/api/v1/posts/" + postId ,
+                    axios.put("/api/v1/posts/" + postId,
                         JSON.stringify(data), {
                             headers: {
                                 'Content-Type': 'application/json',
                             }
                         }
                     ).then((response) => {
-                        history.back();
+                        $('#finalMessage').text("완료되었습니다.");
+                        $('#finalModal').modal('show');
+                        $('#final-Btn').click(function() {
+                            history.back();
+                        });
                     }).catch((error) => {
                         console.log(error);
                         $('#alertMessage').text(error.response.data.result);
                         $('#alertModal').modal('show');
                     });
-                };
+                }
+                ;
             });
 
 

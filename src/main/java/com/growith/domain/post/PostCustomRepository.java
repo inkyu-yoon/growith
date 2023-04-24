@@ -12,6 +12,7 @@ public interface PostCustomRepository {
 
     Page<PostGetListResponse> getPostsListByCategory(Category category, Pageable pageable);
     Page<PostGetListResponse> getPostsListByUserName(String userName, Pageable pageable);
+    Page<PostGetListResponse> getPostsListBySearchAndCategory(String searchCondition,String keyword , Category category, Pageable pageable);
 
     List<PostGetListResponse> getBestPosts();
 }

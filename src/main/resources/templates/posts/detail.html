@@ -329,7 +329,12 @@
                             }
                         }
                     ).then((response) => {
-                        history.back();
+                        $('#finalMessage').text("완료되었습니다.");
+                        $('#finalModal').modal('show');
+                        $('#final-Btn').click(function() {
+                            history.back();
+                        });
+
                     }).catch((error) => {
                         console.log(error);
                         $('#alertMessage').text(error.response.data.result);
@@ -363,7 +368,11 @@
                             }
                         }
                     ).then((response) => {
-                        window.location.href = '/posts/' + postId;
+                        $('#finalMessage').text("완료되었습니다.");
+                        $('#finalModal').modal('show');
+                        $('#final-Btn').click(function() {
+                            window.location.href = '/posts/' + postId;
+                        });
                     }).catch((error) => {
                         console.log(error)
                         $('#alertMessage').text(error.response.data.result);
@@ -391,8 +400,11 @@
                             }
                         }
                     ).then((response) => {
-                            console.log(response);
+                        $('#finalMessage').text("완료되었습니다.");
+                        $('#finalModal').modal('show');
+                        $('#final-Btn').click(function() {
                             window.location.href = '/posts/' + postId;
+                        });
                         }
                     ).catch((error) => {
                         console.log(error);
@@ -430,8 +442,11 @@
                             }
                         }
                     ).then((response) => {
-                            console.log(response);
+                        $('#finalMessage').text("완료되었습니다.");
+                        $('#finalModal').modal('show');
+                        $('#final-Btn').click(function() {
                             window.location.href = '/posts/' + postId;
+                        });
                         }
                     ).catch((error) => {
                         console.log(error.response.data.result);
@@ -464,7 +479,11 @@
                             }
                         }
                     ).then((response) => {
-                        window.location.href = '/posts/' + postId;
+                        $('#finalMessage').text("완료되었습니다.");
+                        $('#finalModal').modal('show');
+                        $('#final-Btn').click(function() {
+                            window.location.href = '/posts/' + postId;
+                        });
                     }).catch((error) => {
                         console.log(error)
                         $('#alertMessage').text(error.response.data.result);
@@ -482,7 +501,11 @@
                     }
                 }
             ).then((response) => {
-                window.location.href = '/posts/' + postId;
+                $('#finalMessage').text("완료되었습니다.");
+                $('#finalModal').modal('show');
+                $('#final-Btn').click(function() {
+                    window.location.href = '/posts/' + postId;
+                });
             }).catch((error) => {
                 console.log(error)
                 $('#alertMessage').text(error.response.data.result);

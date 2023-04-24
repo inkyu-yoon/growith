@@ -1,4 +1,18 @@
 <th:block th:fragment="postBlockFragment">
+    <div th:if="${noResults}">
+    <script>
+        window.onload = function() {
+            myFunction();
+        }
+        function myFunction() {
+            $('#finalMessage').text("게시글이 더 이상 존재하지 않습니다.");
+            $('#finalModal').modal('show');
+            $('#final-Btn').click(function() {
+                window.history.back();
+            });
+        }
+    </script>
+    </div>
 
     <th:block th:each="post : ${posts}">
         <div class="card bg-light mb-2" style="max-height: 20rem;">

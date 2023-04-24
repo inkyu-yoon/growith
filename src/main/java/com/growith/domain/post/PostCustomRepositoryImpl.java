@@ -1,6 +1,7 @@
 package com.growith.domain.post;
 
 import com.growith.domain.post.dto.PostGetListResponse;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +65,53 @@ public class PostCustomRepositoryImpl implements PostCustomRepository{
 
         return new PageImpl<>(posts, pageable,total);
     }
+
+    @Override
+    public Page<PostGetListResponse> getPostsListBySearchAndCategory(String searchCondition, String keyword, Category category, Pageable pageable) {
+        List<PostGetListResponse> posts = jpaQueryFactory.from(post)
+                .where(userNameContains(searchCondition,keyword),titleContains(searchCondition,keyword),contentContains(searchCondition,keyword),post.category.eq(category))
+                .join(user).on(user.id.eq(post.user.id))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(post.createdDate.desc())
+                .transform(groupBy(post.id)
+                        .list(Projections.constructor(PostGetListResponse.class, post, user)
+                        ));
+
+        long total = jpaQueryFactory.selectFrom(post)
+                .where(userNameContains(searchCondition,keyword),titleContains(searchCondition,keyword),contentContains(searchCondition,keyword),post.category.eq(category))
+                .join(user).on(user.eq(post.user))
+                .fetch()
+                .size();
+
+
+        return new PageImpl<>(posts, pageable,total);
+    }
+
+    private Predicate userNameContains(String searchCondition, String keyword) {
+        if (searchCondition.equals("author")) {
+            return keyword == null ? null : post.user.userName.contains(keyword);
+        } else {
+            return null;
+        }
+    }
+
+    private Predicate titleContains(String searchCondition, String keyword) {
+        if (searchCondition.equals("title")) {
+            return keyword == null ? null : post.title.contains(keyword);
+        } else {
+            return null;
+        }
+    }
+
+    private Predicate contentContains(String searchCondition, String keyword) {
+        if (searchCondition.equals("content")) {
+            return keyword == null ? null : post.content.contains(keyword);
+        } else {
+            return null;
+        }
+    }
+
 
     @Override
     public List<PostGetListResponse> getBestPosts() {

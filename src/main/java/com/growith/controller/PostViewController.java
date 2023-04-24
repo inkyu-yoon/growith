@@ -45,19 +45,26 @@ public class PostViewController {
     }
 
     @GetMapping("/posts/qna")
-    public String postsQNA(Model model, Pageable pageable) {
-        Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.QNA,pageable);
+    public String postsQNA(@RequestParam(required = false,defaultValue = "none") String searchCondition, @RequestParam(required = false) String keyword, Model model, Pageable pageable) {
 
+        Page<PostGetListResponse> posts = postService.getPostsBySearchAndCategory(searchCondition, keyword, Category.QNA, pageable);
+        boolean noResults = false;
+        if (posts.isEmpty()) {
+            noResults = true;
+        }
+        model.addAttribute("noResults", noResults);
         model.addAttribute("posts", posts);
         model.addAttribute("numberOfPages", posts.getTotalPages());
         model.addAttribute("previous", pageable.previousOrFirst().getPageNumber());
         model.addAttribute("next", pageable.next().getPageNumber());
+        model.addAttribute("searchCondition", searchCondition);
+        model.addAttribute("keyword", keyword);
         return "posts/qna";
     }
 
     @GetMapping("/posts/community")
-    public String postsCommunity(Model model,Pageable pageable) {
-        Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.COMMUNITY,pageable);
+    public String postsCommunity(Model model, Pageable pageable) {
+        Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.COMMUNITY, pageable);
 
         model.addAttribute("posts", posts);
         model.addAttribute("numberOfPages", posts.getTotalPages());
@@ -67,8 +74,8 @@ public class PostViewController {
     }
 
     @GetMapping("/posts/study")
-    public String postStudy(Model model,Pageable pageable) {
-        Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.STUDY,pageable);
+    public String postStudy(Model model, Pageable pageable) {
+        Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.STUDY, pageable);
 
         model.addAttribute("posts", posts);
         model.addAttribute("numberOfPages", posts.getTotalPages());
@@ -78,8 +85,8 @@ public class PostViewController {
     }
 
     @GetMapping("/posts/notice")
-    public String postsNotice(Model model,Pageable pageable) {
-        Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.NOTICE,pageable);
+    public String postsNotice(Model model, Pageable pageable) {
+        Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.NOTICE, pageable);
 
         model.addAttribute("posts", posts);
         model.addAttribute("numberOfPages", posts.getTotalPages());

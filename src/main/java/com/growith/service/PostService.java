@@ -38,6 +38,7 @@ public class PostService {
         return postRepository.findAll(pageable)
                 .map(post -> post.toPostGetResponse());
     }
+
     @Transactional(readOnly = true)
     public Page<PostGetListResponse> getAllPostsByUserName(String userName, Pageable pageable) {
         return postRepository.getPostsListByUserName(userName, pageable);
@@ -51,10 +52,17 @@ public class PostService {
 
         return savedPost.toPostResponse();
     }
+
     @Transactional(readOnly = true)
     public Page<PostGetListResponse> getAllPostsByCategory(Category category, Pageable pageable) {
         return postRepository.getPostsListByCategory(category, pageable);
     }
+
+    @Transactional(readOnly = true)
+    public Page<PostGetListResponse> getPostsBySearchAndCategory(String searchCondition, String userName, Category category, Pageable pageable) {
+        return postRepository.getPostsListBySearchAndCategory(searchCondition, userName, category, pageable);
+    }
+
 
     @Transactional(readOnly = true)
     public PostGetResponse getPost(Long postId) {
@@ -81,12 +89,12 @@ public class PostService {
 
         // 쿠키가 존재하나, 해당 postId 기록이 없는 경우 조회수 증가
         if (StringUtils.hasText(viewHistory)) {
-            if(!TextParsingUtil.parsingViewHistory(viewHistory).contains(String.valueOf(postId))){
+            if (!TextParsingUtil.parsingViewHistory(viewHistory).contains(String.valueOf(postId))) {
                 foundPost.increaseView();
                 CookieUtil.setCookie(res, VIEW_HISTORY_COOKIE_NAME, String.format("%s%d_", viewHistory, postId), VIEW_HISTORY_COOKIE_AGE);
             }
-        // 쿠키 자체가 존재하지 않는 경우 조회수 증가(어떠한 게시글도 읽지 않았다는 의미이므로)
-        } else{
+            // 쿠키 자체가 존재하지 않는 경우 조회수 증가(어떠한 게시글도 읽지 않았다는 의미이므로)
+        } else {
             foundPost.increaseView();
             CookieUtil.setCookie(res, VIEW_HISTORY_COOKIE_NAME, String.format("%d_", postId), VIEW_HISTORY_COOKIE_AGE);
         }

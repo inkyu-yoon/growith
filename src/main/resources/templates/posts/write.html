@@ -149,7 +149,11 @@
                     }
                 }
             ).then((response) => {
-                history.back();
+                $('#finalMessage').text("완료되었습니다.");
+                $('#finalModal').modal('show');
+                $('#final-Btn').click(function() {
+                    history.back();
+                });
                 // var frm = new FormData();
                 // var uploadFile = document.getElementById("input-file");
                 // if (uploadFile.files.length != 0) {

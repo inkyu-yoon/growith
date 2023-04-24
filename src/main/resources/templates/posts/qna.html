@@ -24,13 +24,13 @@
                     <p class="card-text">💡 서로의 지식을 공유해봐요!</p>
                 </div>
             </div>
+
             <button type="submit" class="btn btn-outline-primary" th:onclick="location.href = '/posts/write'"><i
                     class="	fa fa-pencil"></i> 질문하기
             </button>
-            <form class="d-flex my-3">
-                <input class="form-control me-sm-2" type="search" placeholder="Search">
-                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-            </form>
+            <th:block th:replace="~{layout/searchBox :: searchBoxFragment}"></th:block>
+
+
 
             <th:block th:replace="~{layout/postBlock :: postBlockFragment}"></th:block>
 
@@ -38,25 +38,48 @@
             <br>
 
             <div>
-                <ul class="pagination pagination-sm" >
+                <ul class="pagination pagination-sm">
+                    <th:block th:if="${searchCondition != 'none'}">
+                        <li class="page-item">
+                            <a class="page-link" th:href="@{/posts/qna(searchCondition=${searchCondition},keyword=${keyword},page=${previous})}">&laquo;</a>
+                        </li>
+                        <th:block th:if="${numberOfPages !=0}">
+                            <th:block th:with="end=${numberOfPages}">
+                                <li class="page-item active" th:each="num : ${#numbers.sequence(1,end)}">
+                                    <a class="page-link" th:href="@{/posts/qna(searchCondition=${searchCondition},keyword=${keyword},page=${num-1})}" th:text="|${num}|"></a>
+                                </li>
+                            </th:block>
+                        </th:block>
+                        <th:block th:if="${numberOfPages ==0}">
+                            <li class="page-item active">
+                                <a class="page-link" th:href="@{/posts/qna(searchCondition=${searchCondition},keyword=${keyword},page=0)}" th:text="1"></a>
+                            </li>
+                        </th:block>
+                        <li class="page-item">
+                            <a class="page-link" th:href="@{/posts/qna(searchCondition=${searchCondition},keyword=${keyword},page=${next})}">&raquo;</a>
+                        </li>
+                    </th:block>
+                    <th:block th:if="${searchCondition == 'none'}">
+
                     <li class="page-item">
                         <a class="page-link" th:href="@{/posts/qna(page=${previous})}">&laquo;</a>
                     </li>
                     <th:block th:if="${numberOfPages !=0}">
-                    <th:block th:with="end=${numberOfPages}">
-                        <li class="page-item active" th:each="num : ${#numbers.sequence(1,end)}">
-                            <a class="page-link" th:href="@{/posts/qna(page=${num-1})}" th:text="|${num}|"></a>
-                        </li>
-                    </th:block>
+                        <th:block th:with="end=${numberOfPages}">
+                            <li class="page-item active" th:each="num : ${#numbers.sequence(1,end)}">
+                                <a class="page-link" th:href="@{/posts/qna(page=${num-1})}" th:text="|${num}|"></a>
+                            </li>
+                        </th:block>
                     </th:block>
                     <th:block th:if="${numberOfPages ==0}">
-                            <li class="page-item active">
-                                <a class="page-link" th:href="@{/posts/qna(page=0)}" th:text="1"></a>
-                            </li>
+                        <li class="page-item active">
+                            <a class="page-link" th:href="@{/posts/qna(page=0)}" th:text="1"></a>
+                        </li>
                     </th:block>
                     <li class="page-item">
                         <a class="page-link" th:href="@{/posts/qna(page=${next})}">&raquo;</a>
                     </li>
+                    </th:block>
                 </ul>
             </div>
         </div>
