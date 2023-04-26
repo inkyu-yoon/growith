@@ -7,6 +7,8 @@ import com.growith.domain.post.dto.PostGetResponse;
 import com.growith.domain.post.dto.PostResponse;
 import com.growith.domain.post.dto.PostUpdateRequest;
 import com.growith.domain.user.User;
+import com.growith.global.exception.AppException;
+import com.growith.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -94,5 +96,15 @@ public class Post extends BaseEntity {
 
     public void increaseView() {
         this.view += 1;
+    }
+
+    public boolean checkUserForAlarm(User user) {
+        return this.getUser().getId() != user.getId() ;
+    }
+
+    public void checkUserForLike(User foundUser) {
+        if (this.getUser().equals(foundUser)) {
+            throw new AppException(ErrorCode.LIKE_NOT_ALLOWED);
+        }
     }
 }

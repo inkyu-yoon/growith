@@ -2,14 +2,12 @@ package com.growith.service;
 
 import com.growith.domain.comment.Comment;
 import com.growith.domain.comment.CommentRepository;
-import com.growith.domain.comment.dto.CommentCreateRequest;
-import com.growith.domain.comment.dto.CommentGetResponse;
-import com.growith.domain.comment.dto.CommentResponse;
-import com.growith.domain.comment.dto.CommentUpdateRequest;
+import com.growith.domain.comment.dto.*;
 import com.growith.domain.post.Post;
 import com.growith.domain.post.PostRepository;
 import com.growith.domain.user.User;
 import com.growith.domain.user.UserRepository;
+import com.growith.global.annotation.CreateAlarm;
 import com.growith.global.exception.AppException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +25,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
+    @CreateAlarm(classInfo = CommentResponse.class)
     public CommentResponse createComment(Long postId, String userName, CommentCreateRequest requestDto) {
         User foundUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
@@ -80,7 +79,8 @@ public class CommentService {
         return foundComment.toCommentResponse();
     }
 
-    public CommentResponse createCommentReply(Long postId, String userName, Long commentId, CommentCreateRequest requestDto) {
+    @CreateAlarm(classInfo = CommentReplyResponse.class)
+    public CommentReplyResponse createCommentReply(Long postId, String userName, Long commentId, CommentCreateRequest requestDto) {
         User foundUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
@@ -90,9 +90,9 @@ public class CommentService {
         Comment foundComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new AppException(COMMENT_NOT_FOUND));
 
-        Comment comment = commentRepository.save(requestDto.toEntity(foundUser, foundPost, foundComment));
+        commentRepository.save(requestDto.toEntity(foundUser, foundPost, foundComment));
 
-        return comment.toCommentResponse();
+        return foundComment.toCommentReplyResponse(foundUser);
     }
 
 }

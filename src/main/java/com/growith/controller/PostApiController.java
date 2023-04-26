@@ -1,9 +1,6 @@
 package com.growith.controller;
 
-import com.growith.domain.comment.dto.CommentCreateRequest;
-import com.growith.domain.comment.dto.CommentGetResponse;
-import com.growith.domain.comment.dto.CommentResponse;
-import com.growith.domain.comment.dto.CommentUpdateRequest;
+import com.growith.domain.comment.dto.*;
 import com.growith.domain.likes.dto.LikeResponse;
 import com.growith.domain.post.Category;
 import com.growith.domain.post.dto.*;
@@ -106,9 +103,9 @@ public class PostApiController {
     }
 
     @PostMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<Response<CommentResponse>> createCommentReply(Authentication authentication, @PathVariable(name = "postId") Long postId, @PathVariable(name = "commentId") Long commentId, @Validated @RequestBody CommentCreateRequest requestDto, BindingResult br) {
+    public ResponseEntity<Response<CommentReplyResponse>> createCommentReply(Authentication authentication, @PathVariable(name = "postId") Long postId, @PathVariable(name = "commentId") Long commentId, @Validated @RequestBody CommentCreateRequest requestDto, BindingResult br) {
         String userName = authentication.getName();
-        CommentResponse response = commentService.createCommentReply(postId, userName, commentId, requestDto);
+        CommentReplyResponse response = commentService.createCommentReply(postId, userName, commentId, requestDto);
 
         return ResponseEntity.ok(Response.success(response));
     }
