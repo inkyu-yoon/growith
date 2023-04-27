@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,7 +50,9 @@ public class PostViewController {
 
         Page<PostGetListResponse> posts = postService.getPostsBySearchAndCategory(searchCondition, keyword, Category.QNA, pageable);
         boolean noResults = false;
-        if (posts.isEmpty()) {
+        if (posts.isEmpty() && pageable.getPageNumber()!=0) {
+            noResults = true;
+        } else if (posts.isEmpty() && StringUtils.hasText(keyword)) {
             noResults = true;
         }
         model.addAttribute("noResults", noResults);
@@ -63,35 +66,59 @@ public class PostViewController {
     }
 
     @GetMapping("/posts/community")
-    public String postsCommunity(Model model, Pageable pageable) {
-        Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.COMMUNITY, pageable);
-
+    public String postsCommunity(@RequestParam(required = false,defaultValue = "none") String searchCondition, @RequestParam(required = false) String keyword, Model model, Pageable pageable) {
+        Page<PostGetListResponse> posts = postService.getPostsBySearchAndCategory(searchCondition, keyword, Category.COMMUNITY, pageable);
+        boolean noResults = false;
+        if (posts.isEmpty() && pageable.getPageNumber()!=0) {
+            noResults = true;
+        } else if (posts.isEmpty() && StringUtils.hasText(keyword)) {
+            noResults = true;
+        }
+        model.addAttribute("noResults", noResults);
         model.addAttribute("posts", posts);
         model.addAttribute("numberOfPages", posts.getTotalPages());
         model.addAttribute("previous", pageable.previousOrFirst().getPageNumber());
         model.addAttribute("next", pageable.next().getPageNumber());
+        model.addAttribute("searchCondition", searchCondition);
+        model.addAttribute("keyword", keyword);
         return "posts/community";
     }
 
     @GetMapping("/posts/study")
-    public String postStudy(Model model, Pageable pageable) {
-        Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.STUDY, pageable);
-
+    public String postStudy(@RequestParam(required = false,defaultValue = "none") String searchCondition, @RequestParam(required = false) String keyword, Model model, Pageable pageable) {
+        Page<PostGetListResponse> posts = postService.getPostsBySearchAndCategory(searchCondition, keyword, Category.STUDY, pageable);
+        boolean noResults = false;
+        if (posts.isEmpty() && pageable.getPageNumber()!=0) {
+            noResults = true;
+        } else if (posts.isEmpty() && StringUtils.hasText(keyword)) {
+            noResults = true;
+        }
+        model.addAttribute("noResults", noResults);
         model.addAttribute("posts", posts);
         model.addAttribute("numberOfPages", posts.getTotalPages());
         model.addAttribute("previous", pageable.previousOrFirst().getPageNumber());
         model.addAttribute("next", pageable.next().getPageNumber());
+        model.addAttribute("searchCondition", searchCondition);
+        model.addAttribute("keyword", keyword);
         return "posts/study";
     }
 
     @GetMapping("/posts/notice")
-    public String postsNotice(Model model, Pageable pageable) {
-        Page<PostGetListResponse> posts = postService.getAllPostsByCategory(Category.NOTICE, pageable);
-
+    public String postsNotice(@RequestParam(required = false,defaultValue = "none") String searchCondition, @RequestParam(required = false) String keyword, Model model, Pageable pageable) {
+        Page<PostGetListResponse> posts = postService.getPostsBySearchAndCategory(searchCondition, keyword, Category.NOTICE, pageable);
+        boolean noResults = false;
+        if (posts.isEmpty() && pageable.getPageNumber()!=0) {
+            noResults = true;
+        } else if (posts.isEmpty() && StringUtils.hasText(keyword)) {
+            noResults = true;
+        }
+        model.addAttribute("noResults", noResults);
         model.addAttribute("posts", posts);
         model.addAttribute("numberOfPages", posts.getTotalPages());
         model.addAttribute("previous", pageable.previousOrFirst().getPageNumber());
         model.addAttribute("next", pageable.next().getPageNumber());
+        model.addAttribute("searchCondition", searchCondition);
+        model.addAttribute("keyword", keyword);
         return "posts/notice";
     }
 
