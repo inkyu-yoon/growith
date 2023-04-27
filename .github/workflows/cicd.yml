@@ -41,10 +41,17 @@ jobs:
         run: |
           docker build -t $NAME/$APP -f ./Dockerfile .
           docker push $NAME/$APP:latest
-      - name: EC2 Docker Run
-        run: |
-          ssh root@${{secrets.EC2_HOST}} -p ${{secrets.PORT}} '${{secrets.EC2_KEY}} && \
-            cd /root/compose && \
-            docker-compose down --rmi all && \
-            docker pull ${{secrets.DOCKER_USER}}/growith:latest && \
-            docker-compose up -d'
+      - name: SSH to NCP
+        uses: appleboy/ssh-action@master
+        env:
+          APP: "growith"
+          COMPOSE: "/root/compose/docker-compose.yml"
+        with:
+          host: ${{ secrets.NC_HOST }}
+          port: ${{ secrets.NC_PORT }}
+          username: root
+          script: |
+            echo ${{secrets.NC_ADMIN_PASSWORD}} | sudo -S ncp-config
+            sudo docker-compose -f $COMPOSE down --rmi all
+            sudo docker pull ${{secrets.DOCKER_USER}}/$APP:latest
+            sudo docker-compose -f $COMPOSE up -d  
