@@ -50,8 +50,9 @@ jobs:
           host: ${{ secrets.NC_HOST }}
           port: ${{ secrets.NC_PORT }}
           username: root
+          password: ${{ secrets.NC_ADMIN_PASSWORD }}
           script: |
-            echo ${{secrets.NC_ADMIN_PASSWORD}} | sudo -S ncp-config
+            sudo ncp-config
             sudo docker-compose -f $COMPOSE down --rmi all
             sudo docker pull ${{secrets.DOCKER_USER}}/$APP:latest
-            sudo docker-compose -f $COMPOSE up -d  
+            sudo docker-compose -f $COMPOSE up -d
