@@ -51,6 +51,7 @@ jobs:
           port: ${{ secrets.NC_PORT }}
           username: root
           password: ${{ secrets.NC_ADMIN_PASSWORD }}
+          envs: APP, COMPOSE
           script: |
             sudo ncp-config
             sudo docker-compose -f $COMPOSE down --rmi all
