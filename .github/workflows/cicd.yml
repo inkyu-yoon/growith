@@ -42,17 +42,8 @@ jobs:
           docker build -t $NAME/$APP -f ./Dockerfile .
           docker push $NAME/$APP:latest
       - name: EC2 Docker Run
-        uses: appleboy/ssh-action@master
-        env:
-          APP: "growith"
-          COMPOSE: "/root/compose/docker-compose.yml"
-        with:
-          username: root
-          host: ${{secrets.EC2_HOST}}
-          key: ${{secrets.EC2_KEY}}
-          envs: APP, COMPOSE
-          script_stop: true
-          script: |
-            sudo docker-compose -f $COMPOSE down --rmi all
-            sudo docker pull ${{secrets.DOCKER_USER}}/$APP:latest
-            sudo docker-compose -f $COMPOSE up -d
+        run: |
+          ssh -i ${{secrets.EC2_KEY}} root@${{secrets.EC2_HOST}} 'cd /root/compose && \
+            docker-compose down --rmi all && \
+            docker pull ${{secrets.DOCKER_USER}}/growith:latest && \
+            docker-compose up -d'
