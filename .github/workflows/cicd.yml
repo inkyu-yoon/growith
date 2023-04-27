@@ -43,7 +43,7 @@ jobs:
           docker push $NAME/$APP:latest
       - name: EC2 Docker Run
         run: |
-          ssh root@${{secrets.EC2_HOST}} -p {{secrets.PORT}} '{{secrets.EC2_KEY}} && \
+          ssh root@${{secrets.EC2_HOST}} -p ${{secrets.PORT}} '${{secrets.EC2_KEY}} && \
             cd /root/compose && \
             docker-compose down --rmi all && \
             docker pull ${{secrets.DOCKER_USER}}/growith:latest && \
