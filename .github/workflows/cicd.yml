@@ -47,7 +47,7 @@ jobs:
           APP: "growith"
           COMPOSE: "/root/compose/docker-compose.yml"
         with:
-          username: ubuntu
+          username: root
           host: ${{secrets.EC2_HOST}}
           key: ${{secrets.EC2_KEY}}
           envs: APP, COMPOSE
