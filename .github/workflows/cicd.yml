@@ -53,7 +53,6 @@ jobs:
           password: ${{ secrets.NC_ADMIN_PASSWORD }}
           envs: APP, COMPOSE
           script: |
-            sudo ncp-config
             sudo docker-compose -f $COMPOSE down --rmi all
             sudo docker pull ${{secrets.DOCKER_USER}}/$APP:latest
             sudo docker-compose -f $COMPOSE up -d
