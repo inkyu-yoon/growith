@@ -75,6 +75,9 @@ dependencies {
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '3.0.5'
 	testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '3.0.5'
 
+	//Swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+
 }
 
 tasks.named('test') {

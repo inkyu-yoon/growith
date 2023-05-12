@@ -41,7 +41,7 @@ public class SecurityConfig {
 
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/assets/**","/","/oauth2/redirect","/githubLogin/success","/logout","/users/**").permitAll()
+                .requestMatchers("/assets/**","/","/oauth2/redirect","/githubLogin/success","/logout","/users/**","/swagger-ui/**","/swagger-ui.html","/v3/api-docs/**").permitAll()
                 .requestMatchers("/posts/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/v1/posts/**").permitAll()
                 .requestMatchers("/api/v1/users/mypage").authenticated()
