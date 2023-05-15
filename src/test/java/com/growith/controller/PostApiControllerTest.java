@@ -1,10 +1,7 @@
 package com.growith.controller;
 
 import com.google.gson.Gson;
-import com.growith.domain.comment.dto.CommentCreateRequest;
-import com.growith.domain.comment.dto.CommentGetResponse;
-import com.growith.domain.comment.dto.CommentResponse;
-import com.growith.domain.comment.dto.CommentUpdateRequest;
+import com.growith.domain.comment.dto.*;
 import com.growith.domain.likes.dto.LikeResponse;
 import com.growith.domain.post.Category;
 import com.growith.domain.post.dto.*;
@@ -88,6 +85,7 @@ class PostApiControllerTest {
     CommentGetResponse commentGetResponse;
     CommentUpdateRequest commentUpdateRequest;
     LikeResponse likeResponse;
+    CommentReplyResponse commentReplyResponse;
 
     @BeforeEach
     public void setUpMockMvc() {
@@ -154,8 +152,13 @@ class PostApiControllerTest {
                 .comment(comment)
                 .build();
 
+        commentReplyResponse = CommentReplyResponse.builder()
+                .commentId(commentId)
+                .fromUserId(1L)
+                .build();
         likeResponse = LikeResponse.builder()
                 .postId(postId)
+                .isHistoryFound(false)
                 .build();
     }
 
@@ -697,7 +700,7 @@ class PostApiControllerTest {
         @DisplayName("대댓글 등록 성공 테스트")
         void writeCommentReplySuccess() throws Exception {
             given(commentService.createCommentReply(anyLong(), anyString(), anyLong(), any(CommentCreateRequest.class)))
-                    .willReturn(commentResponse);
+                    .willReturn(commentReplyResponse);
 
             mockMvc.perform(post("/api/v1/posts/" + postId + "/comments/" + commentId)
                             .cookie(cookie)
@@ -709,7 +712,7 @@ class PostApiControllerTest {
                     .andExpect(jsonPath("$.message").value("SUCCESS"))
                     .andExpect(jsonPath("$.result").exists())
                     .andExpect(jsonPath("$.result.commentId").value(commentId))
-                    .andExpect(jsonPath("$.result.comment").value(comment));
+                    .andExpect(jsonPath("$.result.fromUserId").value(1));
         }
 
         @Test

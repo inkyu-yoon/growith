@@ -3,6 +3,7 @@ package com.growith.service;
 import com.growith.domain.alarm.Alarm;
 import com.growith.domain.alarm.AlarmRepository;
 import com.growith.domain.alarm.AlarmType;
+import com.growith.domain.alarm.dto.AlarmGetListResponse;
 import com.growith.domain.comment.Comment;
 import com.growith.domain.comment.CommentRepository;
 import com.growith.domain.post.Post;
@@ -13,6 +14,8 @@ import com.growith.global.exception.AppException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.growith.global.exception.ErrorCode.*;
 
@@ -75,5 +78,13 @@ public class AlarmService {
                 .orElseThrow(() -> new AppException(ALARM_NOT_FOUND));
 
         alarmRepository.delete(alarm);
+    }
+
+    public List<AlarmGetListResponse> getAlarms(String userName) {
+
+        User foundUser = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(USER_NOT_FOUND));
+
+        return alarmRepository.getAlarms(foundUser.getId());
     }
 }

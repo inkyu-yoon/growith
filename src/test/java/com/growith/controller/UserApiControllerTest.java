@@ -12,6 +12,7 @@ import com.growith.global.aop.BindingCheck;
 import com.growith.global.config.SecurityConfig;
 import com.growith.global.exception.AppException;
 import com.growith.global.util.JwtUtil;
+import com.growith.service.AlarmService;
 import com.growith.service.PostService;
 import com.growith.service.UserService;
 import jakarta.servlet.http.Cookie;
@@ -66,6 +67,8 @@ class UserApiControllerTest {
 
     @MockBean
     PostService postService;
+    @MockBean
+    AlarmService alarmService;
 
 
     @Value("${jwt.secret}")

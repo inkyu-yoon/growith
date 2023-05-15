@@ -1,11 +1,13 @@
 package com.growith.controller;
 
+import com.growith.domain.alarm.dto.AlarmGetListResponse;
 import com.growith.domain.post.dto.PostGetListResponse;
 import com.growith.domain.user.dto.UserGetMyPageResponse;
 import com.growith.domain.user.dto.UserGetResponse;
 import com.growith.domain.user.dto.UserUpdateRequest;
 import com.growith.domain.user.dto.UserUpdateResponse;
 import com.growith.global.Response;
+import com.growith.service.AlarmService;
 import com.growith.service.PostService;
 import com.growith.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +28,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
@@ -34,6 +38,7 @@ public class UserApiController {
 
     private final UserService userService;
     private final PostService postService;
+    private final AlarmService alarmService;
 
     @Tag(name = "User", description = "회원 관련 API")
     @Operation(summary = "회원 정보 조회", description = "💡userId에 해당하는 회원의 정보를 확인합니다.(포인트 정보는 조회 불가)<br>🚨가입된 회원이 존재하지 않을 시 에러 발생")
@@ -99,4 +104,22 @@ public class UserApiController {
 
         return ResponseEntity.ok(Response.success(response));
     }
+
+    @Tag(name = "Alarm", description = "알림 관련 API")
+    @Operation(summary = "회원 알림 조회", description = "<strong>🔑JWT 필요</strong><br>💡회원 본인의 모든 알림 정보를 최신순으로 조회한다..<br>🚨가입된 회원이 존재하지 않을 시 에러 발생")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "⭕ SUCCESS", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    examples = {@ExampleObject(value = "{\"message\":\"SUCCESS\",\"result\":[{\"alarmId\":2,\"fromUserNickName\":\"buinq\",\"postName\":\"postName\",\"postId\":1,\"text\":\"댓글을 달았습니다.\",\"createdAt\":\"1분 전\"},{\"alarmId\":1,\"fromUserNickName\":\"buinq\",\"postName\":\"postName\",\"postId\":1,\"text\":\"좋아요를 눌렀습니다.\",\"createdAt\":\"1분 전\"}]}")}, schema = @Schema(implementation = Response.class))),
+            @ApiResponse(responseCode = "404", description = "❌ ERROR (가입된 회원이 존재하지 않을 시)", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    examples = {@ExampleObject(value = "{\"message\":\"ERROR\",\"result\":\"가입된 회원이 아닙니다.\"}")}, schema = @Schema(implementation = Response.class)))
+    })
+    @GetMapping("/alarms")
+    public ResponseEntity<Response<List<AlarmGetListResponse>>> getAlarms(Authentication authentication){
+        String userName = authentication.getName();
+        List<AlarmGetListResponse> response = alarmService.getAlarms(userName);
+
+        return ResponseEntity.ok(Response.success(response));
+    }
+
+
 }
