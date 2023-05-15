@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT,"/api/v1/posts/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE,"/api/v1/posts/**").authenticated()
                 .requestMatchers("/api/v1/users/**").permitAll()
+                .requestMatchers("/**").permitAll()
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(new CustomAuthenticationEntryPointHandler())

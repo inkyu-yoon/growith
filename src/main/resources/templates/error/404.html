@@ -1,0 +1,17 @@
+<th:block th:replace="~{layout/header :: headerFragment}"></th:block>
+
+<body>
+<th:block th:replace="~{layout/navbar :: navbarFragment}"></th:block>
+
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        $('#finalMessage').text("존재하지 않는 페이지 입니다.");
+        $('#finalModal').modal('show');
+        $('#final-Btn').click(function() {
+            history.back();
+        });
+    });
+
+</script>
+</html>
