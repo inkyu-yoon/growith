@@ -106,7 +106,7 @@ public class UserApiController {
     }
 
     @Tag(name = "Alarm", description = "알림 관련 API")
-    @Operation(summary = "회원 알림 조회", description = "<strong>🔑JWT 필요</strong><br>💡회원 본인의 모든 알림 정보를 최신순으로 조회한다..<br>🚨가입된 회원이 존재하지 않을 시 에러 발생")
+    @Operation(summary = "회원 알림 조회", description = "<strong>🔑JWT 필요</strong><br>💡회원 본인의 모든 알림 정보를 최신순으로 조회한다.<br>🚨가입된 회원이 존재하지 않을 시 에러 발생")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "⭕ SUCCESS", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                     examples = {@ExampleObject(value = "{\"message\":\"SUCCESS\",\"result\":[{\"alarmId\":2,\"fromUserNickName\":\"buinq\",\"postName\":\"postName\",\"postId\":1,\"text\":\"댓글을 달았습니다.\",\"createdAt\":\"1분 전\"},{\"alarmId\":1,\"fromUserNickName\":\"buinq\",\"postName\":\"postName\",\"postId\":1,\"text\":\"좋아요를 눌렀습니다.\",\"createdAt\":\"1분 전\"}]}")}, schema = @Schema(implementation = Response.class))),
@@ -121,5 +121,21 @@ public class UserApiController {
         return ResponseEntity.ok(Response.success(response));
     }
 
+    @Tag(name = "Alarm", description = "알림 관련 API")
+    @Operation(summary = "회원 알림 삭제", description = "<strong>🔑JWT 필요</strong><br>💡회원 본인의 알림을 단건으로 삭제한다.<br>🚨가입된 회원이 존재하지 않을 시 · 알림이 존재하지 않을 시 에러 발생")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "⭕ SUCCESS", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    examples = {@ExampleObject(value = "{\"message\":\"SUCCESS\",\"result\":\"complete\"}")}, schema = @Schema(implementation = Response.class))),
+            @ApiResponse(responseCode = "404", description = "❌ ERROR (가입된 회원이 존재하지 않을 시 · 알림이 존재하지 않을 시)", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    examples = {@ExampleObject(value = "{\"message\":\"ERROR\",\"result\":\"가입된 회원이 아닙니다.\"}")}, schema = @Schema(implementation = Response.class)))
+    })
+    @DeleteMapping("/alarms/{alarmId}")
+    public ResponseEntity<Response<String>> deleteAlarm(Authentication authentication, @PathVariable(name = "alarmId") Long alarmId) {
+
+        String userName = authentication.getName();
+        alarmService.delete(userName,alarmId);
+
+        return ResponseEntity.ok(Response.success("complete"));
+    }
 
 }

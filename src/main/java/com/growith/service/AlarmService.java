@@ -87,4 +87,16 @@ public class AlarmService {
 
         return alarmRepository.getAlarms(foundUser.getId());
     }
+
+    public void delete(String userName,Long alarmId) {
+        userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(USER_NOT_FOUND));
+
+        Alarm foundAlarm = alarmRepository.findById(alarmId)
+                .orElseThrow(() -> new AppException(ALARM_NOT_FOUND));
+
+        foundAlarm.getUser().checkAuth(userName);
+
+        alarmRepository.delete(foundAlarm);
+    }
 }

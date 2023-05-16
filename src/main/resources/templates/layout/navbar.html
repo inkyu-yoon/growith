@@ -57,7 +57,7 @@
                     </div>
                     <div sec:authorize="isAuthenticated()">
                         <button type="button" class="btn btn-sm mx-2" style="background-color: #378DFC;color: white"
-                                th:onclick="location.href = '/users/mypage'">
+                                data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample" onclick="getNotifications()">
                             🔔
                         </button>
                         <button type="button" class="btn btn-sm mx-2" style="background-color: #378DFC;color: white"
@@ -72,6 +72,96 @@
             </div>
         </div>
     </nav>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasExampleLabel">🔔 알림 목록</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div>
+                <div id="notificationsList">
+                    <!-- 알림 목록이 여기에 동적으로 추가될 것입니다 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+        <script>
+            function getNotifications() {
+                console.log("시작");
+
+                $.get("/api/v1/users/alarms", function(data) {
+                // API 응답을 받았을 때 동작할 코드 작성
+                var notifications = data.result;
+                console.log(notifications);
+                var notificationsList = document.getElementById("notificationsList");
+
+                // 기존 목록 초기화
+                notificationsList.innerHTML = "";
+
+                // 알림 목록 동적으로 생성
+                    for (var i = 0; i < notifications.length; i++) {
+                        var notification = notifications[i];
+                        var cardDiv = document.createElement("div");
+                        cardDiv.className = "card border-primary my-lg-1";
+
+                        var cardBodyDiv = document.createElement("div");
+                        cardBodyDiv.className = "card-body";
+                        cardBodyDiv.style.display = "flex";
+                        cardBodyDiv.style.justifyContent = "space-between";
+
+                        var contentDiv = document.createElement("div");
+                        contentDiv.innerHTML = `
+        <strong>${notification.fromUserNickName}</strong>님이
+        <a href="/posts/${notification.postId}">${notification.postName}</a>에 ${notification.text}
+        <br>
+        <span class="timestamp">${notification.createdAt}</span>`;
+
+                        var deleteButton = document.createElement("button");
+                        deleteButton.innerHTML = "×";
+                        deleteButton.className = "btn btn-sm mx-2";
+                        deleteButton.addEventListener("click", function() {
+                            alarm.alarmDelete(notification.alarmId);
+                        });
+
+                        cardBodyDiv.appendChild(contentDiv);
+                        cardBodyDiv.appendChild(deleteButton);
+                        cardDiv.appendChild(cardBodyDiv);
+                        notificationsList.appendChild(cardDiv);
+                    }
+
+                });
+        }
+
+            let alarm = {
+                init: function () {
+                    var _this = this;
+
+                },
+                alarmDelete: function (alarmId) {
+
+                    const url = `/api/v1/users/alarms/${alarmId}`;
+                            axios.delete(url, {
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    }
+                                }
+                            ).then((response) => {
+                                    location.reload();
+                                }
+                            ).catch((error) => {
+                                console.log(error);
+                                $('#alertMessage').text(error.response.data.result);
+                                $('#alertModal').modal('show');
+                            });
+                }
+
+
+            };
+    </script>
+
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog login animated">
