@@ -65,6 +65,18 @@ class UserServiceTest {
             verify(userRepository, atLeastOnce()).findById(anyLong());
         }
 
+        @Test
+        @DisplayName("회원수 카운트 조회 성공")
+        public void countUser(){
+            given(userRepository.count())
+                    .willReturn(1L);
+
+            assertDoesNotThrow(()->userService.countUser());
+
+            verify(userRepository, atLeastOnce()).count();
+
+        }
+
     }
 
     @Nested

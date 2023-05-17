@@ -57,22 +57,15 @@ class PostServiceTest {
     String userName;
     Long postId;
     String diffUserName;
+    PostGetListResponse postGetListResponse;
+    PageRequest pageable;
 
     @BeforeEach
     void setUp() {
         userName = "userName";
         postId = 1L;
         diffUserName = "diffUserName";
-
-    }
-
-    @Nested
-    @DisplayName("게시글 조회 테스트")
-    class getPostTest {
-
-        PageRequest pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
-
-        PostGetListResponse postGetListResponse = PostGetListResponse
+        postGetListResponse = PostGetListResponse
                 .builder()
                 .postId(1L)
                 .title("title")
@@ -81,6 +74,16 @@ class PostServiceTest {
                 .nickName("nickName")
                 .view(0L)
                 .build();
+        pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
+
+    }
+
+    @Nested
+    @DisplayName("게시글 조회 테스트")
+    class getPostTest {
+
+
+
 
         @Test
         @DisplayName("게시글 리스트 조회 성공")
@@ -142,6 +145,35 @@ class PostServiceTest {
             AppException appException = assertThrows(AppException.class, () -> postService.getPost(postId));
             assertThat(appException.getErrorCode()).isEqualTo(POST_NOT_FOUND);
             verify(postRepository, atLeastOnce()).findById(postId);
+        }
+    }
+
+    @Nested
+    @DisplayName("게시글 조회 테스트 (UI용)")
+    class getPostsTest{
+
+        @Test
+        @DisplayName("게시글 카테고리별 검색 조회 성공")
+        void getBySearchSuccess() {
+
+            given(postRepository.getPostsListBySearchAndCategory("SearchCondition","keyword",Category.QNA,pageable))
+                    .willReturn(new PageImpl<>(List.of(postGetListResponse)));
+
+            assertDoesNotThrow(() -> postService.getPostsBySearchAndCategory("SearchCondition","keyword",Category.QNA,pageable));
+
+            verify(postRepository, atLeastOnce()).getPostsListBySearchAndCategory("SearchCondition","keyword",Category.QNA,pageable);
+        }
+
+        @Test
+        @DisplayName("베스트 게시글 조회 성공")
+        void getBestPostsSuccess() {
+
+            given(postRepository.getBestPosts())
+                    .willReturn(List.of(postGetListResponse));
+
+            assertDoesNotThrow(() -> postService.getBestPosts());
+
+            verify(postRepository, atLeastOnce()).getBestPosts();
         }
     }
 
