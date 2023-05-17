@@ -17,7 +17,7 @@ public class AlarmEventListener {
 
     @EventListener(classes = CommentResponse.class)
     public void handle(CommentResponse event) {
-        alarmService.createPostCommentAlarm(event.getPostId(), event.getFromUserId(), AlarmType.NEW_COMMENT_ON_POST);
+        alarmService.createPostAlarm(event.getPostId(), event.getFromUserId(), AlarmType.NEW_COMMENT_ON_POST);
     }
 
     @EventListener(classes = CommentReplyResponse.class)
@@ -30,7 +30,7 @@ public class AlarmEventListener {
         if (event.getIsHistoryFound()) {
             alarmService.delete(event.getPostId(), event.getFromUserId(),AlarmType.NEW_LIKE_ON_POST);
         } else {
-            alarmService.createLikeAlarm(event.getPostId(), event.getFromUserId(), AlarmType.NEW_LIKE_ON_POST);
+            alarmService.createPostAlarm(event.getPostId(), event.getFromUserId(), AlarmType.NEW_LIKE_ON_POST);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.growith.controller;
 
 import com.google.gson.Gson;
+import com.growith.domain.alarm.dto.AlarmGetListResponse;
 import com.growith.domain.post.dto.PostGetListResponse;
 import com.growith.domain.user.User;
 import com.growith.domain.user.UserRole;
@@ -42,8 +43,7 @@ import java.util.List;
 import static com.growith.global.exception.ErrorCode.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -74,6 +74,23 @@ class UserApiControllerTest {
     @Value("${jwt.secret}")
     String secretKey;
 
+    Long userId;
+    Long postId;
+    Long alarmId;
+
+    String userName;
+    String token;
+    Cookie cookie;
+    Gson gson;
+    UserGetResponse userGetResponse;
+    UserGetMyPageResponse userGetMyPageResponse;
+
+    UserUpdateRequest userUpdateRequest;
+
+    UserUpdateResponse userUpdateResponse;
+    PostGetListResponse postGetListResponse;
+    AlarmGetListResponse alarmGetListResponse;
+
     @BeforeEach
     public void setUpMockMvc() {
         mockMvc = MockMvcBuilders
@@ -92,20 +109,49 @@ class UserApiControllerTest {
                         .imageUrl("imageUrl")
                         .userRole(UserRole.ROLE_USER)
                         .build());
+
+        userId = 1L;
+        userName = "userName";
+        postId = 1L;
+        alarmId = 1L;
+
+        token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
+        cookie = new Cookie("jwt", token);
+        gson = new Gson();
+        userGetResponse = new UserGetResponse(userId, "userName", "imageUrl", "nickName", "email", "blog", "githubUrl");
+        userGetMyPageResponse = new UserGetMyPageResponse(1L, userName, "imageUrl", "nickName", "email", "blog", 0L, "githubUrl");
+        userUpdateRequest = new UserUpdateRequest("nickName", "blog", "email@email.com");
+        userUpdateResponse = new UserUpdateResponse(userId, "nickName", "blog", "email");
+        postGetListResponse = PostGetListResponse
+                .builder()
+                .postId(postId)
+                .title("title")
+                .content("content")
+                .date("date")
+                .nickName("nickName")
+                .view(0L)
+                .build();
+
+        alarmGetListResponse = AlarmGetListResponse.builder()
+                .alarmId(alarmId)
+                .postId(postId)
+                .createdAt("createdAt")
+                .fromUserNickName("fromUserNickName")
+                .text("text")
+                .postName("postName")
+                .build();
     }
 
     @Nested
     @DisplayName("회원 조회 테스트")
     class getUserTest {
-        Long userId = 1L;
-        UserGetResponse response = new UserGetResponse(userId, "userName", "imageUrl", "nickName", "email", "blog", "githubUrl");
 
         @Test
         @DisplayName("회원 조회 성공 테스트")
         void success() throws Exception {
 
             given(userService.getUser(userId))
-                    .willReturn(response);
+                    .willReturn(userGetResponse);
 
             mockMvc.perform(get("/api/v1/users/" + userId))
                     .andDo(print())
@@ -144,19 +190,13 @@ class UserApiControllerTest {
     @Nested
     @DisplayName("회원 마이페이지 조회 테스트")
     class getUserMyPageTest {
-        String userName = "userName";
-
-        UserGetMyPageResponse response = new UserGetMyPageResponse(1L, userName, "imageUrl", "nickName", "email", "blog", 0L, "githubUrl");
-
-        String token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
-        Cookie cookie = new Cookie("jwt", token);
 
 
         @Test
         @DisplayName("회원 마이페이지 조회 성공 테스트")
         void success() throws Exception {
             given(userService.getMyPageUser(userName))
-                    .willReturn(response);
+                    .willReturn(userGetMyPageResponse);
 
 
             mockMvc.perform(get("/api/v1/users/mypage")
@@ -195,22 +235,9 @@ class UserApiControllerTest {
     @Nested
     @DisplayName("회원 별 게시글 조회 테스트")
     class getPostsByUserTest {
-        Long userId = 1L;
-        Long postId = 1L;
-        String userName = "userName";
 
-        UserGetResponse user = new UserGetResponse(userId, userName, "imageUrl", "nickName", "email", "blog", "githubUrl");
-
-        PostGetListResponse postGetListResponse = PostGetListResponse
-                .builder()
-                .postId(postId)
-                .title("title")
-                .content("content")
-                .date("date")
-                .nickName("nickName")
-                .view(0L)
-                .build();
         List<PostGetListResponse> posts = new ArrayList<>();
+
         @Test
         @DisplayName("회원 별 게시글 조회 성공")
         void getPostsByUserSuccess() throws Exception {
@@ -220,7 +247,7 @@ class UserApiControllerTest {
 
 
             given(userService.getUser(userId))
-                    .willReturn(user);
+                    .willReturn(userGetResponse);
             given(postService.getAllPostsByUserName(any(), any()))
                     .willReturn(postsPage);
 
@@ -258,27 +285,18 @@ class UserApiControllerTest {
     @Nested
     @DisplayName("회원 정보 수정 테스트")
     class updateUserTest {
-        Long userId = 1L;
-        UserUpdateRequest request = new UserUpdateRequest("nickName", "blog", "email@email.com");
-
-        UserUpdateResponse response = new UserUpdateResponse(userId, "nickName", "blog", "email");
-        String userName = "userName";
-        String token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
-        Cookie cookie = new Cookie("jwt", token);
-
-        Gson gson = new Gson();
 
 
         @Test
         @DisplayName("회원 정보 수정 성공 테스트")
         void success() throws Exception {
             given(userService.updateUser(eq(userName), eq(userId), any(UserUpdateRequest.class)))
-                    .willReturn(response);
+                    .willReturn(userUpdateResponse);
 
             mockMvc.perform(patch("/api/v1/users/" + userId)
                             .cookie(cookie)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(gson.toJson(request)))
+                            .content(gson.toJson(userUpdateRequest)))
                     .andDo(print())
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("SUCCESS"))
@@ -301,7 +319,7 @@ class UserApiControllerTest {
             mockMvc.perform(patch("/api/v1/users/" + userId)
                             .cookie(cookie)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(gson.toJson(request)))
+                            .content(gson.toJson(userUpdateRequest)))
                     .andDo(print())
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
@@ -320,7 +338,7 @@ class UserApiControllerTest {
             mockMvc.perform(patch("/api/v1/users/" + userId)
                             .cookie(cookie)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(gson.toJson(request)))
+                            .content(gson.toJson(userUpdateRequest)))
                     .andDo(print())
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
@@ -339,7 +357,7 @@ class UserApiControllerTest {
             mockMvc.perform(patch("/api/v1/users/" + userId)
                             .cookie(cookie)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(gson.toJson(request)))
+                            .content(gson.toJson(userUpdateRequest)))
                     .andDo(print())
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
@@ -365,5 +383,100 @@ class UserApiControllerTest {
         }
     }
 
+    @Nested
+    @DisplayName("회원 알림 조회 테스트")
+    class getAlarmsTest{
+
+        @Test
+        @DisplayName("알림 조회 성공 테스트")
+        void success() throws Exception {
+            given(alarmService.getAlarms(userName))
+                    .willReturn(List.of(alarmGetListResponse));
+
+            mockMvc.perform(get("/api/v1/users/alarms")
+                    .cookie(cookie))
+                    .andDo(print())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("SUCCESS"))
+                    .andExpect(jsonPath("$.result[0].alarmId").value(alarmId))
+                    .andExpect(jsonPath("$.result[0].fromUserNickName").value("fromUserNickName"))
+                    .andExpect(jsonPath("$.result[0].postName").value("postName"))
+                    .andExpect(jsonPath("$.result[0].postId").value(postId))
+                    .andExpect(jsonPath("$.result[0].text").value("text"))
+                    .andExpect(jsonPath("$.result[0].createdAt").value("createdAt"));
+
+        }
+
+        @Test
+        @DisplayName("알림 조회 실패 테스트 (가입된 회원을 찾을 수 없는 경우)")
+        void error() throws Exception {
+
+            when(alarmService.getAlarms(userName))
+                    .thenThrow(new AppException(USER_NOT_FOUND));
+
+            mockMvc.perform(get("/api/v1/users/alarms")
+                            .cookie(cookie))
+                    .andDo(print())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").value("가입된 회원이 아닙니다."));
+
+        }
+    }
+
+    @Nested
+    @DisplayName("회원 알림 삭제 테스트")
+    class deleteAlarmTest{
+
+        @Test
+        @DisplayName("알림 삭제 성공 테스트")
+        void success() throws Exception {
+            willDoNothing()
+                    .given(alarmService)
+                            .delete(userName,alarmId);
+
+            mockMvc.perform(delete("/api/v1/users/alarms/"+alarmId)
+                            .cookie(cookie))
+                    .andDo(print())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("SUCCESS"))
+                    .andExpect(jsonPath("$.result").value("complete"));
+
+        }
+
+        @Test
+        @DisplayName("알림 삭제 실패 테스트 (가입된 회원을 찾을 수 없는 경우)")
+        void error1() throws Exception {
+
+            doThrow(new AppException(USER_NOT_FOUND))
+                    .when(alarmService)
+                    .delete(userName, alarmId);
+
+            mockMvc.perform(delete("/api/v1/users/alarms/"+alarmId)
+                            .cookie(cookie))
+                    .andDo(print())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").value("가입된 회원이 아닙니다."));
+
+        }
+
+        @Test
+        @DisplayName("알림 삭제 실패 테스트 (알림을 찾을 수 없는 경우)")
+        void error2() throws Exception {
+
+            doThrow(new AppException(ALARM_NOT_FOUND))
+                    .when(alarmService)
+                    .delete(userName, alarmId);
+
+            mockMvc.perform(delete("/api/v1/users/alarms/"+alarmId)
+                            .cookie(cookie))
+                    .andDo(print())
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value("ERROR"))
+                    .andExpect(jsonPath("$.result").value("알림 데이터를 찾을 수 없습니다."));
+
+        }
+    }
 
 }

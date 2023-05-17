@@ -29,7 +29,7 @@ public class AlarmService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
-    public void createPostCommentAlarm(Long postId, Long userId, AlarmType alarmType) {
+    public void createPostAlarm(Long postId, Long userId, AlarmType alarmType) {
         Post foundPost = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(POST_NOT_FOUND));
 
@@ -50,19 +50,6 @@ public class AlarmService {
 
         if(foundComment.checkUserForAlarm(user)){
             Alarm alarm = Alarm.of(foundComment, user, alarmType);
-            alarmRepository.save(alarm);
-        }
-    }
-
-    public void createLikeAlarm(Long postId, Long userId, AlarmType alarmType) {
-        Post foundPost = postRepository.findById(postId)
-                .orElseThrow(() -> new AppException(POST_NOT_FOUND));
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(USER_NOT_FOUND));
-
-        if(foundPost.checkUserForAlarm(user)){
-            Alarm alarm = Alarm.of(foundPost, user, alarmType);
             alarmRepository.save(alarm);
         }
     }
