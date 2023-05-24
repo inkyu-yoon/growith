@@ -57,12 +57,13 @@ public class Comment extends BaseEntity {
         this.post.getComments().add(this);
     }
 
-    public CommentResponse toCommentResponse() {
+    public CommentResponse toCommentResponse(Post post) {
         return CommentResponse.builder()
                 .commentId(this.id)
                 .comment(this.comment)
                 .fromUserId(this.user.getId())
                 .postId(this.post.getId())
+                .toUserId(post.getUser().getId())
                 .build();
     }
 
@@ -70,10 +71,11 @@ public class Comment extends BaseEntity {
         this.comment = requestDto.getComment();
     }
 
-    public CommentReplyResponse toCommentReplyResponse(User user) {
+    public CommentReplyResponse toCommentReplyResponse(User user,Comment comment) {
         return CommentReplyResponse.builder()
                 .commentId(this.id)
                 .fromUserId(user.getId())
+                .toUserId(comment.getUser().getId())
                 .build();
     }
 

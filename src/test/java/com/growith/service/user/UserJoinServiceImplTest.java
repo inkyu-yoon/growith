@@ -54,7 +54,7 @@ class UserJoinServiceImplTest {
                     .willReturn(mockUser);
             given(mockUser.getUserRole())
                     .willReturn(UserRole.ROLE_USER);
-            given(JwtUtil.createToken(anyString(), anyString(), anyString(), anyLong())).
+            given(JwtUtil.createToken(anyLong(),anyString(), anyString(), anyString(), anyLong())).
                     willReturn("jwt");
 
 
@@ -78,7 +78,7 @@ class UserJoinServiceImplTest {
 
             given(mockUser.getUserRole())
                     .willReturn(UserRole.ROLE_USER);
-            given(JwtUtil.createToken(anyString(), anyString(), anyString(), anyLong())).
+            given(JwtUtil.createToken(anyLong(),anyString(), anyString(), anyString(), anyLong())).
                     willReturn("jwt");
 
 

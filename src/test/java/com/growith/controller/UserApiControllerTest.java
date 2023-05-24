@@ -115,7 +115,7 @@ class UserApiControllerTest {
         postId = 1L;
         alarmId = 1L;
 
-        token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
+        token = JwtUtil.createToken(1L,userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
         cookie = new Cookie("jwt", token);
         gson = new Gson();
         userGetResponse = new UserGetResponse(userId, "userName", "imageUrl", "nickName", "email", "blog", "githubUrl");

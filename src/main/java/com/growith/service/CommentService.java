@@ -35,7 +35,7 @@ public class CommentService {
 
         Comment comment = commentRepository.save(requestDto.toEntity(foundUser, foundPost));
 
-        return comment.toCommentResponse();
+        return comment.toCommentResponse(foundPost);
     }
     @Transactional(readOnly = true)
     public List<CommentGetResponse> getAllComments(Long postId) {
@@ -49,7 +49,7 @@ public class CommentService {
         User foundUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
-        postRepository.findById(postId)
+        Post foundPost = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(POST_NOT_FOUND));
 
         Comment foundComment = commentRepository.findById(commentId)
@@ -59,14 +59,14 @@ public class CommentService {
 
         commentRepository.delete(foundComment);
 
-        return foundComment.toCommentResponse();
+        return foundComment.toCommentResponse(foundPost);
     }
 
     public CommentResponse updateComment(Long postId, String userName, Long commentId, CommentUpdateRequest requestDto) {
         User foundUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(USER_NOT_FOUND));
 
-        postRepository.findById(postId)
+        Post foundPost = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(POST_NOT_FOUND));
 
         Comment foundComment = commentRepository.findById(commentId)
@@ -76,7 +76,7 @@ public class CommentService {
 
         foundComment.update(requestDto);
 
-        return foundComment.toCommentResponse();
+        return foundComment.toCommentResponse(foundPost);
     }
 
     @CreateAlarm(classInfo = CommentReplyResponse.class)
@@ -92,7 +92,7 @@ public class CommentService {
 
         commentRepository.save(requestDto.toEntity(foundUser, foundPost, foundComment));
 
-        return foundComment.toCommentReplyResponse(foundUser);
+        return foundComment.toCommentReplyResponse(foundUser,foundComment);
     }
 
 }

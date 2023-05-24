@@ -30,7 +30,7 @@ public class UserJoinServiceImpl implements UserJoinService {
         User foundUser = userRepository.findByUserName(userProfile.getUserName())
                 .orElseGet(() -> join(userProfile));
 
-        return JwtUtil.createToken(foundUser.getUsername(), foundUser.getUserRole().toString(), secretKey, TOKEN_VALID_MILLIS);
+        return JwtUtil.createToken(foundUser.getId(),foundUser.getUsername(), foundUser.getUserRole().toString(), secretKey, TOKEN_VALID_MILLIS);
 
     }
 

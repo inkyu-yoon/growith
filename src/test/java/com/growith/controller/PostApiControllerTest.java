@@ -108,7 +108,7 @@ class PostApiControllerTest {
 
         postId = 1L;
         userName = "userName";
-        token = JwtUtil.createToken(userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
+        token = JwtUtil.createToken(1L,userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
         cookie = new Cookie("jwt", token);
         commentId = 1L;
         comment = "comment";

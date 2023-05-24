@@ -57,7 +57,8 @@
                     </div>
                     <div sec:authorize="isAuthenticated()">
                         <button type="button" class="btn btn-sm mx-2" style="background-color: #378DFC;color: white"
-                                data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample" onclick="getNotifications()">
+                                data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample"
+                                aria-controls="offcanvasExample" onclick="getNotifications()">
                             🔔
                         </button>
                         <button type="button" class="btn btn-sm mx-2" style="background-color: #378DFC;color: white"
@@ -88,11 +89,11 @@
     </div>
 
 
-        <script>
-            function getNotifications() {
-                console.log("시작");
+    <script>
+        function getNotifications() {
+            console.log("시작");
 
-                $.get("/api/v1/users/alarms", function(data) {
+            $.get("/api/v1/users/alarms", function (data) {
                 // API 응답을 받았을 때 동작할 코드 작성
                 var notifications = data.result;
                 console.log(notifications);
@@ -102,61 +103,61 @@
                 notificationsList.innerHTML = "";
 
                 // 알림 목록 동적으로 생성
-                    for (var i = 0; i < notifications.length; i++) {
-                        var notification = notifications[i];
-                        var cardDiv = document.createElement("div");
-                        cardDiv.className = "card border-primary my-lg-1";
+                for (var i = 0; i < notifications.length; i++) {
+                    var notification = notifications[i];
+                    var cardDiv = document.createElement("div");
+                    cardDiv.className = "card border-primary my-lg-1";
 
-                        var cardBodyDiv = document.createElement("div");
-                        cardBodyDiv.className = "card-body";
-                        cardBodyDiv.style.display = "flex";
-                        cardBodyDiv.style.justifyContent = "space-between";
+                    var cardBodyDiv = document.createElement("div");
+                    cardBodyDiv.className = "card-body";
+                    cardBodyDiv.style.display = "flex";
+                    cardBodyDiv.style.justifyContent = "space-between";
 
-                        var contentDiv = document.createElement("div");
-                        contentDiv.innerHTML = `
+                    var contentDiv = document.createElement("div");
+                    contentDiv.innerHTML = `
         <strong>${notification.fromUserNickName}</strong>님이
         <a href="/posts/${notification.postId}">${notification.postName}</a>에 ${notification.text}
         <br>
         <span class="timestamp">${notification.createdAt}</span>`;
 
-                        var deleteButton = document.createElement("button");
-                        deleteButton.innerHTML = "×";
-                        deleteButton.className = "btn btn-sm mx-2";
-                        deleteButton.addEventListener("click", function() {
-                            alarm.alarmDelete(notification.alarmId);
-                        });
+                    var deleteButton = document.createElement("button");
+                    deleteButton.innerHTML = "×";
+                    deleteButton.className = "btn btn-sm mx-2";
+                    deleteButton.addEventListener("click", function () {
+                        alarm.alarmDelete(notification.alarmId);
+                    });
 
-                        cardBodyDiv.appendChild(contentDiv);
-                        cardBodyDiv.appendChild(deleteButton);
-                        cardDiv.appendChild(cardBodyDiv);
-                        notificationsList.appendChild(cardDiv);
-                    }
+                    cardBodyDiv.appendChild(contentDiv);
+                    cardBodyDiv.appendChild(deleteButton);
+                    cardDiv.appendChild(cardBodyDiv);
+                    notificationsList.appendChild(cardDiv);
+                }
 
-                });
+            });
         }
 
-            let alarm = {
-                init: function () {
-                    var _this = this;
+        let alarm = {
+            init: function () {
+                var _this = this;
 
-                },
-                alarmDelete: function (alarmId) {
+            },
+            alarmDelete: function (alarmId) {
 
-                    const url = `/api/v1/users/alarms/${alarmId}`;
-                            axios.delete(url, {
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    }
-                                }
-                            ).then((response) => {
-                                    location.reload();
-                                }
-                            ).catch((error) => {
-                                console.log(error);
-                                $('#alertMessage').text(error.response.data.result);
-                                $('#alertModal').modal('show');
-                            });
-                }
+                const url = `/api/v1/users/alarms/${alarmId}`;
+                axios.delete(url, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                ).then((response) => {
+                        location.reload();
+                    }
+                ).catch((error) => {
+                    console.log(error);
+                    $('#alertMessage').text(error.response.data.result);
+                    $('#alertModal').modal('show');
+                });
+            }
 
 
             };
@@ -222,7 +223,7 @@
                         <div class="content">
                             <div align="center">
                                 <p id="askMessage" style="font-family: 'Jua', sans-serif;font-size: 30px"></p>
-                                <button type="button" id ='confirm-Btn' class="btn btn-sm mx-2" data-bs-dismiss="modal"
+                                <button type="button" id='confirm-Btn' class="btn btn-sm mx-2" data-bs-dismiss="modal"
                                         style="background-color: #FFC107;color:white;">OK
                                 </button>
                                 <button type="button" class="btn btn-sm mx-2" data-bs-dismiss="modal"

@@ -9,6 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class CommentResponse {
     private Long commentId;
+    private Long toUserId;
     private String comment;
     private Long postId;
     private Long fromUserId;
@@ -18,5 +19,6 @@ public class CommentResponse {
         this.comment = commentResponse.getComment();
         this.postId = commentResponse.getPostId();
         this.fromUserId = commentResponse.getFromUserId();
+        this.toUserId = commentResponse.getToUserId();
     }
 }
