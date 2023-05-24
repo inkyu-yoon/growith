@@ -37,6 +37,8 @@ class PostLikeServiceTest {
     @Mock
     User mockUser;
     @Mock
+    User mockPostUser;
+    @Mock
     Post mockPost;
     @Mock
     PostLike mockPostLike;
@@ -62,6 +64,10 @@ class PostLikeServiceTest {
                     .willReturn(Optional.of(mockUser));
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
+            given(mockPost.getUser())
+                    .willReturn(mockPostUser);
+            given(mockPostUser.getId())
+                    .willReturn(1L);
             given(postLikeRepository.findByUserAndPost(mockUser, mockPost))
                     .willReturn(Optional.empty());
 
@@ -81,6 +87,10 @@ class PostLikeServiceTest {
                     .willReturn(Optional.of(mockUser));
             given(postRepository.findById(postId))
                     .willReturn(Optional.of(mockPost));
+            given(mockPost.getUser())
+                    .willReturn(mockPostUser);
+            given(mockPostUser.getId())
+                    .willReturn(1L);
             given(postLikeRepository.findByUserAndPost(mockUser, mockPost))
                     .willReturn(Optional.of(mockPostLike));
 
