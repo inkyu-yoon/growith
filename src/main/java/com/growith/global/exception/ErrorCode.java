@@ -17,6 +17,7 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."),
     USER_NOT_MATCH(HttpStatus.UNAUTHORIZED,"본인만 접근할 수 있습니다."),
     LIKE_NOT_ALLOWED(HttpStatus.UNAUTHORIZED,"본인 게시글에 좋아요를 누를 수 없습니다."),
+    ALLOWED_ONLY_ADMIN(HttpStatus.UNAUTHORIZED,"관리자만 요청할 수 있습니다."),
 
     REQUEST_PARAM_NOT_MATCH(HttpStatus.BAD_REQUEST,"Request Parameter가 유효한지 확인해주세요."),
 

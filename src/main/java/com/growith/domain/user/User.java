@@ -16,7 +16,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -136,7 +135,7 @@ public class User extends BaseEntity implements UserDetails {
      * 요청하는 자가 본인이면 가능, 혹은 관리자는 본인이 아니어도 가능
      */
     public void checkAuth(String userName) {
-        if (!this.userName.equals(userName) & !this.userRole.equals(ROLE_ADMIN)) {
+        if (!this.userName.equals(userName) && !this.userRole.equals(ROLE_ADMIN)) {
             throw new AppException(ErrorCode.USER_NOT_MATCH);
         }
     }
@@ -160,5 +159,11 @@ public class User extends BaseEntity implements UserDetails {
      */
     public boolean checkNickName(UserUpdateRequest requestDto) {
         return this.nickName.equals(requestDto.getNickName());
+    }
+
+    public void checkAdmin() {
+        if (!this.userRole.equals(ROLE_ADMIN)) {
+            throw new AppException(ErrorCode.ALLOWED_ONLY_ADMIN);
+        }
     }
 }
