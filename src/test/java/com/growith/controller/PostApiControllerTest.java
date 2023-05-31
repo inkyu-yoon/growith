@@ -20,6 +20,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -37,6 +40,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static com.growith.global.exception.ErrorCode.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -108,7 +112,7 @@ class PostApiControllerTest {
 
         postId = 1L;
         userName = "userName";
-        token = JwtUtil.createToken(1L,userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
+        token = JwtUtil.createToken(1L, userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
         cookie = new Cookie("jwt", token);
         commentId = 1L;
         comment = "comment";
@@ -363,60 +367,32 @@ class PostApiControllerTest {
                     .andExpect(jsonPath("$.result.postId").value(1));
         }
 
-        @Test
-        @DisplayName("게시글 수정 에러 테스트 (게시글을 찾을 수 없는 경우)")
-        void updatePostError1() throws Exception {
-
-            when(postService.updatePost(anyLong(), anyString(), any(PostUpdateRequest.class)))
-                    .thenThrow(new AppException(POST_NOT_FOUND));
-
-            mockMvc.perform(put("/api/v1/posts/" + postId)
-                            .cookie(cookie)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(gson.toJson(request)))
-                    .andDo(print())
-                    .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
-
+        private static Stream<Arguments> testCasesOfUpdatePost() {
+            return Stream.of(
+                    Arguments.of(ErrorCode.POST_NOT_FOUND, 404, "해당 게시글을 찾을 수 없습니다."),
+                    Arguments.of(ErrorCode.USER_NOT_FOUND, 404, "가입된 회원이 아닙니다."),
+                    Arguments.of(ErrorCode.USER_NOT_MATCH, 401, "본인만 접근할 수 있습니다.")
+            );
         }
 
-        @Test
-        @DisplayName("게시글 수정 에러 테스트 (회원을 찾을 수 없는 경우)")
-        void updatePostError2() throws Exception {
+        @DisplayName("게시글 수정 에러 테스트")
+        @ParameterizedTest
+        @MethodSource("testCasesOfUpdatePost")
+        void updatePostError1(ErrorCode errorCode, int responseStatus, String errorMessage) throws Exception {
 
             when(postService.updatePost(anyLong(), anyString(), any(PostUpdateRequest.class)))
-                    .thenThrow(new AppException(USER_NOT_FOUND));
+                    .thenThrow(new AppException(errorCode));
 
             mockMvc.perform(put("/api/v1/posts/" + postId)
                             .cookie(cookie)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(gson.toJson(request)))
                     .andDo(print())
-                    .andExpect(status().isNotFound())
+                    .andExpect(status().is(responseStatus))
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
-
-        }
-
-        @Test
-        @DisplayName("게시글 수정 에러 테스트 (삭제 요청자가 본인이 아닌 경우)")
-        void updatePostError3() throws Exception {
-
-            when(postService.updatePost(anyLong(), anyString(), any(PostUpdateRequest.class)))
-                    .thenThrow(new AppException(USER_NOT_MATCH));
-
-            mockMvc.perform(put("/api/v1/posts/" + postId)
-                            .cookie(cookie)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(gson.toJson(request)))
-                    .andDo(print())
-                    .andExpect(status().isUnauthorized())
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result").value(errorMessage));
 
         }
 
@@ -458,54 +434,30 @@ class PostApiControllerTest {
                     .andExpect(jsonPath("$.result.postId").value(1));
         }
 
-        @Test
+        private static Stream<Arguments> testCasesOfDeletePost() {
+            return Stream.of(
+                    Arguments.of(ErrorCode.POST_NOT_FOUND, 404, "해당 게시글을 찾을 수 없습니다."),
+                    Arguments.of(ErrorCode.USER_NOT_FOUND, 404, "가입된 회원이 아닙니다."),
+                    Arguments.of(ErrorCode.USER_NOT_MATCH, 401, "본인만 접근할 수 있습니다.")
+            );
+        }
+
         @DisplayName("게시글 삭제 에러 테스트 (게시글을 찾을 수 없는 경우)")
-        void deletePostError1() throws Exception {
+        @ParameterizedTest
+        @MethodSource("testCasesOfDeletePost")
+        void deletePostError1(ErrorCode errorCode, int responseStatus, String errorMessage) throws Exception {
 
             when(postService.deletePost(anyLong(), anyString()))
-                    .thenThrow(new AppException(POST_NOT_FOUND));
+                    .thenThrow(new AppException(errorCode));
 
             mockMvc.perform(delete("/api/v1/posts/" + postId)
                             .cookie(cookie))
                     .andDo(print())
-                    .andExpect(status().isNotFound())
+                    .andExpect(status().is(responseStatus))
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
-
-        }
-
-        @Test
-        @DisplayName("게시글 삭제 에러 테스트 (회원을 찾을 수 없는 경우)")
-        void deletePostError2() throws Exception {
-
-            when(postService.deletePost(anyLong(), anyString()))
-                    .thenThrow(new AppException(USER_NOT_FOUND));
-
-            mockMvc.perform(delete("/api/v1/posts/" + postId)
-                            .cookie(cookie))
-                    .andDo(print())
-                    .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
-
-        }
-
-        @Test
-        @DisplayName("게시글 삭제 에러 테스트 (삭제 요청자가 본인이 아닌 경우)")
-        void deletePostError3() throws Exception {
-
-            when(postService.deletePost(anyLong(), anyString()))
-                    .thenThrow(new AppException(USER_NOT_MATCH));
-
-            mockMvc.perform(delete("/api/v1/posts/" + postId)
-                            .cookie(cookie))
-                    .andDo(print())
-                    .andExpect(status().isUnauthorized())
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result").value(errorMessage));
 
         }
     }
@@ -532,39 +484,30 @@ class PostApiControllerTest {
                     .andExpect(jsonPath("$.result.commentId").value(commentId))
                     .andExpect(jsonPath("$.result.comment").value(comment));
         }
-
-        @Test
-        @DisplayName("댓글 등록 실패 테스트(가입된 회원이 아닌 경우)")
-        void writeCommentError1() throws Exception {
-            when(commentService.createComment(anyLong(), anyString(), any(CommentCreateRequest.class)))
-                    .thenThrow(new AppException(USER_NOT_FOUND));
-
-            mockMvc.perform(post("/api/v1/posts/" + postId + "/comments")
-                            .cookie(cookie)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(gson.toJson(commentCreateRequest)))
-                    .andDo(print())
-                    .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
+        private static Stream<Arguments> testCasesOfWriteComment() {
+            return Stream.of(
+                    Arguments.of(ErrorCode.USER_NOT_FOUND, 404, "가입된 회원이 아닙니다."),
+                    Arguments.of(ErrorCode.POST_NOT_FOUND, 404, "해당 게시글을 찾을 수 없습니다.")
+            );
         }
 
-        @Test
-        @DisplayName("댓글 등록 실패 테스트(게시글이 존재하지 않는 경우)")
-        void writeCommentError2() throws Exception {
+        @DisplayName("댓글 등록 실패 테스트")
+        @ParameterizedTest
+        @MethodSource("testCasesOfWriteComment")
+        void writeCommentError1(ErrorCode errorCode, int responseStatus, String errorMessage) throws Exception {
             when(commentService.createComment(anyLong(), anyString(), any(CommentCreateRequest.class)))
-                    .thenThrow(new AppException(POST_NOT_FOUND));
+                    .thenThrow(new AppException(errorCode));
 
             mockMvc.perform(post("/api/v1/posts/" + postId + "/comments")
                             .cookie(cookie)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(gson.toJson(commentCreateRequest)))
                     .andDo(print())
-                    .andExpect(status().isNotFound())
+                    .andExpect(status().is(responseStatus))
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result").value(errorMessage));
         }
     }
 
@@ -633,20 +576,31 @@ class PostApiControllerTest {
                     .andExpect(jsonPath("$.result.commentId").value(commentId))
                     .andExpect(jsonPath("$.result.comment").value(comment));
         }
+        private static Stream<Arguments> testCasesOfDeleteComment() {
+            return Stream.of(
+                    Arguments.of(ErrorCode.USER_NOT_FOUND, 404, "가입된 회원이 아닙니다."),
+                    Arguments.of(ErrorCode.POST_NOT_FOUND, 404, "해당 게시글을 찾을 수 없습니다."),
+                    Arguments.of(ErrorCode.COMMENT_NOT_FOUND, 404, "해당 댓글을 찾을 수 없습니다."),
+                    Arguments.of(ErrorCode.USER_NOT_MATCH, 401, "본인만 접근할 수 있습니다.")
 
-        @Test
+            );
+        }
+
         @DisplayName("댓글 삭제 실패")
-        void deleteCommentError() throws Exception {
+        @ParameterizedTest
+        @MethodSource("testCasesOfDeleteComment")
+        void deleteCommentError(ErrorCode errorCode, int responseStatus, String errorMessage) throws Exception {
             when(commentService.deleteComment(anyLong(), anyString(), anyLong()))
-                    .thenThrow(new AppException(USER_NOT_FOUND));
+                    .thenThrow(new AppException(errorCode));
 
             mockMvc.perform(delete("/api/v1/posts/" + postId + "/comments/" + commentId)
                             .cookie(cookie))
                     .andDo(print())
-                    .andExpect(status().isNotFound())
+                    .andExpect(status().is(responseStatus))
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result").value(errorMessage));
         }
 
     }
@@ -674,21 +628,32 @@ class PostApiControllerTest {
                     .andExpect(jsonPath("$.result.comment").value(comment));
         }
 
-        @Test
+        private static Stream<Arguments> testCasesOfUpdateComment() {
+            return Stream.of(
+                    Arguments.of(ErrorCode.USER_NOT_FOUND, 404, "가입된 회원이 아닙니다."),
+                    Arguments.of(ErrorCode.POST_NOT_FOUND, 404, "해당 게시글을 찾을 수 없습니다."),
+                    Arguments.of(ErrorCode.COMMENT_NOT_FOUND, 404, "해당 댓글을 찾을 수 없습니다."),
+                    Arguments.of(ErrorCode.USER_NOT_MATCH, 401, "본인만 접근할 수 있습니다.")
+
+            );
+        }
         @DisplayName("댓글 수정 실패")
-        void updateCommentError() throws Exception {
+        @ParameterizedTest
+        @MethodSource("testCasesOfUpdateComment")
+        void updateCommentError(ErrorCode errorCode, int responseStatus, String errorMessage) throws Exception {
             when(commentService.updateComment(anyLong(), anyString(), anyLong(), any(CommentUpdateRequest.class)))
-                    .thenThrow(new AppException(USER_NOT_FOUND));
+                    .thenThrow(new AppException(errorCode));
 
             mockMvc.perform(put("/api/v1/posts/" + postId + "/comments/" + commentId)
                             .cookie(cookie)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(gson.toJson(commentUpdateRequest)))
                     .andDo(print())
-                    .andExpect(status().isNotFound())
+                    .andExpect(status().is(responseStatus))
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result").value(errorMessage));
         }
     }
 
@@ -715,21 +680,31 @@ class PostApiControllerTest {
                     .andExpect(jsonPath("$.result.fromUserId").value(1));
         }
 
-        @Test
+        private static Stream<Arguments> testCasesOfWriteCommentReply() {
+            return Stream.of(
+                    Arguments.of(ErrorCode.USER_NOT_FOUND, 404, "가입된 회원이 아닙니다."),
+                    Arguments.of(ErrorCode.POST_NOT_FOUND, 404, "해당 게시글을 찾을 수 없습니다."),
+                    Arguments.of(ErrorCode.COMMENT_NOT_FOUND, 404, "해당 댓글을 찾을 수 없습니다.")
+            );
+        }
+
         @DisplayName("대댓글 등록 실패 테스트")
-        void writeCommentReplyError1() throws Exception {
+        @ParameterizedTest
+        @MethodSource("testCasesOfWriteCommentReply")
+        void writeCommentReplyError1(ErrorCode errorCode, int responseStatus, String errorMessage) throws Exception {
             when(commentService.createCommentReply(anyLong(), anyString(), anyLong(), any(CommentCreateRequest.class)))
-                    .thenThrow(new AppException(USER_NOT_FOUND));
+                    .thenThrow(new AppException(errorCode));
 
             mockMvc.perform(post("/api/v1/posts/" + postId + "/comments/" + commentId)
                             .cookie(cookie)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(gson.toJson(commentCreateRequest)))
                     .andDo(print())
-                    .andExpect(status().isNotFound())
+                    .andExpect(status().is(responseStatus))
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result").value(errorMessage));
         }
 
     }
@@ -754,35 +729,29 @@ class PostApiControllerTest {
                     .andExpect(jsonPath("$.result.postId").value(postId));
         }
 
-        @Test
-        @DisplayName("게시글 좋아요 실패 테스트 (가입된 회원이 아닌 경우)")
-        void PostLikeError1() throws Exception {
-
-            when(postLikeService.addLike(anyString(), anyLong()))
-                    .thenThrow(new AppException(USER_NOT_FOUND));
-
-            mockMvc.perform(post("/api/v1/posts/" + postId + "/likes")
-                            .cookie(cookie))
-                    .andDo(print())
-                    .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
+        private static Stream<Arguments> testCasesOfPostLike() {
+            return Stream.of(
+                    Arguments.of(ErrorCode.USER_NOT_FOUND, 404, "가입된 회원이 아닙니다."),
+                    Arguments.of(ErrorCode.POST_NOT_FOUND, 404, "해당 게시글을 찾을 수 없습니다.")
+            );
         }
-        @Test
-        @DisplayName("게시글 좋아요 실패 테스트 (게시글이 존재하지 않는 경우)")
-        void PostLikeError2() throws Exception {
+
+        @DisplayName("게시글 좋아요 실패 테스트 (가입된 회원이 아닌 경우)")
+        @ParameterizedTest
+        @MethodSource("testCasesOfPostLike")
+        void PostLikeError1(ErrorCode errorCode, int responseStatus, String errorMessage) throws Exception {
 
             when(postLikeService.addLike(anyString(), anyLong()))
-                    .thenThrow(new AppException(POST_NOT_FOUND));
+                    .thenThrow(new AppException(errorCode));
 
             mockMvc.perform(post("/api/v1/posts/" + postId + "/likes")
                             .cookie(cookie))
                     .andDo(print())
-                    .andExpect(status().isNotFound())
+                    .andExpect(status().is(responseStatus))
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result").value(errorMessage));
         }
 
     }

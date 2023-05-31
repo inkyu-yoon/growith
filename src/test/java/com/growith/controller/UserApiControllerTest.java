@@ -12,6 +12,7 @@ import com.growith.domain.user.dto.UserUpdateResponse;
 import com.growith.global.aop.BindingCheck;
 import com.growith.global.config.SecurityConfig;
 import com.growith.global.exception.AppException;
+import com.growith.global.exception.ErrorCode;
 import com.growith.global.util.JwtUtil;
 import com.growith.service.AlarmService;
 import com.growith.service.PostService;
@@ -21,6 +22,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -39,6 +43,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static com.growith.global.exception.ErrorCode.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -307,12 +312,22 @@ class UserApiControllerTest {
                     .andExpect(jsonPath("$.result.email").value("email"));
 
         }
+        private static Stream<Arguments> testCasesOfUpdateUser() {
+            return Stream.of(
+                    Arguments.of(USER_NOT_FOUND,404,"가입된 회원이 아닙니다."),
+                    Arguments.of(DUPLICATE_NICKNAME,409,"이미 존재하는 닉네임입니다."),
+                    Arguments.of(USER_NOT_MATCH,401,"본인만 접근할 수 있습니다.")
+            );
+        }
 
-        @Test
+
+
+        @ParameterizedTest
+        @MethodSource("testCasesOfUpdateUser")
         @DisplayName("회원 정보 수정 실패 테스트 (회원이 존재하지 않는 경우)")
-        void error1() throws Exception {
+        void error1(ErrorCode errorCode, int responseStatus, String errorMessage) throws Exception {
 
-            doThrow(new AppException(USER_NOT_FOUND))
+            doThrow(new AppException(errorCode))
                     .when(userService).updateUser(anyString(), anyLong(), any(UserUpdateRequest.class));
 
 
@@ -321,47 +336,11 @@ class UserApiControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(gson.toJson(userUpdateRequest)))
                     .andDo(print())
+                    .andExpect(status().is(responseStatus))
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
-
-        }
-
-        @Test
-        @DisplayName("회원 정보 수정 실패 테스트 (수정 요청자가 본인이 아닌 경우)")
-        void error2() throws Exception {
-
-            doThrow(new AppException(USER_NOT_MATCH))
-                    .when(userService).updateUser(anyString(), anyLong(), any(UserUpdateRequest.class));
-
-
-            mockMvc.perform(patch("/api/v1/users/" + userId)
-                            .cookie(cookie)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(gson.toJson(userUpdateRequest)))
-                    .andDo(print())
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
-
-        }
-
-        @Test
-        @DisplayName("회원 정보 수정 실패 테스트 (중복된 닉네임으로 변경 요청하는 경우)")
-        void error3() throws Exception {
-
-            doThrow(new AppException(DUPLICATE_NICKNAME))
-                    .when(userService).updateUser(anyString(), anyLong(), any(UserUpdateRequest.class));
-
-
-            mockMvc.perform(patch("/api/v1/users/" + userId)
-                            .cookie(cookie)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(gson.toJson(userUpdateRequest)))
-                    .andDo(print())
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result").value(errorMessage));
 
         }
 
@@ -443,40 +422,33 @@ class UserApiControllerTest {
                     .andExpect(jsonPath("$.result").value("complete"));
 
         }
+        private static Stream<Arguments> testCasesOfDeleteAlarm() {
+            return Stream.of(
+                    Arguments.of(USER_NOT_FOUND,404,"가입된 회원이 아닙니다."),
+                    Arguments.of(ALARM_NOT_FOUND,404,"알림 데이터를 찾을 수 없습니다.")
+            );
+        }
 
-        @Test
-        @DisplayName("알림 삭제 실패 테스트 (가입된 회원을 찾을 수 없는 경우)")
-        void error1() throws Exception {
+        @ParameterizedTest
+        @MethodSource("testCasesOfDeleteAlarm")
+        @DisplayName("알림 삭제 실패 테스트 ")
+        void error1(ErrorCode errorCode, int responseStatus, String errorMessage) throws Exception {
 
-            doThrow(new AppException(USER_NOT_FOUND))
+            doThrow(new AppException(errorCode))
                     .when(alarmService)
                     .delete(userName, alarmId);
 
             mockMvc.perform(delete("/api/v1/users/alarms/"+alarmId)
                             .cookie(cookie))
                     .andDo(print())
+                    .andExpect(status().is(responseStatus))
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").value("가입된 회원이 아닙니다."));
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result").value(errorMessage));
 
         }
 
-        @Test
-        @DisplayName("알림 삭제 실패 테스트 (알림을 찾을 수 없는 경우)")
-        void error2() throws Exception {
-
-            doThrow(new AppException(ALARM_NOT_FOUND))
-                    .when(alarmService)
-                    .delete(userName, alarmId);
-
-            mockMvc.perform(delete("/api/v1/users/alarms/"+alarmId)
-                            .cookie(cookie))
-                    .andDo(print())
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").value("알림 데이터를 찾을 수 없습니다."));
-
-        }
     }
 
 }

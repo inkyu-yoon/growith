@@ -148,15 +148,15 @@ class ProductApiControllerTest {
 
         private static Stream<Arguments> testCasesOfAddProduct() {
             return Stream.of(
-                    Arguments.of(ErrorCode.USER_NOT_FOUND),
-                    Arguments.of(ErrorCode.ALLOWED_ONLY_ADMIN)
+                    Arguments.of(ErrorCode.USER_NOT_FOUND,404,"가입된 회원이 아닙니다."),
+                    Arguments.of(ErrorCode.ALLOWED_ONLY_ADMIN,401,"관리자만 요청할 수 있습니다.")
             );
         }
 
         @DisplayName("상품 등록 실패 테스트")
         @ParameterizedTest
         @MethodSource("testCasesOfAddProduct")
-        void AddProductError(ErrorCode errorCode) throws Exception {
+        void AddProductError(ErrorCode errorCode, int responseStatus, String errorMessage) throws Exception {
             when(productService.addProduct(anyString(), any()))
                     .thenThrow(new AppException(errorCode));
 
@@ -165,15 +165,14 @@ class ProductApiControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(gson.toJson(productAddRequest)))
                     .andDo(print())
-                    .andExpect(status().is(errorCode.getHttpStatus().value()))
+                    .andExpect(status().is(responseStatus))
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
                     .andExpect(jsonPath("$.result").exists())
-                    .andExpect(jsonPath("$.result").value(errorCode.getMessage()));
+                    .andExpect(jsonPath("$.result").value(errorMessage));
 
         }
 
     }
-
 
 }
