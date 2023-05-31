@@ -1,8 +1,12 @@
 package com.growith.domain.product;
 
 import com.growith.domain.BaseEntity;
+import com.growith.domain.product.dto.ProductGetResponse;
 import com.growith.domain.product.dto.ProductResponse;
+import com.growith.domain.product.dto.ProductUpdateRequest;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -42,4 +46,20 @@ public class Product extends BaseEntity {
                 .build();
     }
 
+    public ProductGetResponse toProductGetResponse() {
+        return ProductGetResponse.builder()
+                .productId(this.id)
+                .name(this.name)
+                .imageUrl(this.imageUrl)
+                .price(this.price)
+                .quantity(this.quantity)
+                .build();
+    }
+
+    public void update(ProductUpdateRequest requestDto) {
+        this.name = requestDto.getName();
+        this.quantity = requestDto.getQuantity();
+        this.price = requestDto.getPrice();
+        this.imageUrl = requestDto.getImageUrl();
+    }
 }

@@ -12,6 +12,7 @@ public enum ErrorCode {
     DUPLICATE_POST_LIKE(HttpStatus.CONFLICT, "좋아요는 중복 입력이 불가능합니다."),
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "가입된 회원이 아닙니다."),
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품 정보를 찾을 수 없습니다."),
     ALARM_NOT_FOUND(HttpStatus.NOT_FOUND, "알림 데이터를 찾을 수 없습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."),

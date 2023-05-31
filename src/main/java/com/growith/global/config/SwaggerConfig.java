@@ -22,25 +22,6 @@ public class SwaggerConfig {
                 .build();
     }
 
-    @Bean
-    public GroupedOpenApi user() {
-        String[] paths = {"/api/v1/users/**"};
-
-        return GroupedOpenApi.builder()
-                .group("User API v1")
-                .pathsToMatch(paths)
-                .build();
-    }
-
-    @Bean
-    public GroupedOpenApi product() {
-        String[] paths = {"/api/v1/posts/**"};
-
-        return GroupedOpenApi.builder()
-                .group("Post API v1")
-                .pathsToMatch(paths)
-                .build();
-    }
 
     @Bean
     public OpenAPI openAPI() {
