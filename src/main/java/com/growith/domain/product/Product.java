@@ -29,14 +29,12 @@ public class Product extends BaseEntity {
 
     private Long price;
 
-    private String imageUrl;
 
     @Builder
-    public Product(String name, Long quantity, Long price, String imageUrl) {
+    public Product(String name, Long quantity, Long price) {
         this.name = name;
         this.quantity = quantity;
         this.price = price;
-        this.imageUrl = imageUrl;
     }
 
     public ProductResponse toProductResponse() {
@@ -50,7 +48,6 @@ public class Product extends BaseEntity {
         return ProductGetResponse.builder()
                 .productId(this.id)
                 .name(this.name)
-                .imageUrl(this.imageUrl)
                 .price(this.price)
                 .quantity(this.quantity)
                 .build();
@@ -60,6 +57,5 @@ public class Product extends BaseEntity {
         this.name = requestDto.getName();
         this.quantity = requestDto.getQuantity();
         this.price = requestDto.getPrice();
-        this.imageUrl = requestDto.getImageUrl();
     }
 }

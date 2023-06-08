@@ -23,15 +23,13 @@ public class ProductUpdateRequest {
     @Positive
     private Long price;
 
-    @NotNull
-    private String imageUrl;
+
 
     public Product toEntity() {
         return Product.builder()
                 .name(this.name)
                 .quantity(this.quantity)
                 .price(this.price)
-                .imageUrl(this.imageUrl)
                 .build();
     }
 }

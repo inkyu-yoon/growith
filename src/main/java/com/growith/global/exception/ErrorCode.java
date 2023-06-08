@@ -16,6 +16,7 @@ public enum ErrorCode {
     ALARM_NOT_FOUND(HttpStatus.NOT_FOUND, "알림 데이터를 찾을 수 없습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."),
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 파일을 찾을 수 없습니다."),
     USER_NOT_MATCH(HttpStatus.UNAUTHORIZED,"본인만 접근할 수 있습니다."),
     LIKE_NOT_ALLOWED(HttpStatus.UNAUTHORIZED,"본인 게시글에 좋아요를 누를 수 없습니다."),
     ALLOWED_ONLY_ADMIN(HttpStatus.UNAUTHORIZED,"관리자만 요청할 수 있습니다."),
@@ -23,7 +24,10 @@ public enum ErrorCode {
     REQUEST_PARAM_NOT_MATCH(HttpStatus.BAD_REQUEST,"Request Parameter가 유효한지 확인해주세요."),
 
     TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "로그인 후 이용해주세요!"),
-    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "다시 로그인 해주세요!");
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "다시 로그인 해주세요!"),
+    WRONG_FILE_FORMAT(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일입니다."),
+    EMPTY_FILE(HttpStatus.BAD_REQUEST, "파일이 존재하지 않습니다."),
+    FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
 
     private HttpStatus httpStatus;
     private String message;
