@@ -23,21 +23,21 @@
 
                     </div>
                     <th:block th:if="${#authentication.name} == ${post.userName}">
-                    <div class="d-flex justify-content-end my-2">
-                        <form action="/posts/edit" method="get">
-                            <input type="text" class="form-control" name="postId"
-                                   th:value="${post.postId}" hidden>
+                        <div class="d-flex justify-content-end my-2">
+                            <form action="/posts/edit" method="get">
+                                <input type="text" class="form-control" name="postId"
+                                       th:value="${post.postId}" hidden>
 
-                            <button
-                                    type="submit"
-                                    class="btn btn-sm bg-gradient-info">게시글 수정
+                                <button
+                                        type="submit"
+                                        class="btn btn-sm bg-gradient-info">게시글 수정
+                                </button>
+                            </form>
+                            <button th:onclick="|post.delete(${postId})|"
+                                    type="button"
+                                    class="btn btn-sm bg-gradient-danger mx-2">게시글 삭제
                             </button>
-                        </form>
-                        <button th:onclick="|post.delete(${postId})|"
-                                type="button"
-                                class="btn btn-sm bg-gradient-danger mx-2">게시글 삭제
-                        </button>
-                    </div>
+                        </div>
                     </th:block>
 
                     <div class="row">
@@ -75,32 +75,31 @@
 
 
                 <div class="card-body" style="padding-top: 0px">
-                    <!--                        <div style="overflow: hidden">-->
-                    <!--                            <th:block th:if="${!files.isEmpty()}">-->
-                    <!--                                <div style="float: right;">-->
-                    <!--                                    <div class="mb-3"-->
-                    <!--                                         style="border: 1px solid #E0E0E0;border-width: 1px; border-radius: 5px;">-->
-                    <!--                                        <div class="mx-3 my-3">-->
-                    <!--                                            <th class="align-middle text-center">-->
-                    <!--                                                <span class=" text-sm font-weight-bold" style="color: #5A2082"-->
-                    <!--                                                >첨부파일 목록</span>-->
-                    <!--                                            </th>-->
-                    <!--                                            <tr th:each="file : ${files}">-->
-                    <!--                                                <div class="row">-->
-                    <!--                                                    <th class="align-middle text-center">-->
-                    <!--                                                        <a th:href="${file.fileUrl}" target='_blank'>-->
-                    <!--                                                <span class=" text-xs font-weight-bold" style="color: #0d6efd"-->
-                    <!--                                                      th:text="${file.fileName}"></span>-->
-                    <!--                                                        </a>-->
-                    <!--                                                    </th>-->
-                    <!--                                                </div>-->
-                    <!--                                            </tr>-->
+                    <div style="float: right;">
+                        <div class="mb-3"
+                             style="border: 1px solid #E0E0E0;border-width: 1px; border-radius: 5px;">
+                            <div class="mx-3 my-3">
+                                <th:block th:if="${files != null}">
+                                    <th class="align-middle text-center">
+                                                <span class=" text-sm font-weight-bold" style="color: #5A2082"
+                                                >첨부파일 목록</span>
+                                    </th>
+                                    <tr th:each="file : ${files}">
+                                        <div class="row">
+                                            <th class="align-middle text-center">
+                                                <a th:href="${file.storedUrl}" target='_blank'>
+                                                <span class=" text-xs font-weight-bold" style="color: #0d6efd"
+                                                      th:text="${file.fileName}"></span>
+                                                </a>
+                                            </th>
+                                        </div>
+                                    </tr>
 
-                    <!--                                        </div>-->
-                    <!--                                    </div>-->
-                    <!--                                </div>-->
-                    <!--                            </th:block>-->
-                    <!--                            <div style="clear: both"></div>-->
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="clear: both"></div>
                     <div>
                         <div class="mx-lg-4">
                             <p
@@ -111,10 +110,29 @@
                     <!--                        </div>-->
                 </div>
                 <br>
+                <th:block th:if="${files != null}">
+                    <div class="image-gallery mx-lg-5">
+                        <th:block th:each="file, fileIndex : ${files}">
+                            <div class="gallery-item">
+                                <img th:src="${file.storedUrl}" alt="이미지" class="img-fluid" width="200">
+                            </div>
+                            <div class="file-name">
+                                <p th:text="${file.fileName}"></p>
+                            </div>
+                        </th:block>
+                    </div>
+
+                </th:block>
+
+
+                <br>
 
                 <div class="d-flex justify-content-center mb-3">
                     <button type="button" class="btn btn-outline-light"
-                            th:onclick="|post.addLike(${post.postId})|">  <i class="fas fa-sun" style="font-size:20px;color: #e0a800"></i> <div th:text="${post.totalNumOfLikes}" style="display: inline;color: #e0a800"></div></button>
+                            th:onclick="|post.addLike(${post.postId})|"><i class="fas fa-sun"
+                                                                           style="font-size:20px;color: #e0a800"></i>
+                        <div th:text="${post.totalNumOfLikes}" style="display: inline;color: #e0a800"></div>
+                    </button>
                 </div>
                 <div class="d-flex justify-content-center mb-3">
                     <form action="/posts/qna" method="get">
@@ -140,7 +158,7 @@
 
 
             <div class="card bg-light  my-4">
-                <div class="card-header bi bi-chat-dots d-flex" >
+                <div class="card-header bi bi-chat-dots d-flex">
                     <p class="mx-1 my-3" th:text="|${post.totalNumOfComments} Comments|"></p>
                     <i class="	fa fa-leaf my-3" style="font-size:20px;color: #5cb85c"></i>
                 </div>
@@ -164,17 +182,17 @@
                                                th:text="|${comment.createdDate}|"></p>
                                             <th:block th:if="${#authentication.name} == ${comment.userName}">
 
-                                            <a type="button" class="comment-edit-btn mx-1" data-bs-toggle="collapse"
-                                               th:attr="data-bs-target='#multi-collapse-'+${comment.commentId}"
-                                               style="font-size: xx-small; display: flex;align-items: center;">
-                                                수정
-                                            </a>
+                                                <a type="button" class="comment-edit-btn mx-1" data-bs-toggle="collapse"
+                                                   th:attr="data-bs-target='#multi-collapse-'+${comment.commentId}"
+                                                   style="font-size: xx-small; display: flex;align-items: center;">
+                                                    수정
+                                                </a>
 
-                                            <a type="button" class="mx-0"
-                                               style="font-size: xx-small;color: darkred;display: flex;align-items: center;"
-                                               th:onclick="|post.commentDelete(${post.postId},${comment.commentId})|">
-                                                삭제
-                                            </a>
+                                                <a type="button" class="mx-0"
+                                                   style="font-size: xx-small;color: darkred;display: flex;align-items: center;"
+                                                   th:onclick="|post.commentDelete(${post.postId},${comment.commentId})|">
+                                                    삭제
+                                                </a>
                                             </th:block>
                                         </div>
                                     </div>
@@ -187,7 +205,8 @@
 
                             <form class="collapse px-lg-3 mt-2" th:id="|multi-collapse-${comment.commentId}|">
                                 <div class="form-group">
-                                    <textarea class="form-control" th:id="|input-update-comment-${comment.commentId}|"  rows="1"
+                                    <textarea class="form-control" th:id="|input-update-comment-${comment.commentId}|"
+                                              rows="1"
                                               th:text="${comment.comment}">{{comment}}</textarea>
                                 </div>
                                 <div align="right">
@@ -202,8 +221,9 @@
 
 
                             <div class="d-flex" style="overflow: hidden">
-                                <a type="button" class="comment-reply-btn mt-2"  data-bs-toggle="collapse"
-                                   th:attr="data-bs-target='#multi-collapse-reply-'+${comment.commentId}" style="font-size: xx-small;"
+                                <a type="button" class="comment-reply-btn mt-2" data-bs-toggle="collapse"
+                                   th:attr="data-bs-target='#multi-collapse-reply-'+${comment.commentId}"
+                                   style="font-size: xx-small;"
                                    th:text="'▼'+| 댓글 ${comment.replySize}|">
                                     개</a>
 
@@ -234,7 +254,7 @@
                                 <div class="collapse show" th:id="|multi-collapse-reply-${comment.commentId}|"
                                      style="margin-left: 20px;padding-left : 10px;border-color:#D9E3F1; border-width: 0px 0px 0px 2px;border-style: solid;
                                         margin-top: 30px;">
-                                <th:block th:each="reply : ${comment.replies}">
+                                    <th:block th:each="reply : ${comment.replies}">
                                         <div class="d-flex mt-2 mb-2" style="overflow: hidden">
                                             <div style="float: left">
                                                 <img th:src="${reply.imageUrl}"
@@ -249,7 +269,8 @@
                                                     <div class="d-flex" style="overflow: hidden">
                                                         <p class="text-xs  mb-0" style="font-size: 0.8rem;color: grey"
                                                            th:text="|${reply.createdDate}|"></p>
-                                                        <a type="button" class="comment-edit-btn mx-1" data-bs-toggle="collapse"
+                                                        <a type="button" class="comment-edit-btn mx-1"
+                                                           data-bs-toggle="collapse"
                                                            th:attr="data-bs-target='#multi-collapse-reply-edit-'+${reply.commentId}"
                                                            style="font-size: xx-small; display: flex;align-items: center;">
                                                             수정
@@ -264,22 +285,24 @@
                                             </div>
                                         </div>
                                         <div class="mb-5" th:text="${reply.comment}"></div>
-                                    <form class="collapse px-lg-3 mt-2" th:id="|multi-collapse-reply-edit-${reply.commentId}|">
-                                        <div class="form-group">
-                                    <textarea class="form-control" th:id="|input-update-comment-${reply.commentId}|"  rows="1"
+                                        <form class="collapse px-lg-3 mt-2"
+                                              th:id="|multi-collapse-reply-edit-${reply.commentId}|">
+                                            <div class="form-group">
+                                    <textarea class="form-control" th:id="|input-update-comment-${reply.commentId}|"
+                                              rows="1"
                                               th:text="${comment.comment}">{{comment}}</textarea>
-                                        </div>
-                                        <div align="right">
-                                            <button
-                                                    type="button"
-                                                    th:onclick="|post.commentUpdate(${post.postId},${reply.commentId})|"
-                                                    class="btn btn-sm bg-warning mx-2 mt-2"
-                                                    style="color: white">수정 완료
-                                            </button>
-                                        </div>
-                                    </form>
+                                            </div>
+                                            <div align="right">
+                                                <button
+                                                        type="button"
+                                                        th:onclick="|post.commentUpdate(${post.postId},${reply.commentId})|"
+                                                        class="btn btn-sm bg-warning mx-2 mt-2"
+                                                        style="color: white">수정 완료
+                                                </button>
+                                            </div>
+                                        </form>
                                         <hr style="border-top: 1px solid #bbb; border-bottom: 1px solid #fff">
-                                </th:block>
+                                    </th:block>
                                 </div>
                             </th:block>
                             <hr style="border-top: 1px solid #bbb; border-bottom: 1px solid #fff">
@@ -319,7 +342,7 @@
             $('#askMessage').text("게시글을 삭제하시겠습니까?");
             $('#askModal').modal('show');
             var confirmBtn = document.getElementById('confirm-Btn');
-            confirmBtn.addEventListener("click", function() {
+            confirmBtn.addEventListener("click", function () {
                 con_check = true;
                 if (con_check === true) {
                     axios.delete("/api/v1/posts/" + postId,
@@ -331,7 +354,7 @@
                     ).then((response) => {
                         $('#finalMessage').text("완료되었습니다.");
                         $('#finalModal').modal('show');
-                        $('#final-Btn').click(function() {
+                        $('#final-Btn').click(function () {
                             history.back();
                         });
 
@@ -358,7 +381,7 @@
             $('#askModal').modal('show');
 
             var confirmBtn = document.getElementById('confirm-Btn');
-            confirmBtn.addEventListener("click", function() {
+            confirmBtn.addEventListener("click", function () {
                 con_check = true;
                 if (con_check === true) {
                     axios.post("/api/v1/posts/" + postId + "/comments",
@@ -370,7 +393,7 @@
                     ).then((response) => {
                         $('#finalMessage').text("완료되었습니다.");
                         $('#finalModal').modal('show');
-                        $('#final-Btn').click(function() {
+                        $('#final-Btn').click(function () {
                             window.location.href = '/posts/' + postId;
                         });
                     }).catch((error) => {
@@ -378,7 +401,8 @@
                         $('#alertMessage').text(error.response.data.result);
                         $('#alertModal').modal('show');
                     });
-                };
+                }
+                ;
             });
         },
 
@@ -391,7 +415,7 @@
             $('#askModal').modal('show');
 
             var confirmBtn = document.getElementById('confirm-Btn');
-            confirmBtn.addEventListener("click", function() {
+            confirmBtn.addEventListener("click", function () {
                 con_check = true;
                 if (con_check === true) {
                     axios.delete(url, {
@@ -400,11 +424,11 @@
                             }
                         }
                     ).then((response) => {
-                        $('#finalMessage').text("완료되었습니다.");
-                        $('#finalModal').modal('show');
-                        $('#final-Btn').click(function() {
-                            window.location.href = '/posts/' + postId;
-                        });
+                            $('#finalMessage').text("완료되었습니다.");
+                            $('#finalModal').modal('show');
+                            $('#final-Btn').click(function () {
+                                window.location.href = '/posts/' + postId;
+                            });
                         }
                     ).catch((error) => {
                         console.log(error);
@@ -412,7 +436,8 @@
                         $('#alertModal').modal('show');
 
                     });
-                };
+                }
+                ;
             });
 
         },
@@ -421,7 +446,7 @@
 
 
             let data = {
-                comment: document.querySelector('#input-update-comment-'+ commentId).value.trim()
+                comment: document.querySelector('#input-update-comment-' + commentId).value.trim()
             };
             console.log(data)
             const url = `/api/v1/posts/${postId}/comments/${commentId}`;
@@ -432,7 +457,7 @@
             $('#askModal').modal('show');
 
             var confirmBtn = document.getElementById('confirm-Btn');
-            confirmBtn.addEventListener("click", function() {
+            confirmBtn.addEventListener("click", function () {
                 con_check = true;
                 if (con_check === true) {
                     axios.put(url,
@@ -442,18 +467,19 @@
                             }
                         }
                     ).then((response) => {
-                        $('#finalMessage').text("완료되었습니다.");
-                        $('#finalModal').modal('show');
-                        $('#final-Btn').click(function() {
-                            window.location.href = '/posts/' + postId;
-                        });
+                            $('#finalMessage').text("완료되었습니다.");
+                            $('#finalModal').modal('show');
+                            $('#final-Btn').click(function () {
+                                window.location.href = '/posts/' + postId;
+                            });
                         }
                     ).catch((error) => {
                         console.log(error.response.data.result);
                         $('#alertMessage').text(error.response.data.result);
                         $('#alertModal').modal('show');
                     });
-                };
+                }
+                ;
             });
         },
         commentReplyWrite: function (postId, commentId) {
@@ -469,7 +495,7 @@
             $('#askModal').modal('show');
 
             var confirmBtn = document.getElementById('confirm-Btn');
-            confirmBtn.addEventListener("click", function() {
+            confirmBtn.addEventListener("click", function () {
                 con_check = true;
                 if (con_check === true) {
                     axios.post("/api/v1/posts/" + postId + "/comments/" + commentId,
@@ -481,7 +507,7 @@
                     ).then((response) => {
                         $('#finalMessage').text("완료되었습니다.");
                         $('#finalModal').modal('show');
-                        $('#final-Btn').click(function() {
+                        $('#final-Btn').click(function () {
                             window.location.href = '/posts/' + postId;
                         });
                     }).catch((error) => {
@@ -489,7 +515,8 @@
                         $('#alertMessage').text(error.response.data.result);
                         $('#alertModal').modal('show');
                     });
-                };
+                }
+                ;
             });
         },
         addLike: function (postId) {
@@ -503,7 +530,7 @@
             ).then((response) => {
                 $('#finalMessage').text("완료되었습니다.");
                 $('#finalModal').modal('show');
-                $('#final-Btn').click(function() {
+                $('#final-Btn').click(function () {
                     window.location.href = '/posts/' + postId;
                 });
             }).catch((error) => {
@@ -515,6 +542,12 @@
     };
 
 </script>
+
+
+<!-- Bootstrap core JavaScript -->
+<script src="../assets/vendor/jquery/jquery.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>

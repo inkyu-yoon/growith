@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.growith.domain.Image.FileInfo;
 import com.growith.domain.Image.FileResponse;
 import com.growith.domain.Image.S3FileInfo;
 import com.growith.domain.Image.post.PostFile;
@@ -28,6 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.growith.global.util.constant.AwsS3Constants.ORIGIN_POST_FOLDER;
 import static com.growith.global.util.constant.AwsS3Constants.ORIGIN_PRODUCT_FOLDER;
@@ -108,7 +111,8 @@ public class AwsS3Service {
         String storedFileUrl = amazonS3Client.getUrl(bucket, key).toString();
 
         return S3FileInfo.builder()
-                .fileName(key)
+                .fileName(originalFileName)
+                .filePath(key)
                 .imageUrl(storedFileUrl)
                 .build();
     }
@@ -142,6 +146,19 @@ public class AwsS3Service {
         return FileResponse.builder().division(ORIGIN_POST_FOLDER)
                 .divisionId(postId)
                 .build();
+    }
+
+    public List<FileInfo> getPostFiles(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
+
+        return postFileRepository.findAllByPost(post)
+                .stream().map(postFile -> FileInfo.builder()
+                        .storedUrl(postFile.getImageUrl())
+                        .fileId(postFile.getId())
+                        .fileName(postFile.getFileName())
+                        .build())
+                .collect(Collectors.toList());
     }
 
 

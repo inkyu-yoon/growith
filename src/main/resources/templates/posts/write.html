@@ -149,37 +149,33 @@
                     }
                 }
             ).then((response) => {
+                var frm = new FormData();
+                var uploadFile = document.getElementById("input-file");
+                console.log(uploadFile.files.length);
+
+                for (var i = 0; i < uploadFile.files.length; i++) {
+
+                    frm.append("multipartFiles", uploadFile.files[i]);
+                }
+
+                axios.post("/api/v1/posts/"+ response.data.result["postId"] + "/files",
+                    frm, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }).then((response) => {
+                    console.log(response);
+                }).catch((error) => {
+                    console.log(error);
+                });
+
                 $('#finalMessage').text("완료되었습니다.");
                 $('#finalModal').modal('show');
                 $('#final-Btn').click(function() {
                     history.back();
                 });
-                // var frm = new FormData();
-                // var uploadFile = document.getElementById("input-file");
-                // if (uploadFile.files.length != 0) {
-                //
-                //     for (var i = 0; i < uploadFile.files.length; i++) {
-                //
-                //         frm.append("multipartFile", uploadFile.files[i]);
-                //     }
-                //
-                //
-                //     axios.post("/api/v1/academies/" + academyId + "/announcements/" + response.data.result["id"] + "/files/upload",
-                //         frm, {
-                //             headers: {
-                //                 'Content-Type': 'multipart/form-data'
-                //             }
-                //         }).then((response) => {
-                //
-                //         window.location.href = '/academy/announcements';
-                //
-                //     }).catch((error) => {
-                //         console.log(error);
-                //         alert(error.response.data.result["message"]);
-                //     });
-                // } else {
-                //     window.location.href = '/academy/announcements';
-                // }
+
+
 
             }).catch((error) => {
                 console.log(error);

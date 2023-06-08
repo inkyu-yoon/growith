@@ -23,6 +23,7 @@ public class PostFile extends BaseEntity {
 
     private String imageUrl;
     private String fileName;
+    private String filePath;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
@@ -33,6 +34,7 @@ public class PostFile extends BaseEntity {
                 .post(post)
                 .imageUrl(s3FileInfo.getImageUrl())
                 .fileName(s3FileInfo.getFileName())
+                .filePath(s3FileInfo.getFilePath())
                 .build();
     }
 

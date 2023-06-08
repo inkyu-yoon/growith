@@ -7,5 +7,6 @@ import lombok.Getter;
 @Builder
 public class S3FileInfo {
     private String imageUrl;
+    private String filePath;
     private String fileName;
 }

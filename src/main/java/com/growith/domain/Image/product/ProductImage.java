@@ -22,6 +22,8 @@ public class ProductImage extends BaseEntity {
 
     private String imageUrl;
     private String fileName;
+    private String filePath;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
@@ -33,6 +35,7 @@ public class ProductImage extends BaseEntity {
                 .product(product)
                 .imageUrl(s3FileInfo.getImageUrl())
                 .fileName(s3FileInfo.getFileName())
+                .filePath(s3FileInfo.getFilePath())
                 .build();
     }
 }

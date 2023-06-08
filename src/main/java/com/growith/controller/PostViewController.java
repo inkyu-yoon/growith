@@ -1,9 +1,11 @@
 package com.growith.controller;
 
+import com.growith.domain.Image.FileInfo;
 import com.growith.domain.comment.dto.CommentGetResponse;
 import com.growith.domain.post.Category;
 import com.growith.domain.post.dto.PostGetListResponse;
 import com.growith.domain.post.dto.PostGetResponse;
+import com.growith.service.AwsS3Service;
 import com.growith.service.CommentService;
 import com.growith.service.PostService;
 import com.growith.service.UserService;
@@ -31,6 +33,7 @@ public class PostViewController {
 
     private final PostService postService;
     private final CommentService commentService;
+    private final AwsS3Service awsS3Service;
 
     @GetMapping("/")
     public String home(Model model, Pageable pageable) {
@@ -131,9 +134,12 @@ public class PostViewController {
     @GetMapping("/posts/{postId}")
     public String read(@PathVariable(name = "postId") Long postId, Model model, HttpServletRequest req, HttpServletResponse res) {
         postService.increaseView(postId, req, res);
+        List<FileInfo> files = awsS3Service.getPostFiles(postId);
+
         PostGetResponse post = postService.getPost(postId);
         List<CommentGetResponse> comments = commentService.getAllComments(postId);
         model.addAttribute("post", post);
+        model.addAttribute("files", files);
         model.addAttribute("comments", comments);
         return "posts/detail";
     }
