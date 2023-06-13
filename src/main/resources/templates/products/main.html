@@ -1,0 +1,81 @@
+<!-- header -->
+<th:block th:replace="~{layout/header :: headerFragment}"></th:block>
+
+<body>
+<th:block th:replace="~{layout/navbar :: navbarFragment}"></th:block>
+
+<!-- Page Content -->
+
+
+<div class="container">
+    <!-- Button trigger modal -->
+
+
+    <div class="row">
+
+
+        <th:block th:replace="~{layout/leftbar :: leftbarFragment}"></th:block>
+
+
+
+        <div class="col-lg-8">
+
+            <th:block th:replace="~{layout/adbar :: adbarFragment}"></th:block>
+
+
+            <div class="card border-primary my-lg-5">
+                <div class="card-body">
+                    <h4 class="card-title" style="color: #3C5E26;">굿즈</h4>
+                    <p class="card-text">🤗 GrowITh의 굿즈를 둘러보세요!</p>
+                </div>
+            </div>
+
+            <div sec:authorize="hasRole('ROLE_ADMIN')">
+                <button type="submit" class="btn btn-outline-primary" th:onclick="location.href = '/products/add'"><i
+                        class="	fa fa-pencil"></i> 상품 등록하기
+                </button>
+            </div>
+
+            <th:block th:replace="~{layout/searchBox :: searchBoxFragment}"></th:block>
+
+
+            <div class="product-container" >
+                <div class="product" th:each="product : ${products}">
+                    <a href="dsf"><img class="card-img-top mx-1" style="" th:src="${product.imageUrl}" alt=""></a>
+
+                    <div class="product-info">
+                        <h1 class="product-name" th:text="${product.name}">상품이름</h1>
+                        <span class="product-price" th:text="${product.price}">$19.99</span>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+        <!-- /.col-lg-8 -->
+
+        <th:block th:replace="~{layout/rightbar :: rightbarFragment}"></th:block>
+
+
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+<th:block th:replace="~{layout/footer :: footerFragment}"></th:block>
+
+<!-- Bootstrap core JavaScript -->
+<script src="assets/vendor/jquery/jquery.min.js"></script>
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>
+    $( function () {
+        $( '[data-bs-toggle="popover"]' ).popover()
+    } );
+</script>
+</body>
+
+</html>

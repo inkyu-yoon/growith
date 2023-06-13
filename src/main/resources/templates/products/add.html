@@ -1,0 +1,167 @@
+<!-- header -->
+<th:block th:replace="~{layout/header :: headerFragment}"></th:block>
+
+<body>
+<th:block th:replace="~{layout/navbar :: navbarFragment}"></th:block>
+
+<!-- Page Content -->
+
+
+<div class="container">
+    <!-- Button trigger modal -->
+
+
+    <div class="container">
+        <div class="row">
+            <th:block th:replace="~{layout/leftbar :: leftbarFragment}"></th:block>
+            <div class="col-8">
+                <div class="card my-4">
+
+                    <div class="card-header pb-0 mx-4">
+                        <div class="row">
+                            <div class="input-group input-group-dynamic mb-4">
+                                <input type="text" class="form-control" placeholder="제목을 입력하세요." id="input-name">
+                            </div>
+                            <div class="input-group input-group-dynamic mb-4">
+                                <input type="text" class="form-control" placeholder="제목을 입력하세요." id="input-price">
+                            </div>
+                            <div class="input-group input-group-dynamic mb-4">
+                                <input type="text" class="form-control" placeholder="제목을 입력하세요." id="input-quantity">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="mx-5 mb-2" style="display: flex;justify-content: flex-end">
+                        <div class="filebox">
+                            <div class="row">
+                                <div class="col">
+                                    <textarea class="form-control" value="첨부파일"
+                                              placeholder="첨부파일"
+                                              id="input-fileName" readonly></textarea>
+                                </div>
+                                <div class="col">
+
+                                    <div class="mt-2">
+                                        <label for="input-file"
+                                               style="margin-top: auto">파일첨부</label>
+                                    </div>
+
+                                    <input type="file" id="input-file">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+                    <div class="d-flex justify-content-center mb-3">
+                        <form action="/posts/qna" method="get">
+                            <button type="submit" class="btn btn-outline-danger">작성 취소</button>
+                        </form>
+                        <button type="submit" th:onclick="|product.add()|"
+                                class="btn btn-outline-secondary">게시글 작성</button>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <th:block th:replace="~{layout/rightbar :: rightbarFragment}"></th:block>
+
+        </div>
+    </div>
+    <!-- /.row -->
+
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+<th:block th:replace="~{layout/footer :: footerFragment}"></th:block>
+
+<!-- Bootstrap core JavaScript -->
+<script src="../assets/vendor/jquery/jquery.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $("input[type=file]").change(function () {
+
+            var fileInput = document.getElementById("input-file");
+
+            var files = fileInput.files;
+            var file;
+            let name = '';
+            for (var i = 0; i < files.length; i++) {
+
+                file = files[i];
+                console.log(file);
+                name += (i + 1) + '. [' + file.name + ']\n';
+            }
+            $("#input-fileName").val(name);
+        });
+
+    });
+
+</script>
+<Script>
+
+    let product = {
+        init: function () {
+            var _this = this;
+        },
+
+        add: function () {
+            let data = {
+                name: document.querySelector('#input-name').value.trim(),
+                quantity: document.querySelector('#input-quantity').value.trim(),
+                price: document.querySelector('#input-price').value.trim()
+            };
+            console.log(data);
+            axios.post("/api/v1/products",
+                JSON.stringify(data), {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }
+            ).then((response) => {
+                var frm = new FormData();
+                var uploadFile = document.getElementById("input-file");
+                console.log(uploadFile.files.length);
+
+                for (var i = 0; i < uploadFile.files.length; i++) {
+
+                    frm.append("multipartFiles", uploadFile.files[i]);
+                }
+
+                axios.post("/api/v1/products/"+ response.data.result["productId"] + "/files",
+                    frm, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }).then((response) => {
+                    console.log(response);
+                }).catch((error) => {
+                    console.log(error);
+                });
+
+                $('#finalMessage').text("완료되었습니다.");
+                $('#finalModal').modal('show');
+                $('#final-Btn').click(function() {
+                    history.back();
+                });
+
+
+
+            }).catch((error) => {
+                console.log(error);
+                $('#alertMessage').text(error.response.data.result);
+                $('#alertModal').modal('show');
+
+            });
+        },
+    };
+</Script>
+</body>
+
+</html>
