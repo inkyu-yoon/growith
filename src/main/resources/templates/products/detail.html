@@ -1,0 +1,113 @@
+<!-- header -->
+<th:block th:replace="~{layout/header :: headerFragment}"></th:block>
+
+<body>
+<th:block th:replace="~{layout/navbar :: navbarFragment}"></th:block>
+
+<!-- Page Content -->
+
+
+<div class="container">
+    <!-- Button trigger modal -->
+
+
+    <div class="row">
+
+
+        <th:block th:replace="~{layout/leftbar :: leftbarFragment}"></th:block>
+
+
+        <div class="col-lg-8">
+
+            <th:block th:replace="~{layout/adbar :: adbarFragment}"></th:block>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div id="myInfo">
+                        <div class="row">
+                            <img class="card-img-top mx-1" style="" th:src="${product.imageUrl}" alt="">
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="col-lg-6">
+                    <div id="myInfo2">
+                        <div class="row">
+                            <div class="form-group">
+                                <fieldset>
+                                    <label class="form-label mt-4" for="input-nickName">상품명</label>
+                                    <div class="form-control" id="input-nickName" type="text"
+                                         th:text="${product.name}">
+                                    </div>
+
+                                </fieldset>
+                            </div>
+                            <div class="form-group">
+                                <fieldset>
+                                    <label class="form-label mt-4" for="input-email">상품 가격</label>
+                                    <div class="form-control" id="input-email" type="text"
+                                           th:text="|${product.price} 원|">
+                                    </div>
+
+                                </fieldset>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <fieldset>
+                                            <label class="form-label mt-4" for="input-blog">재고</label>
+                                            <div class="form-control" id="input-blog" type="text"
+                                                   th:text="|${product.quantity} 개|">
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                                <div class="col-8">
+
+                                    <div class="form-group">
+                                        <fieldset>
+                                            <label class="form-label mt-4" for="input-nickName">구매 수량</label>
+                                            <input type="number" class="form-control" id="input-lecturePrice" placeholder="구매할 수량을 선택하세요!">
+                                        </fieldset>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <br>
+                        <!-- /.row -->
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" th:onclick="|product.buy()|"
+                                    class="btn btn-outline-light">상품 구매
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <!-- /.col-lg-8 -->
+
+        <th:block th:replace="~{layout/rightbar :: rightbarFragment}"></th:block>
+
+
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+<th:block th:replace="~{layout/footer :: footerFragment}"></th:block>
+
+<!-- Bootstrap core JavaScript -->
+<script src="assets/vendor/jquery/jquery.min.js"></script>
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

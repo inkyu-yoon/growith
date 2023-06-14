@@ -46,6 +46,14 @@ public class ProductService {
                 .map(product -> product.toProductGetResponse());
     }
 
+    public Page<ProductGetResponse> getAllProductsWithImage(Pageable pageable) {
+        return productRepository.getAllProductsWithImage(pageable);
+    }
+
+    public ProductGetResponse getProductWithImage(Long productId) {
+        return productRepository.getProductWithImage(productId);
+
+    }
 
     public ProductResponse deleteProduct(String userName, Long productId) {
         User foundUser = userRepository.findByUserName(userName)

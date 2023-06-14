@@ -31,21 +31,21 @@
             </div>
 
             <div sec:authorize="hasRole('ROLE_ADMIN')">
-                <button type="submit" class="btn btn-outline-primary" th:onclick="location.href = '/products/add'"><i
+                <button type="submit" class="btn btn-outline-primary my-lg-5" th:onclick="location.href = '/products/add'"><i
                         class="	fa fa-pencil"></i> 상품 등록하기
                 </button>
             </div>
 
-            <th:block th:replace="~{layout/searchBox :: searchBoxFragment}"></th:block>
-
-
             <div class="product-container" >
                 <div class="product" th:each="product : ${products}">
-                    <a href="dsf"><img class="card-img-top mx-1" style="" th:src="${product.imageUrl}" alt=""></a>
+                    <a th:href="@{/products/{productId}(productId=${product.productId})}" style="text-decoration: none">
+                    <img class="card-img-top mx-1" style="" th:src="${product.imageUrl}" alt="">
+                    </a>
 
                     <div class="product-info">
-                        <h1 class="product-name" th:text="${product.name}">상품이름</h1>
-                        <span class="product-price" th:text="${product.price}">$19.99</span>
+                        <h1 class="product-name" th:text="${product.name}"></h1>
+                        <span class="product-price" th:text="|${product.price} 원|"></span>
+                        <span class="product-quantity"  th:text="|재고 ${product.quantity} 개|"></span>
                     </div>
                 </div>
             </div>
