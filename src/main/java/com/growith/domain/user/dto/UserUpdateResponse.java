@@ -12,4 +12,7 @@ public class UserUpdateResponse {
     private String nickName;
     private String blog;
     private String email;
+    private String roadNameAddress;
+    private String detailedAddress;
+    private String postalCode;
 }

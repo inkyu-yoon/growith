@@ -86,10 +86,10 @@ public class UserApiController {
     }
 
     @Tag(name = "User", description = "회원 관련 API")
-    @Operation(summary = "회원 정보 수정", description = "<strong>🔑JWT 필요</strong><br>💡회원 본인의 정보 닉네임, 블로그 주소, 이메일 정보를 갱신합니다.<br>🚨본인 정보 수정 요청이 아닐 시 · 가입된 회원이 존재하지 않을 시 · 이미 존재하는 닉네임으로 수정 요청 시 에러 발생")
+    @Operation(summary = "회원 정보 수정", description = "<strong>🔑JWT 필요</strong><br>💡회원 본인의 정보 닉네임, 블로그 주소, 이메일 정보, 주소 정보를 갱신합니다.<br>🚨본인 정보 수정 요청이 아닐 시 · 가입된 회원이 존재하지 않을 시 · 이미 존재하는 닉네임으로 수정 요청 시 에러 발생")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "⭕ SUCCESS", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    examples = {@ExampleObject(value = "{\"message\":\"SUCCESS\",\"result\":{\"id\":1,\"nickName\":\"nickName\",\"blog\":\"blog\",\"email\":\"email\"}}")}, schema = @Schema(implementation = Response.class))),
+                    examples = {@ExampleObject(value = "{\"message\":\"SUCCESS\",\"result\":{\"id\":1,\"nickName\":\"nickName\",\"blog\":\"blog\",\"email\":\"email\",\"roadNameAddress\":\"roadNameAddress\",\"detailedAddress\":\"detailedAddress\",\"postalCode\":\"postalCode\"}}")}, schema = @Schema(implementation = Response.class))),
             @ApiResponse(responseCode = "401", description = "❌ ERROR (가입된 회원이 존재하지 않을 시)", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                     examples = {@ExampleObject(value = "{\"message\":\"ERROR\",\"result\":\"본인만 접근할 수 있습니다.\"}")}, schema = @Schema(implementation = Response.class))),
             @ApiResponse(responseCode = "404", description = "❌ ERROR (가입된 회원이 존재하지 않을 시)", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,

@@ -119,6 +119,27 @@
                                            th:value="${user.blog}">
                                 </fieldset>
                             </div>
+                            <div class="form-group">
+                                <fieldset>
+                                    <label class="form-label mt-4" for="input-roadNameAddress">도로명 주소</label>
+                                    <input class="form-control" id="input-roadNameAddress" type="text"
+                                           th:value="${user.roadNameAddress != null ? user.roadNameAddress : ''}">
+                                </fieldset>
+                            </div>
+                            <div class="form-group">
+                                <fieldset>
+                                    <label class="form-label mt-4" for="input-detailedAddress">상세 주소</label>
+                                    <input class="form-control" id="input-detailedAddress" type="text"
+                                           th:value="${user.detailedAddress != null ? user.detailedAddress : ''}">
+                                </fieldset>
+                            </div>
+                            <div class="form-group">
+                                <fieldset>
+                                    <label class="form-label mt-4" for="input-postalCode">우편번호</label>
+                                    <input class="form-control" id="input-postalCode" type="text"
+                                           th:value="${user.postalCode != null ? user.postalCode : ''}">
+                                </fieldset>
+                            </div>
                         </div>
                         <br>
                         <!-- /.row -->
@@ -281,7 +302,10 @@
             let data = {
                 nickName: document.querySelector('#input-nickName').value.trim(),
                 blog: document.querySelector('#input-blog').value.trim(),
-                email: document.querySelector('#input-email').value.trim()
+                email: document.querySelector('#input-email').value.trim(),
+                roadNameAddress: document.querySelector('#input-roadNameAddress').value.trim(),
+                detailedAddress: document.querySelector('#input-detailedAddress').value.trim(),
+                postalCode: document.querySelector('#input-postalCode').value.trim()
             };
             var con_check = false;
             console.log(data);

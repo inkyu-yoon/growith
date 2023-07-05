@@ -48,6 +48,9 @@ public class User extends BaseEntity implements UserDetails {
 
     private String githubUrl;
 
+    @Embedded
+    private Address address;
+
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
@@ -118,7 +121,8 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     public UserGetMyPageResponse toUserGetMyPageResponse() {
-        return UserGetMyPageResponse.builder()
+
+        UserGetMyPageResponse response = UserGetMyPageResponse.builder()
                 .id(this.id)
                 .userName(this.userName)
                 .imageUrl(this.imageUrl)
@@ -128,6 +132,12 @@ public class User extends BaseEntity implements UserDetails {
                 .point(this.point)
                 .githubUrl(this.githubUrl)
                 .build();
+
+        if (this.address != null) {
+            response.setAddress(this.address);
+        }
+
+        return response;
     }
 
 
@@ -144,6 +154,11 @@ public class User extends BaseEntity implements UserDetails {
         this.blog = requestDto.getBlog();
         this.nickName = requestDto.getNickName();
         this.email = requestDto.getEmail();
+        this.address = Address.builder()
+                .roadNameAddress(requestDto.getRoadNameAddress())
+                .postalCode(requestDto.getPostalCode())
+                .detailedAddress(requestDto.getDetailedAddress())
+                .build();
     }
 
     public UserUpdateResponse toUserUpdateResponse() {
@@ -151,6 +166,9 @@ public class User extends BaseEntity implements UserDetails {
                 .id(this.id)
                 .blog(this.blog)
                 .nickName(this.nickName)
+                .roadNameAddress(this.address.getRoadNameAddress())
+                .postalCode(this.address.getPostalCode())
+                .detailedAddress(this.address.getDetailedAddress())
                 .build();
     }
 

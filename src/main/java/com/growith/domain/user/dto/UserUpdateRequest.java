@@ -18,4 +18,10 @@ public class UserUpdateRequest {
     private String blog;
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$",message = "올바른 이메일 형식이 아닙니다.")
     private String email;
+    @NotBlank
+    private String roadNameAddress;
+    @NotBlank
+    private String detailedAddress;
+    @NotBlank
+    private String postalCode;
 }
