@@ -17,8 +17,11 @@ public enum ErrorCode {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."),
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 파일을 찾을 수 없습니다."),
+    ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "회원 주소를 찾을 수 없습니다.(마이페이지에서 업데이트 해주세요.)"),
     USER_NOT_MATCH(HttpStatus.UNAUTHORIZED,"본인만 접근할 수 있습니다."),
     LIKE_NOT_ALLOWED(HttpStatus.UNAUTHORIZED,"본인 게시글에 좋아요를 누를 수 없습니다."),
+    LACK_OF_QUANTITY(HttpStatus.BAD_REQUEST,"재고를 초과하여 주문할 수 없습니다."),
+    LACK_OF_POINT(HttpStatus.BAD_REQUEST,"포인트가 부족합니다."),
     ALLOWED_ONLY_ADMIN(HttpStatus.UNAUTHORIZED,"관리자만 요청할 수 있습니다."),
 
     REQUEST_PARAM_NOT_MATCH(HttpStatus.BAD_REQUEST,"Request Parameter가 유효한지 확인해주세요."),

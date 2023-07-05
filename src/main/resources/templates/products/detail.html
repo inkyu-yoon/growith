@@ -49,7 +49,7 @@
                                 <fieldset>
                                     <label class="form-label mt-4" for="input-email">상품 가격</label>
                                     <div class="form-control" id="input-email" type="text"
-                                           th:text="|${product.price} 원|">
+                                         th:text="|${product.price} 원|">
                                     </div>
 
                                 </fieldset>
@@ -60,7 +60,7 @@
                                         <fieldset>
                                             <label class="form-label mt-4" for="input-blog">재고</label>
                                             <div class="form-control" id="input-blog" type="text"
-                                                   th:text="|${product.quantity} 개|">
+                                                 th:text="|${product.quantity} 개|">
                                             </div>
                                         </fieldset>
                                     </div>
@@ -69,8 +69,9 @@
 
                                     <div class="form-group">
                                         <fieldset>
-                                            <label class="form-label mt-4" for="input-nickName">구매 수량</label>
-                                            <input type="number" class="form-control" id="input-lecturePrice" placeholder="구매할 수량을 선택하세요!">
+                                            <label class="form-label mt-4" for="input-quantity">구매 수량</label>
+                                            <input type="number" class="form-control" id="input-quantity"
+                                                   placeholder="구매할 수량을 선택하세요!">
                                         </fieldset>
                                     </div>
                                 </div>
@@ -80,7 +81,7 @@
                         <br>
                         <!-- /.row -->
                         <div class="d-flex justify-content-end">
-                            <button type="submit" th:onclick="|product.buy()|"
+                            <button type="submit" th:onclick="|product.buy(${product.productId})|"
                                     class="btn btn-outline-light">상품 구매
                             </button>
                         </div>
@@ -107,7 +108,49 @@
 <!-- Bootstrap core JavaScript -->
 <script src="assets/vendor/jquery/jquery.min.js"></script>
 <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>
+    let product = {
+        init: function () {
+            var _this = this;
+        },
+        buy: function (productId) {
+            let data = {
+                productId: productId,
+                quantity: document.querySelector('#input-quantity').value.trim()
+            };
+            var con_check = false;
+            console.log(data);
+            $('#askMessage').text("구매 하시겠습니까?");
+            $('#askModal').modal('show');
 
+            var confirmBtn = document.getElementById('confirm-Btn');
+            confirmBtn.addEventListener("click", function () {
+                con_check = true;
+                if (con_check === true) {
+                    axios.post("/api/v1/orders",
+                        JSON.stringify(data), {
+                            headers: {
+                                'Content-Type': 'application/json',
+                            }
+                        }
+                    ).then((response) => {
+                        $('#finalMessage').text("완료되었습니다.");
+                        $('#finalModal').modal('show');
+                        $('#final-Btn').click(function () {
+                            location.reload();
+                        });
+                    }).catch((error) => {
+                        console.log(error);
+                        $('#alertMessage').text(error.response.data.result);
+                        $('#alertModal').modal('show');
+                    });
+                };
+            });
+
+
+        }
+    };
+</script>
 </body>
 
 </html>

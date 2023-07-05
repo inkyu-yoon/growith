@@ -184,4 +184,18 @@ public class User extends BaseEntity implements UserDetails {
             throw new AppException(ErrorCode.ALLOWED_ONLY_ADMIN);
         }
     }
+
+    public void checkAddress() {
+        if (this.address == null) {
+            throw new AppException(ErrorCode.ALLOWED_ONLY_ADMIN);
+        }
+    }
+
+    public void checkPoint(long totalPrice) {
+        if (this.point < totalPrice) {
+            throw new AppException(ErrorCode.LACK_OF_POINT);
+        } else {
+            this.point -= totalPrice;
+        }
+    }
 }

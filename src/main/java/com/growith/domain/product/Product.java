@@ -4,6 +4,8 @@ import com.growith.domain.BaseEntity;
 import com.growith.domain.product.dto.ProductGetResponse;
 import com.growith.domain.product.dto.ProductResponse;
 import com.growith.domain.product.dto.ProductUpdateRequest;
+import com.growith.global.exception.AppException;
+import com.growith.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -57,5 +59,13 @@ public class Product extends BaseEntity {
         this.name = requestDto.getName();
         this.quantity = requestDto.getQuantity();
         this.price = requestDto.getPrice();
+    }
+
+    public void removeStock(Long num) {
+        if (this.quantity < num) {
+            throw new AppException(ErrorCode.LACK_OF_QUANTITY);
+        } else {
+            this.quantity -= num;
+        }
     }
 }
