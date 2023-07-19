@@ -1,8 +1,8 @@
 # growith
 
-[배포 주소(제작중)](http://49.50.162.219:8080/)  
+[배포 주소(제작중)](http://ec2-3-38-133-211.ap-northeast-2.compute.amazonaws.com:8080/)  
 
-[스웨거 주소](http://49.50.162.219:8080/swagger-ui/index.html)
+[스웨거 주소](http://ec2-3-38-133-211.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/index.html)
 
 <br>
 
