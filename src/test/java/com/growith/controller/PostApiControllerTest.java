@@ -51,7 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = PostApiController.class)
-@EnableAspectJAutoProxy
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @Import({SecurityConfig.class, BindingCheck.class})
 class PostApiControllerTest {
     @Autowired

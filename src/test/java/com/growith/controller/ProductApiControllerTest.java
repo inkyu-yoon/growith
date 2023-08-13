@@ -51,7 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = ProductApiController.class)
-@EnableAspectJAutoProxy
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @Import({SecurityConfig.class, BindingCheck.class})
 class ProductApiControllerTest {
 
@@ -120,7 +120,6 @@ class ProductApiControllerTest {
         productAddRequest = ProductAddRequest.builder()
                 .name(productName)
                 .quantity(productQuantity)
-                .imageUrl(productImageUrl)
                 .price(price)
                 .build();
 
@@ -138,7 +137,6 @@ class ProductApiControllerTest {
                 .build();
 
         productUpdateRequest = ProductUpdateRequest.builder()
-                .imageUrl(productImageUrl)
                 .name(productName)
                 .price(price)
                 .quantity(productQuantity)
