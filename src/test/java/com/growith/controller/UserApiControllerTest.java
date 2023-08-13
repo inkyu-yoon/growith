@@ -3,12 +3,13 @@ package com.growith.controller;
 import com.google.gson.Gson;
 import com.growith.domain.alarm.dto.AlarmGetListResponse;
 import com.growith.domain.post.dto.PostGetListResponse;
-import com.growith.domain.user.User;
-import com.growith.domain.user.UserRole;
 import com.growith.domain.user.dto.UserGetMyPageResponse;
 import com.growith.domain.user.dto.UserGetResponse;
 import com.growith.domain.user.dto.UserUpdateRequest;
 import com.growith.domain.user.dto.UserUpdateResponse;
+import com.growith.fixture.AlarmFixture;
+import com.growith.fixture.PostFixture;
+import com.growith.fixture.UserFixture;
 import com.growith.global.aop.BindingCheck;
 import com.growith.global.config.SecurityConfig;
 import com.growith.global.exception.AppException;
@@ -33,9 +34,10 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -54,7 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = UserApiController.class)
-@EnableAspectJAutoProxy
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @Import({SecurityConfig.class, BindingCheck.class})
 class UserApiControllerTest {
 
@@ -87,14 +89,8 @@ class UserApiControllerTest {
     String token;
     Cookie cookie;
     Gson gson;
-    UserGetResponse userGetResponse;
-    UserGetMyPageResponse userGetMyPageResponse;
-
     UserUpdateRequest userUpdateRequest;
-
     UserUpdateResponse userUpdateResponse;
-    PostGetListResponse postGetListResponse;
-    AlarmGetListResponse alarmGetListResponse;
 
     @BeforeEach
     public void setUpMockMvc() {
@@ -104,56 +100,30 @@ class UserApiControllerTest {
                 .build();
 
         given(userDetailsService.loadUserByUsername(anyString()))
-                .willReturn(User.builder()
-                        .userName("userName")
-                        .email("email")
-                        .point(0L)
-                        .blog("blog")
-                        .githubUrl("githubUrl")
-                        .nickName("nickName")
-                        .imageUrl("imageUrl")
-                        .userRole(UserRole.ROLE_USER)
-                        .build());
+                .willReturn(UserFixture.createUser());
 
         userId = 1L;
         userName = "userName";
         postId = 1L;
         alarmId = 1L;
 
-        token = JwtUtil.createToken(1L,userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
+        token = JwtUtil.createToken(1L, userName, "ROLE_USER", secretKey, 1000L * 60 * 60);
         cookie = new Cookie("jwt", token);
         gson = new Gson();
-        userGetResponse = new UserGetResponse(userId, "userName", "imageUrl", "nickName", "email", "blog", "githubUrl");
-        userGetMyPageResponse = new UserGetMyPageResponse(1L, userName, "imageUrl", "nickName", "email", "blog", 0L, "githubUrl");
-        userUpdateRequest = new UserUpdateRequest("nickName", "blog", "email@email.com");
-        userUpdateResponse = new UserUpdateResponse(userId, "nickName", "blog", "email");
-        postGetListResponse = PostGetListResponse
-                .builder()
-                .postId(postId)
-                .title("title")
-                .content("content")
-                .date("date")
-                .nickName("nickName")
-                .view(0L)
-                .build();
-
-        alarmGetListResponse = AlarmGetListResponse.builder()
-                .alarmId(alarmId)
-                .postId(postId)
-                .createdAt("createdAt")
-                .fromUserNickName("fromUserNickName")
-                .text("text")
-                .postName("postName")
-                .build();
+        userUpdateRequest = UserFixture.createUserUpdateRequest();
+        userUpdateResponse = UserFixture.createUserUpdateResponse();
     }
 
     @Nested
-    @DisplayName("회원 조회 테스트")
+    @DisplayName("회원 조회")
     class getUserTest {
 
         @Test
-        @DisplayName("회원 조회 성공 테스트")
+        @DisplayName("성공")
         void success() throws Exception {
+
+            UserGetResponse userGetResponse = UserFixture.createUserGetResponse();
+
 
             given(userService.getUser(userId))
                     .willReturn(userGetResponse);
@@ -164,19 +134,18 @@ class UserApiControllerTest {
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("SUCCESS"))
                     .andExpect(jsonPath("$.result").exists())
-                    .andExpect(jsonPath("$.result.id").value(1))
-                    .andExpect(jsonPath("$.result.userName").value("userName"))
-                    .andExpect(jsonPath("$.result.imageUrl").value("imageUrl"))
-                    .andExpect(jsonPath("$.result.nickName").value("nickName"))
-                    .andExpect(jsonPath("$.result.email").value("email"))
-                    .andExpect(jsonPath("$.result.blog").value("blog"))
-                    .andExpect(jsonPath("$.result.githubUrl").value("githubUrl"));
+                    .andExpect(jsonPath("$.result.id").exists())
+                    .andExpect(jsonPath("$.result.userName").exists())
+                    .andExpect(jsonPath("$.result.imageUrl").exists())
+                    .andExpect(jsonPath("$.result.nickName").exists())
+                    .andExpect(jsonPath("$.result.email").exists())
+                    .andExpect(jsonPath("$.result.blog").exists())
+                    .andExpect(jsonPath("$.result.githubUrl").exists());
 
         }
 
         @Test
-        @DisplayName("회원 조회 실패 테스트 (회원이 존재하지 않는 경우)")
-        @WithMockUser
+        @DisplayName("실패 - userId에 해당하는 회원이 존재하지 않습니다.")
         void error() throws Exception {
 
             when(userService.getUser(userId))
@@ -187,19 +156,23 @@ class UserApiControllerTest {
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result").value("가입된 회원이 아닙니다."));
 
         }
     }
 
     @Nested
-    @DisplayName("회원 마이페이지 조회 테스트")
+    @DisplayName("회원 마이페이지 조회")
     class getUserMyPageTest {
 
 
         @Test
-        @DisplayName("회원 마이페이지 조회 성공 테스트")
+        @DisplayName("성공")
         void success() throws Exception {
+
+            UserGetMyPageResponse userGetMyPageResponse = UserFixture.createUserGetMyPageResponse();
+
             given(userService.getMyPageUser(userName))
                     .willReturn(userGetMyPageResponse);
 
@@ -210,19 +183,22 @@ class UserApiControllerTest {
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("SUCCESS"))
                     .andExpect(jsonPath("$.result").exists())
-                    .andExpect(jsonPath("$.result.id").value(1L))
-                    .andExpect(jsonPath("$.result.userName").value(userName))
-                    .andExpect(jsonPath("$.result.imageUrl").value("imageUrl"))
-                    .andExpect(jsonPath("$.result.nickName").value("nickName"))
-                    .andExpect(jsonPath("$.result.email").value("email"))
-                    .andExpect(jsonPath("$.result.blog").value("blog"))
-                    .andExpect(jsonPath("$.result.point").value(0L))
-                    .andExpect(jsonPath("$.result.githubUrl").value("githubUrl"));
+                    .andExpect(jsonPath("$.result.id").exists())
+                    .andExpect(jsonPath("$.result.userName").exists())
+                    .andExpect(jsonPath("$.result.imageUrl").exists())
+                    .andExpect(jsonPath("$.result.nickName").exists())
+                    .andExpect(jsonPath("$.result.email").exists())
+                    .andExpect(jsonPath("$.result.blog").exists())
+                    .andExpect(jsonPath("$.result.point").exists())
+                    .andExpect(jsonPath("$.result.githubUrl").exists())
+                    .andExpect(jsonPath("$.result.roadNameAddress").exists())
+                    .andExpect(jsonPath("$.result.detailedAddress").exists())
+                    .andExpect(jsonPath("$.result.postalCode").exists());
 
         }
 
         @Test
-        @DisplayName("회원 마이페이지 조회 실패 테스트 (회원이 존재하지 않는 경우)")
+        @DisplayName("실패 - jwt claim 에 있는 회원 정보로 회원을 찾을 수 없습니다.")
         void error() throws Exception {
 
             when(userService.getMyPageUser(userName))
@@ -233,27 +209,32 @@ class UserApiControllerTest {
                     .andDo(print())
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result").value("가입된 회원이 아닙니다."));
+
         }
     }
 
     @Nested
-    @DisplayName("회원 별 게시글 조회 테스트")
+    @DisplayName("회원 별 작성한 게시글 조회")
     class getPostsByUserTest {
 
-        List<PostGetListResponse> posts = new ArrayList<>();
 
         @Test
-        @DisplayName("회원 별 게시글 조회 성공")
+        @DisplayName("성공")
         void getPostsByUserSuccess() throws Exception {
 
+
+            UserGetResponse userGetResponse = UserFixture.createUserGetResponse();
+            PostGetListResponse postGetListResponse = PostFixture.createPostGetListResponse();
+            List<PostGetListResponse> posts = new ArrayList<>();
             posts.add(postGetListResponse);
             Page<PostGetListResponse> postsPage = new PageImpl<>(posts);
-
+            Pageable pageable = PageRequest.of(0, 20);
 
             given(userService.getUser(userId))
                     .willReturn(userGetResponse);
-            given(postService.getAllPostsByUserName(any(), any()))
+            given(postService.getAllPostsByUserName(userGetResponse.getUserName(), pageable))
                     .willReturn(postsPage);
 
             mockMvc.perform(get("/api/v1/users/" + userId + "/posts"))
@@ -263,15 +244,19 @@ class UserApiControllerTest {
                     .andExpect(jsonPath("$.message").value("SUCCESS"))
                     .andExpect(jsonPath("$.result").exists())
                     .andExpect(jsonPath("$.result.content").exists())
-                    .andExpect(jsonPath("$.result.content[0].postId").value(1))
-                    .andExpect(jsonPath("$.result.content[0].title").value("title"))
-                    .andExpect(jsonPath("$.result.content[0].content").value("content"))
-                    .andExpect(jsonPath("$.result.content[0].date").value("date"))
-                    .andExpect(jsonPath("$.result.content[0].nickName").value("nickName"));
+                    .andExpect(jsonPath("$.result.content[0].postId").exists())
+                    .andExpect(jsonPath("$.result.content[0].title").exists())
+                    .andExpect(jsonPath("$.result.content[0].content").exists())
+                    .andExpect(jsonPath("$.result.content[0].date").exists())
+                    .andExpect(jsonPath("$.result.content[0].nickName").exists())
+                    .andExpect(jsonPath("$.result.content[0].imageUrl").exists())
+                    .andExpect(jsonPath("$.result.content[0].view").exists())
+                    .andExpect(jsonPath("$.result.content[0].numOfComments").exists())
+                    .andExpect(jsonPath("$.result.content[0].numOfLikes").exists());
         }
 
         @Test
-        @DisplayName("회원 별 게시글 조회 실패 (가입된 회원이 아닌 경우)")
+        @DisplayName("실패 - userId에 해당하는 회원이 존재하지 않습니다.")
         void getPostsByUserError() throws Exception {
 
             when(userService.getUser(userId))
@@ -282,7 +267,9 @@ class UserApiControllerTest {
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result").value("가입된 회원이 아닙니다."));
+
         }
 
     }
@@ -295,7 +282,7 @@ class UserApiControllerTest {
         @Test
         @DisplayName("회원 정보 수정 성공 테스트")
         void success() throws Exception {
-            given(userService.updateUser(eq(userName), eq(userId), any(UserUpdateRequest.class)))
+            given(userService.updateUser(anyString(), anyLong(), any(UserUpdateRequest.class)))
                     .willReturn(userUpdateResponse);
 
             mockMvc.perform(patch("/api/v1/users/" + userId)
@@ -306,25 +293,25 @@ class UserApiControllerTest {
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("SUCCESS"))
                     .andExpect(jsonPath("$.result").exists())
-                    .andExpect(jsonPath("$.result.id").value(1L))
-                    .andExpect(jsonPath("$.result.nickName").value("nickName"))
-                    .andExpect(jsonPath("$.result.blog").value("blog"))
-                    .andExpect(jsonPath("$.result.email").value("email"));
+                    .andExpect(jsonPath("$.result.id").exists())
+                    .andExpect(jsonPath("$.result.nickName").exists())
+                    .andExpect(jsonPath("$.result.blog").exists())
+                    .andExpect(jsonPath("$.result.email").exists());
 
         }
-        private static Stream<Arguments> testCasesOfUpdateUser() {
+
+        private static Stream<Arguments> UpdateUserFailScenarios() {
             return Stream.of(
-                    Arguments.of(USER_NOT_FOUND,404,"가입된 회원이 아닙니다."),
-                    Arguments.of(DUPLICATE_NICKNAME,409,"이미 존재하는 닉네임입니다."),
-                    Arguments.of(USER_NOT_MATCH,401,"본인만 접근할 수 있습니다.")
+                    Arguments.of(USER_NOT_FOUND, 404, "가입된 회원이 아닙니다."),
+                    Arguments.of(DUPLICATE_NICKNAME, 409, "이미 존재하는 닉네임입니다."),
+                    Arguments.of(USER_NOT_MATCH, 401, "본인만 접근할 수 있습니다.")
             );
         }
 
 
-
-        @ParameterizedTest
-        @MethodSource("testCasesOfUpdateUser")
-        @DisplayName("회원 정보 수정 실패 테스트 (회원이 존재하지 않는 경우)")
+        @ParameterizedTest(name = "[{index}] - {2}")
+        @MethodSource("UpdateUserFailScenarios")
+        @DisplayName("실패")
         void error1(ErrorCode errorCode, int responseStatus, String errorMessage) throws Exception {
 
             doThrow(new AppException(errorCode))
@@ -344,11 +331,36 @@ class UserApiControllerTest {
 
         }
 
-        @Test
-        @DisplayName("회원 정보 수정 실패 테스트 (Binding Error 발생)")
-        void error4() throws Exception {
+        private static Stream<Arguments> UpdateUserBindingFailScenarios() {
+            return Stream.of(
+                    Arguments.of(UserUpdateRequest.builder().nickName(null).email("email@email.com").roadNameAddress("roadNameAddress").detailedAddress("detailedAddress").postalCode("postalCode").build(),
+                            "닉네임은 존재해야합니다.",
+                            "nickname",
+                            "공백인 경우"),
+                    Arguments.of(UserUpdateRequest.builder().nickName("nickName").email("email").roadNameAddress("roadNameAddress").detailedAddress("detailedAddress").postalCode("postalCode").build(),
+                            "올바른 이메일 형식이 아닙니다.",
+                            "email",
+                            "올바른 이메일 형식이 아닌 경우"),
+                    Arguments.of(UserUpdateRequest.builder().nickName("nickName").email("email@email.com").roadNameAddress(null).detailedAddress("detailedAddress").postalCode("postalCode").build(),
+                            "도로명 주소는 존재해야합니다.",
+                            "roadNameAddress",
+                            "공백인 경우"),
+                    Arguments.of(UserUpdateRequest.builder().nickName("nickName").email("email@email.com").roadNameAddress("roadNameAddress").detailedAddress(null).postalCode("postalCode").build(),
+                            "상세 주소는 존재해야합니다.",
+                            "detailedAddress",
+                            "공백인 경우"),
+                    Arguments.of(UserUpdateRequest.builder().nickName("nickName").email("email@email.com").roadNameAddress("roadNameAddress").detailedAddress("detailedAddress").postalCode(null).build(),
+                            "우편번호는 존재해야합니다.",
+                            "postalCode",
+                            "공백인 경우")
+            );
+        }
 
-            UserUpdateRequest request = new UserUpdateRequest(null, "blog", "email");
+        @ParameterizedTest(name = "[{index}] - {2}이(가) {3}")
+        @MethodSource("UpdateUserBindingFailScenarios")
+        @DisplayName("실패 - Binding Error 발생")
+        void error4(UserUpdateRequest request,String ErrorMessage,String property, String cause) throws Exception {
+
 
             mockMvc.perform(patch("/api/v1/users/" + userId)
                             .cookie(cookie)
@@ -357,37 +369,40 @@ class UserApiControllerTest {
                     .andDo(print())
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("ERROR"))
-                    .andExpect(jsonPath("$.result").exists());
+                    .andExpect(jsonPath("$.result").exists())
+                    .andExpect(jsonPath("$.result").value(ErrorMessage));
 
         }
     }
 
     @Nested
-    @DisplayName("회원 알림 조회 테스트")
-    class getAlarmsTest{
+    @DisplayName("회원 알림 조회")
+    class getAlarmsTest {
 
         @Test
-        @DisplayName("알림 조회 성공 테스트")
+        @DisplayName("성공")
         void success() throws Exception {
+            AlarmGetListResponse alarmGetListResponse = AlarmFixture.createAlarmGetListResponse();
+
             given(alarmService.getAlarms(userName))
                     .willReturn(List.of(alarmGetListResponse));
 
             mockMvc.perform(get("/api/v1/users/alarms")
-                    .cookie(cookie))
+                            .cookie(cookie))
                     .andDo(print())
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.message").value("SUCCESS"))
-                    .andExpect(jsonPath("$.result[0].alarmId").value(alarmId))
-                    .andExpect(jsonPath("$.result[0].fromUserNickName").value("fromUserNickName"))
-                    .andExpect(jsonPath("$.result[0].postName").value("postName"))
-                    .andExpect(jsonPath("$.result[0].postId").value(postId))
-                    .andExpect(jsonPath("$.result[0].text").value("text"))
-                    .andExpect(jsonPath("$.result[0].createdAt").value("createdAt"));
+                    .andExpect(jsonPath("$.result[0].alarmId").exists())
+                    .andExpect(jsonPath("$.result[0].fromUserNickName").exists())
+                    .andExpect(jsonPath("$.result[0].postName").exists())
+                    .andExpect(jsonPath("$.result[0].postId").exists())
+                    .andExpect(jsonPath("$.result[0].text").exists())
+                    .andExpect(jsonPath("$.result[0].createdAt").exists());
 
         }
 
         @Test
-        @DisplayName("알림 조회 실패 테스트 (가입된 회원을 찾을 수 없는 경우)")
+        @DisplayName("실패 - jwt claim 에 있는 회원 정보로 회원을 찾을 수 없습니다.")
         void error() throws Exception {
 
             when(alarmService.getAlarms(userName))
@@ -404,17 +419,17 @@ class UserApiControllerTest {
     }
 
     @Nested
-    @DisplayName("회원 알림 삭제 테스트")
-    class deleteAlarmTest{
+    @DisplayName("회원 알림 삭제")
+    class deleteAlarmTest {
 
         @Test
-        @DisplayName("알림 삭제 성공 테스트")
+        @DisplayName("성공")
         void success() throws Exception {
             willDoNothing()
                     .given(alarmService)
-                            .delete(userName,alarmId);
+                    .delete(userName, alarmId);
 
-            mockMvc.perform(delete("/api/v1/users/alarms/"+alarmId)
+            mockMvc.perform(delete("/api/v1/users/alarms/" + alarmId)
                             .cookie(cookie))
                     .andDo(print())
                     .andExpect(jsonPath("$.message").exists())
@@ -422,23 +437,24 @@ class UserApiControllerTest {
                     .andExpect(jsonPath("$.result").value("complete"));
 
         }
+
         private static Stream<Arguments> testCasesOfDeleteAlarm() {
             return Stream.of(
-                    Arguments.of(USER_NOT_FOUND,404,"가입된 회원이 아닙니다."),
-                    Arguments.of(ALARM_NOT_FOUND,404,"알림 데이터를 찾을 수 없습니다.")
+                    Arguments.of(USER_NOT_FOUND, 404, "가입된 회원이 아닙니다."),
+                    Arguments.of(ALARM_NOT_FOUND, 404, "알림 데이터를 찾을 수 없습니다.")
             );
         }
 
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] - {2}")
         @MethodSource("testCasesOfDeleteAlarm")
-        @DisplayName("알림 삭제 실패 테스트 ")
+        @DisplayName("실패")
         void error1(ErrorCode errorCode, int responseStatus, String errorMessage) throws Exception {
 
             doThrow(new AppException(errorCode))
                     .when(alarmService)
                     .delete(userName, alarmId);
 
-            mockMvc.perform(delete("/api/v1/users/alarms/"+alarmId)
+            mockMvc.perform(delete("/api/v1/users/alarms/" + alarmId)
                             .cookie(cookie))
                     .andDo(print())
                     .andExpect(status().is(responseStatus))

@@ -36,11 +36,11 @@ class UserServiceTest {
     private UserService userService;
 
     @Nested
-    @DisplayName("회원 조회 테스트")
+    @DisplayName("회원 조회 관련 테스트")
     class getUserTest{
 
         @Test
-        @DisplayName("회원 조회 성공")
+        @DisplayName("성공")
         public void getUserSuccess(){
             given(userRepository.findById(anyLong()))
                     .willReturn(Optional.of(mockUser));
@@ -51,7 +51,7 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("회원 조회 실패 (회원이 존재하지 않는 경우)")
+        @DisplayName("실패 - 회원이 존재하지 않는 경우")
         public void getUserError(){
 
             when(userRepository.findById(anyLong()))
@@ -84,7 +84,7 @@ class UserServiceTest {
     class getMyPageTest{
 
         @Test
-        @DisplayName("마이페이지 조회 성공 테스트")
+        @DisplayName("성공")
         public void getMyPageSuccess(){
             given(userRepository.findByUserName(anyString()))
                     .willReturn(Optional.of(mockUser));
@@ -95,7 +95,7 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("마이페이지 조회 실패 테스트 (회원이 존재하지 않는 경우) ")
+        @DisplayName("실패 - 회원이 존재하지 않는 경우")
         public void getMyPageError(){
             when(userRepository.findByUserName(anyString()))
                     .thenReturn(Optional.empty());
@@ -116,7 +116,7 @@ class UserServiceTest {
         String userName = "userName";
 
         @Test
-        @DisplayName("회원 정보 수정 성공 테스트")
+        @DisplayName("성공")
         public void updateUserSuccess(){
 
             given(userRepository.findById(anyLong()))
@@ -129,7 +129,7 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("회원 정보 수정 성공 테스트 (이미 본인이 쓰고있는 닉네임으로 요청시 성공)")
+        @DisplayName("성공- 이미 본인이 쓰고있는 닉네임으로 요청시")
         public void updateUserSuccess2(){
 
             given(userRepository.findById(anyLong()))
@@ -144,7 +144,7 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("회원 정보 수정 실패 테스트 (회원이 존재하지 않는 경우)")
+        @DisplayName("실패 - userId에 해당하는 회원이 존재하지 않는 경우")
         public void updateUserError1(){
             when(userRepository.findById(anyLong()))
                     .thenReturn(Optional.empty());
@@ -157,7 +157,7 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("회원 정보 수정 실패 테스트 (수정 요청자가 본인이 아닌 경우)")
+        @DisplayName("실패 - 수정 요청자가 본인이 아닌 경우")
         public void updateUserError2(){
             given(userRepository.findById(anyLong()))
                     .willReturn(Optional.of(mockUser));
@@ -174,7 +174,7 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("회원 정보 수정 실패 테스트 (중복된 닉네임으로 변경 요청하는 경우)")
+        @DisplayName("실패 - 중복된 닉네임으로 변경 요청하는 경우")
         public void updateUserError3(){
 
             given(userRepository.findById(anyLong()))
