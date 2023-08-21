@@ -45,6 +45,9 @@ dependencies {
 	// WebClient
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+	//FeignClient
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.0.4'
+
 	// jwt 토큰
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	implementation 'javax.xml.bind:jaxb-api:2.3.0'
